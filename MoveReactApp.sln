@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35514.174 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoveReactApp.Server", "MoveReactApp.Server\MoveReactApp.Server.csproj", "{A20A0135-6243-4396-8241-E390EEAEE1F1}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "movereactapp.client", "movereactapp.client\movereactapp.client.esproj", "{7265887D-99A6-4A34-9D2A-7EDB3D091B81}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A20A0135-6243-4396-8241-E390EEAEE1F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A20A0135-6243-4396-8241-E390EEAEE1F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A20A0135-6243-4396-8241-E390EEAEE1F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A20A0135-6243-4396-8241-E390EEAEE1F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7265887D-99A6-4A34-9D2A-7EDB3D091B81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7265887D-99A6-4A34-9D2A-7EDB3D091B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7265887D-99A6-4A34-9D2A-7EDB3D091B81}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{7265887D-99A6-4A34-9D2A-7EDB3D091B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7265887D-99A6-4A34-9D2A-7EDB3D091B81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7265887D-99A6-4A34-9D2A-7EDB3D091B81}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
