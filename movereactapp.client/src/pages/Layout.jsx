@@ -2,9 +2,10 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import { AppBar, Box, Button, Stack, Toolbar } from "@mui/material";
+import { AppBar, Box, Button, Icon, Link, Stack, Toolbar } from "@mui/material";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import { Outlet } from "react-router-dom";
+import AppBarLink from "../components/AppBarLink";
 
 const Layout = () => {
   return (
@@ -12,28 +13,14 @@ const Layout = () => {
       <AppBar>
         <Toolbar>
           <Box sx={{ flexGrow: 1 }}>
-            <Button
-              variant="text"
-              href="/"
-              color="inherit"
-              startIcon={<FileCopyIcon />}
-            >
-              Move App
-            </Button>
+            <FileCopyIcon />
+            <AppBarLink title="MOVE APP" link="/" />
           </Box>
           <Stack direction="row" spacing={2}>
-            <Button variant="text" href="/departments" color="inherit">
-              Departments
-            </Button>
-            <Button variant="text" href="/extensions" color="inherit">
-              Extensions
-            </Button>
-            <Button variant="text" href="/configurations" color="inherit">
-              Configurations
-            </Button>
-            <Button variant="text" href="#" color="inherit">
-              Move Manually
-            </Button>
+            <AppBarLink title="DEPARTEMENTS" link="/departments" />
+            <AppBarLink title="EXTENSIONS" link="/extensions" />
+            <AppBarLink title="CONFIGURATIONS" link="/configurations" />
+            <AppBarLink title="MOVE" link="#" />
           </Stack>
         </Toolbar>
       </AppBar>
