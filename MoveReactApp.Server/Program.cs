@@ -14,8 +14,25 @@ namespace MoveReactApp.Server
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var app = builder.Build();
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost",
+                            "http://localhost:4200",
+                            "https://localhost:7230",
+                            "http://localhost:90",
+                            "https://localhost:54785")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .SetIsOriginAllowedToAllowWildcardSubdomains();
+                    });
+            });
 
+            var app = builder.Build();
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
@@ -34,6 +51,8 @@ namespace MoveReactApp.Server
             app.MapControllers();
 
             app.MapFallbackToFile("/index.html");
+
+
 
             app.Run();
         }

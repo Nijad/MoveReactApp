@@ -1,20 +1,31 @@
-import { Link } from "@mui/material";
+import { Box, Link, Typography } from "@mui/material";
 
-function AppBarLink({ title, link }) {
+function AppBarLink({ title, link, icon = null }) {
   return (
     <Link
       height={64}
-      width={128}
+      minWidth={128}
       align="center"
       alignContent="center"
       href={link}
       underline="none"
       color="white"
       sx={{
-        "&:hover": { backgroundColor: "white", fontWeight: "bold" },
+        "&:hover": {
+          color: "#2196f3",
+          backgroundColor: "#fefefe",
+        },
       }}
     >
-      {title}
+      {icon === null ? (
+        <Typography>{title}</Typography>
+      ) : (
+        <Box>
+          {icon}
+          &nbsp;
+          <Typography variant="body2">{title}</Typography>
+        </Box>
+      )}
     </Link>
   );
 }
