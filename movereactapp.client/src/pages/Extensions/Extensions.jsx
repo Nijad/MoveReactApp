@@ -15,7 +15,7 @@ function Extensions() {
       <h1>Extensions Page</h1>
       <div>
         <Get
-          url="https://localhost:7203/api/Extensions" /*params={{ id: "12345" }}*/
+          url="https://localhost:7203/api/Extensions/GetExtensions" /*params={{ id: "12345" }}*/
         >
           {(error, response, isLoading, makeRequest, axios) => {
             if (error) {

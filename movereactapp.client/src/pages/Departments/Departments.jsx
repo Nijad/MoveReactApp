@@ -148,7 +148,7 @@ export default function Departments() {
       field: "joinDate",
       headerName: "Join date",
       type: "date",
-      valueFormatter: (params) => dayjs(params?.value).format("DD/MM/YYYY"),
+      valueFormatter: (params) => dayjs(params).format("DD/MM/YYYY"),
       width: 180,
       editable: true,
     },
