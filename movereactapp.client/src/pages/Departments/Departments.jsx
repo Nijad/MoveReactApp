@@ -13,6 +13,8 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons,
 } from "@mui/x-data-grid";
+import dayjs from "dayjs";
+
 // import {
 //   randomCreatedDate,
 //   randomTraderName,
@@ -30,7 +32,7 @@ const initialRows = [
     id: 1, //randomId(),
     name: "nijad", //randomTraderName(),
     age: 25,
-    joinDate: "01-01-2000", //randomCreatedDate(),
+    joinDate: "01/01/2000", //randomCreatedDate(),
     role: "Market",
   },
   {
@@ -145,7 +147,8 @@ export default function Departments() {
     {
       field: "joinDate",
       headerName: "Join date",
-      //type: "date",
+      type: "date",
+      valueFormatter: (params) => dayjs(params?.value).format("DD/MM/YYYY"),
       width: 180,
       editable: true,
     },
@@ -169,6 +172,7 @@ export default function Departments() {
         if (isInEditMode) {
           return [
             <GridActionsCellItem
+              key={"save" + id}
               icon={<SaveIcon />}
               label="Save"
               sx={{
@@ -177,6 +181,7 @@ export default function Departments() {
               onClick={handleSaveClick(id)}
             />,
             <GridActionsCellItem
+              key={"cancel" + id}
               icon={<CancelIcon />}
               label="Cancel"
               className="textPrimary"
@@ -188,6 +193,7 @@ export default function Departments() {
 
         return [
           <GridActionsCellItem
+            key={"edit" + id}
             icon={<EditIcon />}
             label="Edit"
             className="textPrimary"
@@ -195,6 +201,7 @@ export default function Departments() {
             color="inherit"
           />,
           <GridActionsCellItem
+            key={"delete" + id}
             icon={<DeleteIcon />}
             label="Delete"
             onClick={handleDeleteClick(id)}

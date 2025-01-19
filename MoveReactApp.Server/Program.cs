@@ -24,7 +24,8 @@ namespace MoveReactApp.Server
                             "http://localhost:4200",
                             "https://localhost:7230",
                             "http://localhost:90",
-                            "https://localhost:54785")
+                            "https://localhost:54785",
+                            "https://localhost:54786")
                             .AllowAnyMethod()
                             .AllowAnyHeader()
                             .SetIsOriginAllowedToAllowWildcardSubdomains();
