@@ -22,10 +22,10 @@ import dayjs from "dayjs";
 //   randomArrayItem,
 // } from "@mui/x-data-grid-generator";
 
-const roles = ["Market", "Finance", "Development"];
-const randomRole = () => {
-  return randomArrayItem(roles);
-};
+//const roles = ["Market", "Finance", "Development"];
+// const randomRole = () => {
+//   return randomArrayItem(roles);
+// };
 
 const initialRows = [
   {

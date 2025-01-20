@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   AxiosProvider,
   Request,
@@ -10,14 +11,15 @@ import {
   withAxios,
 } from "react-axios";
 function Extensions() {
+  const [extensions, setExtensions] = useState([]);
   return (
     <div>
       <h1>Extensions Page</h1>
       <div>
         <Get
-          url="https://localhost:7203/api/Extensions/GetExtensions" /*params={{ id: "12345" }}*/
+          url="https://localhost:7203/api/Extensions" /*params={{ id: "12345" }}*/
         >
-          {(error, response, isLoading, makeRequest, axios) => {
+          {(error, response, isLoading, makeRequest /*, axios*/) => {
             if (error) {
               return (
                 <div>
@@ -32,6 +34,8 @@ function Extensions() {
             } else if (isLoading) {
               return <div>Loading...</div>;
             } else if (response !== null) {
+              //console.log(response.data);
+              //setExtensions([...response.data]);
               console.log(response.data);
               return (
                 <div>

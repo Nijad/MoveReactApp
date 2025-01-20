@@ -13,9 +13,9 @@ namespace MoveReactApp.Server.Controllers
     {
         // GET: api/<ExtensionController>
         [HttpGet]
-        public dynamic Get()
+        public List<Extension> Get()
         {
-            List<Prop> columnDefenitions = ColDef.Properties<Extension>(new Extension());
+            //List<Prop> columnDefenitions = ColDef.Properties<Extension>(new Extension());
             //List<Extension> extensions = new()
             //{
             //    new Extension()
@@ -49,46 +49,46 @@ namespace MoveReactApp.Server.Controllers
             //};
             
             List<Extension> extensions = Operations.GetExtensions();
-            return new { data = extensions, cols = columnDefenitions };
+            return extensions;
         }
 
-        [HttpGet("GetExtensions")]
-        public ActionResult GetExtensions()
-        {
-            List<Prop> columnDefenitions = ColDef.Properties<Extension>(new Extension());
-            List<Extension> extensions = new()
-            {
-                new Extension()
-                {
-                    Ext="doc",
-                    Program="Word",
-                    Note="",
-                    Enabled=true
-                },
-                new Extension()
-                {
-                    Ext="docx",
-                    Program="Word",
-                    Note="",
-                    Enabled=true
-                },
-                new Extension()
-                {
-                    Ext="xls",
-                    Program="Excel",
-                    Note="",
-                    Enabled=true
-                },
-                new Extension()
-                {
-                    Ext="xlsx",
-                    Program="Excel",
-                    Note="",
-                    Enabled=true
-                },
-            };
-            return Ok(new { data = extensions, cols = columnDefenitions });
-        }
+        //[HttpGet("GetExtensions")]
+        //public ActionResult GetExtensions()
+        //{
+        //    List<Prop> columnDefenitions = ColDef.Properties<Extension>(new Extension());
+        //    List<Extension> extensions = new()
+        //    {
+        //        new Extension()
+        //        {
+        //            Ext="doc",
+        //            Program="Word",
+        //            Note="",
+        //            Enabled=true
+        //        },
+        //        new Extension()
+        //        {
+        //            Ext="docx",
+        //            Program="Word",
+        //            Note="",
+        //            Enabled=true
+        //        },
+        //        new Extension()
+        //        {
+        //            Ext="xls",
+        //            Program="Excel",
+        //            Note="",
+        //            Enabled=true
+        //        },
+        //        new Extension()
+        //        {
+        //            Ext="xlsx",
+        //            Program="Excel",
+        //            Note="",
+        //            Enabled=true
+        //        },
+        //    };
+        //    return Ok(new { data = extensions, cols = columnDefenitions });
+        //}
 
         // GET api/<ExtensionController>/5
         [HttpGet("{ext}")]
