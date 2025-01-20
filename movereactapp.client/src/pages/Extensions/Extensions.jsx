@@ -1,56 +1,234 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/DeleteOutlined";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Close";
 import {
-  AxiosProvider,
-  Request,
-  Get,
-  Delete,
-  Head,
-  Post,
-  Put,
-  Patch,
-  withAxios,
-} from "react-axios";
+  GridRowModes,
+  DataGrid,
+  GridToolbarContainer,
+  GridActionsCellItem,
+  GridRowEditStopReasons,
+  GridCheckIcon,
+  GridCloseIcon,
+} from "@mui/x-data-grid";
+
+function EditToolbar(props) {
+  const { setRows, setRowModesModel } = props;
+
+  const handleClick = () => {
+    const id = Math.random();
+    setRows((oldRows) => [
+      ...oldRows,
+      { id, ext: "", program: "", note: "", enabled: "", isNew: true },
+    ]);
+    setRowModesModel((oldModel) => ({
+      ...oldModel,
+      [id]: { mode: GridRowModes.Edit, fieldToFocus: "ext" },
+    }));
+  };
+
+  return (
+    <GridToolbarContainer>
+      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+        Add Extension
+      </Button>
+    </GridToolbarContainer>
+  );
+}
 function Extensions() {
+  const columns = [
+    {
+      field: "id",
+      headerName: "Id",
+      width: 80,
+      editable: true,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "ext",
+      headerName: "Extension",
+      width: 120,
+      editable: true,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "program",
+      headerName: "Program",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      editable: true,
+    },
+    {
+      field: "note",
+      headerName: "Note",
+      width: 240,
+      editable: true,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "enabled",
+      headerName: "Enabled",
+      width: 120,
+      editable: true,
+      align: "center",
+      headerAlign: "center",
+      type: "boolean",
+      // renderCell: (param) => {
+      //   return param.value ? <GridCheckIcon /> : <GridCloseIcon />;
+      // },
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 120,
+      cellClassName: "actions",
+      getActions: ({ id }) => {
+        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+
+        if (isInEditMode) {
+          return [
+            <GridActionsCellItem
+              key={"save" + id}
+              icon={<SaveIcon />}
+              label="Save"
+              sx={{
+                color: "primary.main",
+              }}
+              onClick={handleSaveClick(id)}
+            />,
+            <GridActionsCellItem
+              key={"cancel" + id}
+              icon={<CancelIcon />}
+              label="Cancel"
+              className="textPrimary"
+              onClick={handleCancelClick(id)}
+              color="inherit"
+            />,
+          ];
+        }
+
+        return [
+          <GridActionsCellItem
+            key={"edit" + id}
+            icon={<EditIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={handleEditClick(id)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            key={"delete" + id}
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={handleDeleteClick(id)}
+            color="inherit"
+          />,
+        ];
+      },
+    },
+  ];
+  useEffect(() => {
+    axios
+      .get("https://localhost:7203/api/Extensions")
+      .then((res) => {
+        setExtensions(res.data);
+        setRows(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
   const [extensions, setExtensions] = useState([]);
+  const [rows, setRows] = useState(extensions);
+  const [rowModesModel, setRowModesModel] = useState({});
+
+  const handleRowEditStop = (params, event) => {
+    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+      event.defaultMuiPrevented = true;
+    }
+  };
+
+  const handleEditClick = (id) => () => {
+    setRowModesModel({
+      ...rowModesModel,
+      [id]: { mode: GridRowModes.Edit },
+    });
+  };
+
+  const handleSaveClick = (id) => () => {
+    setRowModesModel({
+      ...rowModesModel,
+      [id]: { mode: GridRowModes.View },
+    });
+  };
+
+  const handleDeleteClick = (id) => () => {
+    setRows(rows.filter((row) => row.id !== id));
+  };
+
+  const handleCancelClick = (id) => () => {
+    setRowModesModel({
+      ...rowModesModel,
+      [id]: { mode: GridRowModes.View, ignoreModifications: true },
+    });
+    const editedRow = rows.find((row) => row.id === id);
+    if (editedRow.isNew) {
+      setRows(rows.filter((row) => row.id !== id));
+    }
+  };
+
+  const processRowUpdate = (newRow) => {
+    const updatedRow = { ...newRow, isNew: false };
+    setRows(rows.map((row) => (row.id === newrow.id ? updatedRow : row)));
+    return updatedRow;
+  };
+
+  const handleProcessRowUpdateError = (error) => {
+    console.log(error);
+  };
+
+  const handleRowModesModelChange = (newRowModesModel) => {
+    setRowModesModel(newRowModesModel);
+  };
+
   return (
     <div>
       <h1>Extensions Page</h1>
-      <div>
-        <Get
-          url="https://localhost:7203/api/Extensions" /*params={{ id: "12345" }}*/
-        >
-          {(error, response, isLoading, makeRequest /*, axios*/) => {
-            if (error) {
-              return (
-                <div>
-                  Something bad happened: {error.message}{" "}
-                  <button
-                    onClick={() => makeRequest({ params: { reload: true } })}
-                  >
-                    Retry
-                  </button>
-                </div>
-              );
-            } else if (isLoading) {
-              return <div>Loading...</div>;
-            } else if (response !== null) {
-              //console.log(response.data);
-              //setExtensions([...response.data]);
-              console.log(response.data);
-              return (
-                <div>
-                  <button
-                    onClick={() => makeRequest({ params: { refresh: true } })}
-                  >
-                    Refresh
-                  </button>
-                </div>
-              );
-            }
-            return <div>Default message before request is made.</div>;
+      <Box
+        sx={{
+          height: 500,
+          width: "100%",
+          "& .actions": {
+            color: "text.secondary",
+          },
+          "& .textPrimary": {
+            color: "text.primary",
+          },
+        }}
+      >
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          editMode="row"
+          rowModesModel={rowModesModel}
+          onRowModesModelChange={handleRowModesModelChange}
+          onProcessRowUpdateError={handleProcessRowUpdateError}
+          onRowEditStop={handleRowEditStop}
+          processRowUpdate={processRowUpdate}
+          slots={{ toolbar: EditToolbar }}
+          slotProps={{
+            toolbar: { setRows, setRowModesModel },
           }}
-        </Get>
-      </div>
+        />
+      </Box>
     </div>
   );
 }

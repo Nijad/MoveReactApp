@@ -16,39 +16,43 @@ namespace MoveReactApp.Server.Controllers
         public List<Extension> Get()
         {
             //List<Prop> columnDefenitions = ColDef.Properties<Extension>(new Extension());
-            //List<Extension> extensions = new()
-            //{
-            //    new Extension()
-            //    {
-            //        Ext="doc",
-            //        Program="Word",
-            //        Note="",
-            //        Enabled=true
-            //    },
-            //    new Extension()
-            //    {
-            //        Ext="docx",
-            //        Program="Word",
-            //        Note="",
-            //        Enabled=true
-            //    },
-            //    new Extension()
-            //    {
-            //        Ext="xls",
-            //        Program="Excel",
-            //        Note="",
-            //        Enabled=true
-            //    },
-            //    new Extension()
-            //    {
-            //        Ext="xlsx",
-            //        Program="Excel",
-            //        Note="",
-            //        Enabled=true
-            //    },
-            //};
-            
-            List<Extension> extensions = Operations.GetExtensions();
+            List<Extension> extensions = new()
+            {
+                new Extension()
+                {
+                    Id=1,
+                    Ext="doc",
+                    Program="Word",
+                    Note="",
+                    Enabled=true
+                },
+                new Extension()
+                {
+                    Id=2,
+                    Ext="docx",
+                    Program="Word",
+                    Note="",
+                    Enabled=true
+                },
+                new Extension()
+                {
+                    Id=3,
+                    Ext="xls",
+                    Program="Excel",
+                    Note="",
+                    Enabled=false
+                },
+                new Extension()
+                {
+                    Id=4,
+                    Ext="xlsx",
+                    Program="Excel",
+                    Note="",
+                    Enabled=true
+                },
+            };
+
+            //List<Extension> extensions = Operations.GetExtensions();
             return extensions;
         }
 

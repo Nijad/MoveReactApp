@@ -15,18 +15,6 @@ import {
 } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 
-// import {
-//   randomCreatedDate,
-//   randomTraderName,
-//   randomId,
-//   randomArrayItem,
-// } from "@mui/x-data-grid-generator";
-
-//const roles = ["Market", "Finance", "Development"];
-// const randomRole = () => {
-//   return randomArrayItem(roles);
-// };
-
 const initialRows = [
   {
     id: 1, //randomId(),
