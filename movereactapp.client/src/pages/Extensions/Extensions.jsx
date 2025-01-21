@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
+import { Typography, Box, Button, Grid2 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
@@ -13,8 +12,6 @@ import {
   GridToolbarContainer,
   GridActionsCellItem,
   GridRowEditStopReasons,
-  GridCheckIcon,
-  GridCloseIcon,
 } from "@mui/x-data-grid";
 
 function EditToolbar(props) {
@@ -42,14 +39,15 @@ function EditToolbar(props) {
 }
 function Extensions() {
   const columns = [
-    {
-      field: "id",
-      headerName: "Id",
-      width: 80,
-      editable: true,
-      align: "center",
-      headerAlign: "center",
-    },
+    // {
+    //   field: "id",
+    //   headerName: "Id",
+    //   width: 80,
+    //   editable: true,
+    //   align: "center",
+    //   headerAlign: "center",
+
+    // },
     {
       field: "ext",
       headerName: "Extension",
@@ -171,7 +169,8 @@ function Extensions() {
   };
 
   const handleDeleteClick = (id) => () => {
-    setRows(rows.filter((row) => row.id !== id));
+    if (confirm("Are you sure to delete extensions?"))
+      setRows(rows.filter((row) => row.id !== id));
   };
 
   const handleCancelClick = (id) => () => {
@@ -179,6 +178,7 @@ function Extensions() {
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
+
     const editedRow = rows.find((row) => row.id === id);
     if (editedRow.isNew) {
       setRows(rows.filter((row) => row.id !== id));
@@ -187,8 +187,14 @@ function Extensions() {
 
   const processRowUpdate = (newRow) => {
     const updatedRow = { ...newRow, isNew: false };
-    setRows(rows.map((row) => (row.id === newrow.id ? updatedRow : row)));
+    setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+
+    //here send data to server
     return updatedRow;
+  };
+
+  const handleClick = (newRow) => {
+    console.log(newRow.row.ext);
   };
 
   const handleProcessRowUpdateError = (error) => {
@@ -201,34 +207,69 @@ function Extensions() {
 
   return (
     <div>
-      <h1>Extensions Page</h1>
-      <Box
-        sx={{
-          height: 500,
-          width: "100%",
-          "& .actions": {
-            color: "text.secondary",
-          },
-          "& .textPrimary": {
-            color: "text.primary",
-          },
-        }}
-      >
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          editMode="row"
-          rowModesModel={rowModesModel}
-          onRowModesModelChange={handleRowModesModelChange}
-          onProcessRowUpdateError={handleProcessRowUpdateError}
-          onRowEditStop={handleRowEditStop}
-          processRowUpdate={processRowUpdate}
-          slots={{ toolbar: EditToolbar }}
-          slotProps={{
-            toolbar: { setRows, setRowModesModel },
-          }}
-        />
-      </Box>
+      <Typography variant="h4">Extensions Page</Typography>
+      <Grid2 container spacing={2}>
+        <Grid2 size={6}>
+          <Box
+            sx={{
+              height: 500,
+              width: "100%",
+              "& .actions": {
+                color: "text.secondary",
+              },
+              "& .textPrimary": {
+                color: "text.primary",
+              },
+            }}
+          >
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              editMode="row"
+              rowModesModel={rowModesModel}
+              onRowModesModelChange={handleRowModesModelChange}
+              onProcessRowUpdateError={handleProcessRowUpdateError}
+              onRowEditStop={handleRowEditStop}
+              processRowUpdate={processRowUpdate}
+              slots={{ toolbar: EditToolbar }}
+              slotProps={{
+                toolbar: { setRows, setRowModesModel },
+              }}
+              onRowClick={handleClick}
+            />
+          </Box>
+        </Grid2>
+        <Grid2 size={6}>
+          <Box
+            sx={{
+              height: 500,
+              width: "100%",
+              "& .actions": {
+                color: "text.secondary",
+              },
+              "& .textPrimary": {
+                color: "text.primary",
+              },
+            }}
+          >
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              editMode="row"
+              rowModesModel={rowModesModel}
+              onRowModesModelChange={handleRowModesModelChange}
+              onProcessRowUpdateError={handleProcessRowUpdateError}
+              onRowEditStop={handleRowEditStop}
+              processRowUpdate={processRowUpdate}
+              slots={{ toolbar: EditToolbar }}
+              slotProps={{
+                toolbar: { setRows, setRowModesModel },
+              }}
+              onRowClick={handleClick}
+            />
+          </Box>
+        </Grid2>
+      </Grid2>
     </div>
   );
 }
