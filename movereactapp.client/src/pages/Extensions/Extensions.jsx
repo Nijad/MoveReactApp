@@ -18,7 +18,8 @@ function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
 
   const handleClick = () => {
-    const id = Math.random();
+    const id = -Math.random();
+
     setRows((oldRows) => [
       ...oldRows,
       { id, ext: "", program: "", note: "", enabled: "", isNew: true },
@@ -80,9 +81,6 @@ function Extensions() {
       align: "center",
       headerAlign: "center",
       type: "boolean",
-      // renderCell: (param) => {
-      //   return param.value ? <GridCheckIcon /> : <GridCloseIcon />;
-      // },
     },
     {
       field: "actions",
@@ -190,6 +188,43 @@ function Extensions() {
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
 
     //here send data to server
+    updatedRow.id < 0
+      ? axios
+          .post(
+            "https://localhost:7203/api/Extensions",
+            {
+              id: updatedRow.id,
+              ext: updatedRow.ext,
+              program: updatedRow.program,
+              note: updatedRow.note,
+              enabled: updatedRow.enabled == "" ? false : true,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err))
+      : axios
+          .put(
+            "https://localhost:7203/api/Extensions/" + updatedRow.id,
+            {
+              id: updatedRow.id,
+              ext: updatedRow.ext,
+              program: updatedRow.program,
+              note: updatedRow.note,
+              enabled: updatedRow.enabled == "" ? false : true,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err));
     return updatedRow;
   };
 
@@ -209,7 +244,7 @@ function Extensions() {
     <div>
       <Typography variant="h4">Extensions Page</Typography>
       <Grid2 container spacing={2}>
-        <Grid2 size={6}>
+        <Grid2 size={12}>
           <Box
             sx={{
               height: 500,
@@ -239,7 +274,7 @@ function Extensions() {
             />
           </Box>
         </Grid2>
-        <Grid2 size={6}>
+        {/* <Grid2 size={6}>
           <Box
             sx={{
               height: 500,
@@ -268,7 +303,7 @@ function Extensions() {
               onRowClick={handleClick}
             />
           </Box>
-        </Grid2>
+        </Grid2> */}
       </Grid2>
     </div>
   );

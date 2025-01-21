@@ -104,13 +104,17 @@ namespace MoveReactApp.Server.Controllers
 
         // POST api/<ExtensionController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post([FromBody] Extension value)
         {
+            if (true)
+            {
+                Extension s = value;
+            }
         }
 
         // PUT api/<ExtensionController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public void Put(double id, [FromBody] Extension value)
         {
         }
 

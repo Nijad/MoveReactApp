@@ -5,7 +5,7 @@ namespace MoveReactApp.Server.Models
 {
     public class Extension
     {
-        public int Id { get; set; }
+        public double Id { get; set; }
         [JsonProperty("Extension")]
         [MaxLength(105)]
         public string Ext { get; set; }
