@@ -13,12 +13,12 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons,
 } from "@mui/x-data-grid";
+import DraggableDialog from "../../components/DraggableDialog";
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
   const handleClick = () => {
     const id = -Math.random();
-    console.log("on create", id);
     setRows((oldRows) => [
       ...oldRows,
       { id, ext: "", program: "", note: "", enabled: "", isNew: true },
@@ -39,15 +39,14 @@ function EditToolbar(props) {
 }
 function Extensions() {
   const columns = [
-    // {
-    //   field: "id",
-    //   headerName: "Id",
-    //   width: 80,
-    //   editable: true,
-    //   align: "center",
-    //   headerAlign: "center",
-
-    // },
+    {
+      field: "id",
+      headerName: "Id",
+      width: 80,
+      editable: true,
+      align: "center",
+      headerAlign: "center",
+    },
     {
       field: "ext",
       headerName: "Extension",
@@ -132,19 +131,21 @@ function Extensions() {
       },
     },
   ];
+  const [extensions, setExtensions] = useState([]);
+  const [rows, setRows] = useState(extensions);
+  const [rowModesModel, setRowModesModel] = useState({});
+  const [ext, setExt] = useState();
+  const [maxId, setMaxId] = useState();
   useEffect(() => {
     axios
       .get("https://localhost:7203/api/Extensions")
       .then((res) => {
         setExtensions(res.data);
         setRows(res.data);
+        setMaxId(rows.length);
       })
       .catch((err) => console.log(err));
   }, []);
-  const [extensions, setExtensions] = useState([]);
-  const [rows, setRows] = useState(extensions);
-  const [rowModesModel, setRowModesModel] = useState({});
-  const [ext, setExt] = useState();
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -160,6 +161,9 @@ function Extensions() {
   };
 
   const handleSaveClick = (id) => () => {
+    // setMaxId(rows.length);
+    // console.log(maxId);
+
     setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View },
@@ -169,8 +173,6 @@ function Extensions() {
   const handleDeleteClick = (id) => () => {
     if (confirm("Are you sure to delete extensions?")) {
       const deletedRow = rows.find((row) => row.id === id);
-      console.log(deletedRow);
-
       axios
         .delete("https://localhost:7203/api/Extensions/" + deletedRow.ext)
         .then((res) => {
@@ -218,7 +220,7 @@ function Extensions() {
             }
           )
           .then((res) => {
-            console.log(res.data);
+            setRows(res.data);
           })
           .catch((err) => {
             const editedRow = rows.find((row) => row.id === newRow.id);
@@ -243,7 +245,7 @@ function Extensions() {
             }
           )
           .then((res) => {
-            console.log(res.data);
+            setRows(res.data);
           })
           .catch((err) => {
             setRows(rows);
@@ -266,6 +268,7 @@ function Extensions() {
 
   return (
     <div>
+      <DraggableDialog aa={alert("adsf")} />
       <Typography variant="h4">Extensions Page</Typography>
       <Grid2 container spacing={2}>
         <Grid2 size={12}>
@@ -295,7 +298,7 @@ function Extensions() {
                 toolbar: { setRows, setRowModesModel },
               }}
               onRowClick={handleClick}
-              pageSizeOptions={[5, 10, 25, { value: -1, label: "All" }]}
+              pageSizeOptions={[5, 10, 25, 100, { value: -1, label: "All" }]}
             />
           </Box>
         </Grid2>
