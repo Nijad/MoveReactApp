@@ -16,10 +16,9 @@ import {
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
-
   const handleClick = () => {
     const id = -Math.random();
-
+    console.log("on create", id);
     setRows((oldRows) => [
       ...oldRows,
       { id, ext: "", program: "", note: "", enabled: "", isNew: true },
@@ -145,6 +144,7 @@ function Extensions() {
   const [extensions, setExtensions] = useState([]);
   const [rows, setRows] = useState(extensions);
   const [rowModesModel, setRowModesModel] = useState({});
+  const [ext, setExt] = useState();
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -167,8 +167,20 @@ function Extensions() {
   };
 
   const handleDeleteClick = (id) => () => {
-    if (confirm("Are you sure to delete extensions?"))
-      setRows(rows.filter((row) => row.id !== id));
+    if (confirm("Are you sure to delete extensions?")) {
+      const deletedRow = rows.find((row) => row.id === id);
+      console.log(deletedRow);
+
+      axios
+        .delete("https://localhost:7203/api/Extensions/" + deletedRow.ext)
+        .then((res) => {
+          setRows(rows.filter((row) => row.id !== id));
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   const handleCancelClick = (id) => () => {
@@ -176,6 +188,7 @@ function Extensions() {
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
+    console.log("row modes model", rowModesModel);
 
     const editedRow = rows.find((row) => row.id === id);
     if (editedRow.isNew) {
@@ -186,18 +199,17 @@ function Extensions() {
   const processRowUpdate = (newRow) => {
     const updatedRow = { ...newRow, isNew: false };
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-
     //here send data to server
-    updatedRow.id < 0
+    newRow.id < 0
       ? axios
           .post(
             "https://localhost:7203/api/Extensions",
             {
-              id: updatedRow.id,
-              ext: updatedRow.ext,
-              program: updatedRow.program,
-              note: updatedRow.note,
-              enabled: updatedRow.enabled == "" ? false : true,
+              id: newRow.id,
+              ext: newRow.ext,
+              program: newRow.program,
+              note: newRow.note,
+              enabled: newRow.enabled == "" ? false : true,
             },
             {
               headers: {
@@ -205,17 +217,24 @@ function Extensions() {
               },
             }
           )
-          .then((res) => console.log(res))
-          .catch((err) => console.log(err))
+          .then((res) => {
+            console.log(res.data);
+          })
+          .catch((err) => {
+            const editedRow = rows.find((row) => row.id === newRow.id);
+            if (editedRow.isNew)
+              setRows(rows.filter((row) => row.id !== newRow.id));
+            console.log(err);
+          })
       : axios
           .put(
-            "https://localhost:7203/api/Extensions/" + updatedRow.id,
+            "https://localhost:7203/api/Extensions/" + ext,
             {
-              id: updatedRow.id,
-              ext: updatedRow.ext,
-              program: updatedRow.program,
-              note: updatedRow.note,
-              enabled: updatedRow.enabled == "" ? false : true,
+              id: newRow.id,
+              ext: newRow.ext,
+              program: newRow.program,
+              note: newRow.note,
+              enabled: newRow.enabled == "" ? false : true,
             },
             {
               headers: {
@@ -223,13 +242,18 @@ function Extensions() {
               },
             }
           )
-          .then((res) => console.log(res))
-          .catch((err) => console.log(err));
+          .then((res) => {
+            console.log(res.data);
+          })
+          .catch((err) => {
+            setRows(rows);
+            console.log(err);
+          });
     return updatedRow;
   };
 
   const handleClick = (newRow) => {
-    console.log(newRow.row.ext);
+    setExt(newRow.row.ext);
   };
 
   const handleProcessRowUpdateError = (error) => {
@@ -271,6 +295,7 @@ function Extensions() {
                 toolbar: { setRows, setRowModesModel },
               }}
               onRowClick={handleClick}
+              pageSizeOptions={[5, 10, 25, { value: -1, label: "All" }]}
             />
           </Box>
         </Grid2>

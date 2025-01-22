@@ -16,43 +16,43 @@ namespace MoveReactApp.Server.Controllers
         public List<Extension> Get()
         {
             //List<Prop> columnDefenitions = ColDef.Properties<Extension>(new Extension());
-            List<Extension> extensions = new()
-            {
-                new Extension()
-                {
-                    Id=1,
-                    Ext="doc",
-                    Program="Word",
-                    Note="",
-                    Enabled=true
-                },
-                new Extension()
-                {
-                    Id=2,
-                    Ext="docx",
-                    Program="Word",
-                    Note="",
-                    Enabled=true
-                },
-                new Extension()
-                {
-                    Id=3,
-                    Ext="xls",
-                    Program="Excel",
-                    Note="",
-                    Enabled=false
-                },
-                new Extension()
-                {
-                    Id=4,
-                    Ext="xlsx",
-                    Program="Excel",
-                    Note="",
-                    Enabled=true
-                },
-            };
+            //List<Extension> extensions = new()
+            //{
+            //    new Extension()
+            //    {
+            //        Id=1,
+            //        Ext="doc",
+            //        Program="Word",
+            //        Note="",
+            //        Enabled=true
+            //    },
+            //    new Extension()
+            //    {
+            //        Id=2,
+            //        Ext="docx",
+            //        Program="Word",
+            //        Note="",
+            //        Enabled=true
+            //    },
+            //    new Extension()
+            //    {
+            //        Id=3,
+            //        Ext="xls",
+            //        Program="Excel",
+            //        Note="",
+            //        Enabled=false
+            //    },
+            //    new Extension()
+            //    {
+            //        Id=4,
+            //        Ext="xlsx",
+            //        Program="Excel",
+            //        Note="",
+            //        Enabled=true
+            //    },
+            //};
 
-            //List<Extension> extensions = Operations.GetExtensions();
+            List<Extension> extensions = Operations.GetExtensions();
             return extensions;
         }
 
@@ -104,24 +104,23 @@ namespace MoveReactApp.Server.Controllers
 
         // POST api/<ExtensionController>
         [HttpPost]
-        public void Post([FromBody] Extension value)
+        public void Post([FromBody] Extension extension)
         {
-            if (true)
-            {
-                Extension s = value;
-            }
+            Operations.AddExtension(extension);
         }
 
         // PUT api/<ExtensionController>/5
-        [HttpPut("{id}")]
-        public void Put(double id, [FromBody] Extension value)
+        [HttpPut("{ext}")]
+        public void Put(string ext, [FromBody] Extension extension)
         {
+            Operations.UpdateExtension(ext, extension);
         }
 
         // DELETE api/<ExtensionController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("{ext}")]
+        public void Delete(string ext)
         {
+            Operations.DeleteExtension(ext);
         }
     }
 }

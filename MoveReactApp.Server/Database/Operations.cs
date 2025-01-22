@@ -54,19 +54,45 @@ namespace MoveReactApp.Server.Database
             DataTable dt = dB.ExecuteReader(query);
 
             List<Extension> extensions = new List<Extension>();
-
+            int i = 0;
             foreach (DataRow dr in dt.Rows)
             {
                 Extension ext = new()
                 {
+                    Id = i++,
                     Ext = dr["ext"].ToString(),
                     Program = dr["program"].ToString(),
+                    Note = dr["note"].ToString(),
                     Enabled = dr["enabled"].ToString() == "1" ? true : false
                 };
                 extensions.Add(ext);
             }
 
             return extensions;
+        }
+
+        public static void AddExtension(Extension extension)
+        {
+            string query = "INSERT INTO `movedb`.`extension` " +
+                "(`ext`,`program`,`enabled`,`note`)" +
+                $"VALUES ('{extension.Ext}','{extension.Program}',{extension.Enabled},'{extension.Note}')";
+
+            dB.ExecuteNonQuery(query);
+        }
+
+        public static void UpdateExtension(string ext, Extension extension)
+        {
+            string query = "UPDATE `movedb`.`extension` SET " +
+                $"`ext` = '{extension.Ext}', `program` ='{extension.Program}', `enabled` = {extension.Enabled}, " +
+                $"`note` = '{extension.Note}' WHERE `ext` = '{ext}'";
+
+            dB.ExecuteNonQuery(query);
+        }
+
+        public static void DeleteExtension(string ext)
+        {
+            string query = $"DELETE FROM `movedb`.`extension` WHERE `ext` =  '{ext}'";
+            dB.ExecuteNonQuery(query);
         }
 
         public static List<DepartmentExts> GetDeptExtensions(string dept, bool enabledExt = true)

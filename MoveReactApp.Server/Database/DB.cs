@@ -29,7 +29,7 @@ namespace MoveReactApp.Server.Database
             con.Close();
         }
 
-        private void ExecuteNonQuery(string query)
+        public void ExecuteNonQuery(string query)
         {
             OpenDB();
             MySqlCommand cmd = new MySqlCommand(query, con);
