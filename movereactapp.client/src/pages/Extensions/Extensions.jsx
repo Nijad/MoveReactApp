@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Typography, Box, Button, Grid2 } from "@mui/material";
@@ -14,6 +15,7 @@ import {
   GridRowEditStopReasons,
 } from "@mui/x-data-grid";
 import DraggableDialog from "../../components/DraggableDialog";
+import { useSnackbar } from "notistack";
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
@@ -38,6 +40,13 @@ function EditToolbar(props) {
   );
 }
 function Extensions() {
+  const { enqueueSnackbar } = useSnackbar();
+  const [extensions, setExtensions] = useState([]);
+  const [rows, setRows] = useState(extensions);
+  const [rowModesModel, setRowModesModel] = useState({});
+  const [ext, setExt] = useState();
+  const [open, setOpen] = useState(false);
+
   const columns = [
     {
       field: "id",
@@ -124,28 +133,37 @@ function Extensions() {
             key={"delete" + id}
             icon={<DeleteIcon />}
             label="Delete"
-            onClick={handleDeleteClick(id)}
+            onClick={() => handleOpenDialog(id)}
+            //onClick={handleDeleteClick(id)}
             color="inherit"
           />,
         ];
       },
     },
   ];
-  const [extensions, setExtensions] = useState([]);
-  const [rows, setRows] = useState(extensions);
-  const [rowModesModel, setRowModesModel] = useState({});
-  const [ext, setExt] = useState();
-  const [maxId, setMaxId] = useState();
+
   useEffect(() => {
     axios
       .get("https://localhost:7203/api/Extensions")
       .then((res) => {
         setExtensions(res.data);
         setRows(res.data);
-        setMaxId(rows.length);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        enqueueSnackbar("Fetching extensions failed.", {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        console.log(err);
+      });
   }, []);
+
+  const handleOpenDialog = (id) => {
+    const row = rows.find((r) => r.id == id);
+    setExt(row.ext);
+    setOpen({ id: id, open: true });
+  };
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -161,28 +179,32 @@ function Extensions() {
   };
 
   const handleSaveClick = (id) => () => {
-    // setMaxId(rows.length);
-    // console.log(maxId);
-
     setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View },
     });
   };
 
-  const handleDeleteClick = (id) => () => {
-    if (confirm("Are you sure to delete extensions?")) {
-      const deletedRow = rows.find((row) => row.id === id);
-      axios
-        .delete("https://localhost:7203/api/Extensions/" + deletedRow.ext)
-        .then((res) => {
-          setRows(rows.filter((row) => row.id !== id));
-          console.log(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
+  const handleDeleteClick = (id) => {
+    const deletedRow = rows.find((row) => row.id === id);
+    axios
+      .delete("https://localhost:7203/api/Extensions/" + deletedRow.ext)
+      .then((/*res*/) => {
+        setRows(rows.filter((row) => row.id !== id));
+        enqueueSnackbar("Extension " + ext + " deleted successfuly.", {
+          variant: "success",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
         });
-    }
+      })
+      .catch((err) => {
+        enqueueSnackbar("Deleting " + ext + " failed.", {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        console.log(err);
+      });
   };
 
   const handleCancelClick = (id) => () => {
@@ -190,7 +212,6 @@ function Extensions() {
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
-    console.log("row modes model", rowModesModel);
 
     const editedRow = rows.find((row) => row.id === id);
     if (editedRow.isNew) {
@@ -220,9 +241,19 @@ function Extensions() {
             }
           )
           .then((res) => {
+            enqueueSnackbar("Extension " + newRow.ext + " added successfuly.", {
+              variant: "success",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            });
             setRows(res.data);
           })
           .catch((err) => {
+            enqueueSnackbar("Adding " + ext + " failed.", {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            });
             const editedRow = rows.find((row) => row.id === newRow.id);
             if (editedRow.isNew)
               setRows(rows.filter((row) => row.id !== newRow.id));
@@ -245,9 +276,22 @@ function Extensions() {
             }
           )
           .then((res) => {
+            enqueueSnackbar(
+              "Extension " + newRow.ext + " updated successfuly.",
+              {
+                variant: "success",
+                anchorOrigin: { horizontal: "center", vertical: "top" },
+                autoHideDuration: 5000,
+              }
+            );
             setRows(res.data);
           })
           .catch((err) => {
+            enqueueSnackbar("Updating " + ext + " failed.", {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            });
             setRows(rows);
             console.log(err);
           });
@@ -268,7 +312,17 @@ function Extensions() {
 
   return (
     <div>
-      <DraggableDialog aa={alert("adsf")} />
+      <DraggableDialog
+        title="Delete Extension"
+        msg={`Are you sure to delete ${ext} extension?`}
+        yesTitle="Delete"
+        cancelTitle="Cancel"
+        open={open}
+        setOpen={setOpen}
+        yesFunction={handleDeleteClick}
+        fullWidth={true}
+        maxWidth="sm"
+      />
       <Typography variant="h4">Extensions Page</Typography>
       <Grid2 container spacing={2}>
         <Grid2 size={12}>

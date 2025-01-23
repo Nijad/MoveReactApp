@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -21,48 +22,47 @@ function PaperComponent(props) {
   );
 }
 
-export default function DraggableDialog({ aa }) {
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
+export default function DraggableDialog({
+  open,
+  setOpen,
+  title,
+  msg,
+  yesTitle,
+  cancelTitle,
+  yesFunction,
+  fullWidth,
+  maxWidth,
+}) {
   const handleClose = () => {
-    setOpen(false);
+    setOpen({ ...open, open: false });
   };
 
-  const handleSubscribe = () => {
-    aa;
+  const handleYes = () => {
+    yesFunction(open.id);
+    handleClose();
   };
 
   return (
-    <React.Fragment>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Open draggable dialog
-      </Button>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        PaperComponent={PaperComponent}
-        aria-labelledby="draggable-dialog-title"
-      >
-        <DialogTitle style={{ cursor: "move" }} id="draggable-dialog-title">
-          Subscribe
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To subscribe to this website, please enter your email address here.
-            We will send updates occasionally.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubscribe}>Subscribe</Button>
-        </DialogActions>
-      </Dialog>
-    </React.Fragment>
+    <Dialog
+      open={open.open}
+      onClose={handleClose}
+      PaperComponent={PaperComponent}
+      aria-labelledby="draggable-dialog-title"
+      fullWidth={fullWidth}
+      maxWidth={maxWidth}
+    >
+      <DialogTitle style={{ cursor: "move" }} id="draggable-dialog-title">
+        {title}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText>{msg}</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button autoFocus onClick={handleClose}>
+          {cancelTitle}
+        </Button>
+        <Button onClick={handleYes}>{yesTitle}</Button>
+      </DialogActions>
+    </Dialog>
   );
 }
