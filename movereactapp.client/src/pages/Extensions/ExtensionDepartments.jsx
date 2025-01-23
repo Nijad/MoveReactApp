@@ -1,22 +1,21 @@
 /* eslint-disable react/prop-types */
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { Typography, Box, Button, Grid2 } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
+import {
+  DataGrid,
+  GridActionsCellItem,
+  GridRowEditStopReasons,
+  GridRowModes,
+  GridToolbarContainer,
+} from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Close";
-import {
-  GridRowModes,
-  DataGrid,
-  GridToolbarContainer,
-  GridActionsCellItem,
-  GridRowEditStopReasons,
-} from "@mui/x-data-grid";
-import DraggableDialog from "../../components/DraggableDialog";
+import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
-import ExtensionDepartments from "./ExtensionDepartments";
+import DraggableDialog from "../../components/DraggableDialog";
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
@@ -40,7 +39,8 @@ function EditToolbar(props) {
     </GridToolbarContainer>
   );
 }
-function Extensions() {
+
+function ExtensionDepartments({ extension }) {
   const { enqueueSnackbar } = useSnackbar();
   const [extensions, setExtensions] = useState([]);
   const [rows, setRows] = useState(extensions);
@@ -325,46 +325,36 @@ function Extensions() {
         maxWidth="sm"
       />
 
-      <Grid2 container spacing={2}>
-        <Grid2 size={{ md: 12, lg: 6 }}>
-          <Typography variant="h4">Extensions</Typography>
-          <Box
-            sx={{
-              height: 500,
-              width: "100%",
-              "& .actions": {
-                color: "text.secondary",
-              },
-              "& .textPrimary": {
-                color: "text.primary",
-              },
-            }}
-          >
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              editMode="row"
-              rowModesModel={rowModesModel}
-              onRowModesModelChange={handleRowModesModelChange}
-              onProcessRowUpdateError={handleProcessRowUpdateError}
-              onRowEditStop={handleRowEditStop}
-              processRowUpdate={processRowUpdate}
-              slots={{ toolbar: EditToolbar }}
-              slotProps={{
-                toolbar: { setRows, setRowModesModel },
-              }}
-              onRowClick={handleClick}
-              pageSizeOptions={[5, 10, 25, 100, { value: -1, label: "All" }]}
-            />
-          </Box>
-        </Grid2>
-        <Grid2 size={{ md: 12, lg: 6 }}>
-          <Typography variant="h4">Extension Departments</Typography>
-          <ExtensionDepartments extension={ext} />
-        </Grid2>
-      </Grid2>
+      <Box
+        sx={{
+          height: 500,
+          width: "100%",
+          "& .actions": {
+            color: "text.secondary",
+          },
+          "& .textPrimary": {
+            color: "text.primary",
+          },
+        }}
+      >
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          editMode="row"
+          rowModesModel={rowModesModel}
+          onRowModesModelChange={handleRowModesModelChange}
+          onProcessRowUpdateError={handleProcessRowUpdateError}
+          onRowEditStop={handleRowEditStop}
+          processRowUpdate={processRowUpdate}
+          slots={{ toolbar: EditToolbar }}
+          slotProps={{
+            toolbar: { setRows, setRowModesModel },
+          }}
+          onRowClick={handleClick}
+        />
+      </Box>
     </div>
   );
 }
 
-export default Extensions;
+export default ExtensionDepartments;
