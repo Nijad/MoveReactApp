@@ -1,6 +1,5 @@
 ﻿using MoveReactApp.Server.DTO;
 using MoveReactApp.Server.Models;
-using System.Collections.Generic;
 using System.Data;
 
 namespace MoveReactApp.Server.Database

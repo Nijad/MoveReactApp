@@ -2,6 +2,7 @@
 {
     public class ExtensionDepts
     {
+        public int Id { get; set; }
         public string Department { get; set; }
         public string LocalPath { get; set; }
         public string NetPath { get; set; }

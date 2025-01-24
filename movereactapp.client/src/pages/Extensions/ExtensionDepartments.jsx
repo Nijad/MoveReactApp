@@ -23,11 +23,19 @@ function EditToolbar(props) {
     const id = -Math.random();
     setRows((oldRows) => [
       ...oldRows,
-      { id, ext: "", program: "", note: "", enabled: "", isNew: true },
+      {
+        id,
+        dept: "",
+        localPath: "",
+        notePath: "",
+        direction: "",
+        note: "",
+        isNew: true,
+      },
     ]);
     setRowModesModel((oldModel) => ({
       ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "ext" },
+      [id]: { mode: GridRowModes.Edit, fieldToFocus: "dept" },
     }));
   };
 
@@ -45,7 +53,7 @@ function ExtensionDepartments({ extension }) {
   const [extensions, setExtensions] = useState([]);
   const [rows, setRows] = useState(extensions);
   const [rowModesModel, setRowModesModel] = useState({});
-  const [ext, setExt] = useState();
+  const [dept, setDept] = useState();
   const [open, setOpen] = useState(false);
 
   const columns = [
@@ -58,25 +66,41 @@ function ExtensionDepartments({ extension }) {
     //   headerAlign: "center",
     // },
     {
-      field: "ext",
-      headerName: "Extension",
+      field: "department",
+      headerName: "Dept",
+      width: 80,
+      editable: true,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "localPath",
+      headerName: "Local Path",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      editable: true,
+    },
+    {
+      field: "netPath",
+      headerName: "Net Path",
       width: 120,
       editable: true,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "program",
-      headerName: "Program",
-      width: 120,
+      field: "direction",
+      headerName: "Direction",
+      width: 60,
+      editable: true,
       align: "center",
       headerAlign: "center",
-      editable: true,
     },
     {
       field: "note",
       headerName: "Note",
-      width: 240,
+      width: 120,
       editable: true,
       align: "center",
       headerAlign: "center",
@@ -84,7 +108,7 @@ function ExtensionDepartments({ extension }) {
     {
       field: "enabled",
       headerName: "Enabled",
-      width: 120,
+      width: 80,
       editable: true,
       align: "center",
       headerAlign: "center",
@@ -144,25 +168,28 @@ function ExtensionDepartments({ extension }) {
   ];
 
   useEffect(() => {
-    axios
-      .get("https://localhost:7203/api/Extensions")
-      .then((res) => {
-        setExtensions(res.data);
-        setRows(res.data);
-      })
-      .catch((err) => {
-        enqueueSnackbar("Fetching extensions failed.", {
-          variant: "error",
-          anchorOrigin: { horizontal: "center", vertical: "top" },
-          autoHideDuration: 5000,
+    if (extension != undefined)
+      axios
+        .get("https://localhost:7203/api/ExtDept/ExtDepts/" + { extension })
+        .then((res) => {
+          setExtensions(res.data);
+          setRows(res.data);
+        })
+        .catch((err) => {
+          enqueueSnackbar("Fetching extensions failed.", {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
+          console.log(err);
         });
-        console.log(err);
-      });
-  }, []);
+  }, [extension]);
 
   const handleOpenDialog = (id) => {
     const row = rows.find((r) => r.id == id);
-    setExt(row.ext);
+    console.log(row);
+
+    setDept(row.department);
     setOpen({ id: id, open: true });
   };
 
@@ -189,21 +216,29 @@ function ExtensionDepartments({ extension }) {
   const handleDeleteClick = (id) => {
     const deletedRow = rows.find((row) => row.id === id);
     axios
-      .delete("https://localhost:7203/api/Extensions/" + deletedRow.ext)
+      .delete(
+        `https://localhost:7203/api/ExtDept/${extension}/${deletedRow.department}`
+      )
       .then((/*res*/) => {
         setRows(rows.filter((row) => row.id !== id));
-        enqueueSnackbar("Extension " + ext + " deleted successfuly.", {
-          variant: "success",
-          anchorOrigin: { horizontal: "center", vertical: "top" },
-          autoHideDuration: 5000,
-        });
+        enqueueSnackbar(
+          `Unmap ${extension} and ${deletedRow.department} successfuly`,
+          {
+            variant: "success",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          }
+        );
       })
       .catch((err) => {
-        enqueueSnackbar("Deleting " + ext + " failed.", {
-          variant: "error",
-          anchorOrigin: { horizontal: "center", vertical: "top" },
-          autoHideDuration: 5000,
-        });
+        enqueueSnackbar(
+          `Unmapping ${extension} and ${deletedRow.department} failed.`,
+          {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          }
+        );
         console.log(err);
       });
   };
@@ -250,7 +285,7 @@ function ExtensionDepartments({ extension }) {
             setRows(res.data);
           })
           .catch((err) => {
-            enqueueSnackbar("Adding " + ext + " failed.", {
+            enqueueSnackbar("Adding " + extension + " failed.", {
               variant: "error",
               anchorOrigin: { horizontal: "center", vertical: "top" },
               autoHideDuration: 5000,
@@ -300,7 +335,7 @@ function ExtensionDepartments({ extension }) {
   };
 
   const handleClick = (newRow) => {
-    setExt(newRow.row.ext);
+    setDept(newRow.row.department);
   };
 
   const handleProcessRowUpdateError = (error) => {
@@ -314,8 +349,8 @@ function ExtensionDepartments({ extension }) {
   return (
     <div>
       <DraggableDialog
-        title="Delete Extension"
-        msg={`Are you sure to delete ${ext} extension?`}
+        title="Unmapping Department"
+        msg={`Are you sure to unmap ${extension} and ${dept}?`}
         yesTitle="Delete"
         cancelTitle="Cancel"
         open={open}
