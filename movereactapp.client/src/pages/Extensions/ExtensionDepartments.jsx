@@ -262,34 +262,28 @@ function ExtensionDepartments({ extension }) {
     newRow.id < 0
       ? axios
           .post(
-            "https://localhost:7203/api/Extensions",
-            {
-              id: newRow.id,
-              ext: newRow.ext,
-              program: newRow.program,
-              note: newRow.note,
-              enabled: newRow.enabled == "" ? false : true,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
+            `https://localhost:7203/api/ExtDept/${extension}/${newRow.department}`
           )
           .then((res) => {
-            enqueueSnackbar("Extension " + newRow.ext + " added successfuly.", {
-              variant: "success",
-              anchorOrigin: { horizontal: "center", vertical: "top" },
-              autoHideDuration: 5000,
-            });
+            enqueueSnackbar(
+              `Extension ${extension} and department ${newRow.department} mapped successfuly.`,
+              {
+                variant: "success",
+                anchorOrigin: { horizontal: "center", vertical: "top" },
+                autoHideDuration: 5000,
+              }
+            );
             setRows(res.data);
           })
           .catch((err) => {
-            enqueueSnackbar("Adding " + extension + " failed.", {
-              variant: "error",
-              anchorOrigin: { horizontal: "center", vertical: "top" },
-              autoHideDuration: 5000,
-            });
+            enqueueSnackbar(
+              `Mapping ${extension} and ${newRow.department} failed.`,
+              {
+                variant: "error",
+                anchorOrigin: { horizontal: "center", vertical: "top" },
+                autoHideDuration: 5000,
+              }
+            );
             const editedRow = rows.find((row) => row.id === newRow.id);
             if (editedRow.isNew)
               setRows(rows.filter((row) => row.id !== newRow.id));

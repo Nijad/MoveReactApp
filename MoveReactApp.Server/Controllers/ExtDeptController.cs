@@ -9,54 +9,66 @@ namespace MoveReactApp.Server.Controllers
     [ApiController]
     public class ExtDeptController : ControllerBase
     {
+        List<ExtensionDepts> extensionDepts = new()
+        {
+            new ExtensionDepts()
+            {
+                Id=1,
+                Department="IT",
+                Direction=3,
+                Enabled=true,
+                LocalPath="path to local",
+                NetPath="net to path",
+                Note="Note 1"
+            },
+            new ExtensionDepts()
+            {
+                Id=2,
+                Department="RISK",
+                Direction=3,
+                Enabled=true,
+                LocalPath="path to local",
+                NetPath="net to path",
+                Note="Note 1"
+            }
+        };
+
         // GET: api/<ExtDeptController>
         [HttpGet("ExtDepts/{ext}")]
         public IEnumerable<ExtensionDepts> Get(string ext)
         {
-            List<ExtensionDepts> extensionDepts = new()
-            {
-                new ExtensionDepts()
-                {
-                    Id=1,
-                    Department="IT",
-                    Direction=3,
-                    Enabled=true,
-                    LocalPath="path to local",
-                    NetPath="net to path",
-                    Note="Note 1"
-                },
-                new ExtensionDepts()
-                {
-                    Id=2,
-                    Department="RISK",
-                    Direction=3,
-                    Enabled=true,
-                    LocalPath="path to local",
-                    NetPath="net to path",
-                    Note="Note 1"
-                }
-            };
             return extensionDepts;
         }
 
         // GET api/<ExtDeptController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+        //[HttpGet("{id}")]
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}
 
         // POST api/<ExtDeptController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("{ext}/{dept}")]
+        public IEnumerable<ExtensionDepts> Post(string ext, string dept)
         {
+            extensionDepts.Add(new ExtensionDepts()
+            {
+                Department = dept,
+                Direction = 3,
+                Enabled = true,
+                Id = extensionDepts.Count + 1,
+                LocalPath = "Local Path",
+                NetPath = "Net Path",
+                Note = ""
+            });
+            return extensionDepts;
         }
 
         // PUT api/<ExtDeptController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        //[HttpPut("{id}")]
+        //public void Put(int id, [FromBody] string value)
+        //{
+        //}
 
         // DELETE api/<ExtDeptController>/5
         [HttpDelete("{ext}/{dept}")]
