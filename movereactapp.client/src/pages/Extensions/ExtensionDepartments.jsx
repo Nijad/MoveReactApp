@@ -26,23 +26,23 @@ function EditToolbar(props) {
       {
         id,
         dept: "",
-        localPath: "",
-        notePath: "",
+        localPath: "will",
+        netPath: "update",
         direction: "",
-        note: "",
+        note: "automatically",
         isNew: true,
       },
     ]);
     setRowModesModel((oldModel) => ({
       ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "dept" },
+      [id]: { mode: GridRowModes.Edit, fieldToFocus: "department" },
     }));
   };
 
   return (
     <GridToolbarContainer>
       <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        Add Extension
+        Add Department
       </Button>
     </GridToolbarContainer>
   );
@@ -55,6 +55,7 @@ function ExtensionDepartments({ extension }) {
   const [rowModesModel, setRowModesModel] = useState({});
   const [dept, setDept] = useState();
   const [open, setOpen] = useState(false);
+  const [departmentList, setDepartmentList] = useState([]);
 
   const columns = [
     // {
@@ -69,9 +70,11 @@ function ExtensionDepartments({ extension }) {
       field: "department",
       headerName: "Dept",
       width: 80,
-      editable: true,
+      //editable: true,
       align: "center",
       headerAlign: "center",
+      type: "singleSelect",
+      valueOptions: departmentList,
     },
     {
       field: "localPath",
@@ -79,13 +82,13 @@ function ExtensionDepartments({ extension }) {
       width: 120,
       align: "center",
       headerAlign: "center",
-      editable: true,
+      //editable: true,
     },
     {
       field: "netPath",
       headerName: "Net Path",
       width: 120,
-      editable: true,
+      //editable: true,
       align: "center",
       headerAlign: "center",
     },
@@ -93,9 +96,20 @@ function ExtensionDepartments({ extension }) {
       field: "direction",
       headerName: "Direction",
       width: 60,
-      editable: true,
+      //editable: true,
       align: "center",
       headerAlign: "center",
+      type: "singleSelect",
+      valueOptions: [
+        { key: 1, label: "IN" },
+        { key: 2, label: "OUT" },
+        { key: 3, label: "IN/OUT" },
+      ],
+      valueFormatter: (value) => {
+        return value.key;
+      },
+      getOptionValue: (value) => value.key,
+      getOptionLabel: (value) => value.label,
     },
     {
       field: "note",
@@ -109,7 +123,7 @@ function ExtensionDepartments({ extension }) {
       field: "enabled",
       headerName: "Enabled",
       width: 80,
-      editable: true,
+      //editable: true,
       align: "center",
       headerAlign: "center",
       type: "boolean",
@@ -146,14 +160,14 @@ function ExtensionDepartments({ extension }) {
         }
 
         return [
-          <GridActionsCellItem
-            key={"edit" + id}
-            icon={<EditIcon />}
-            label="Edit"
-            className="textPrimary"
-            onClick={handleEditClick(id)}
-            color="inherit"
-          />,
+          // <GridActionsCellItem
+          //   key={"edit" + id}
+          //   icon={<EditIcon />}
+          //   label="Edit"
+          //   className="textPrimary"
+          //   onClick={handleEditClick(id)}
+          //   color="inherit"
+          // />,
           <GridActionsCellItem
             key={"delete" + id}
             icon={<DeleteIcon />}
@@ -170,7 +184,7 @@ function ExtensionDepartments({ extension }) {
   useEffect(() => {
     if (extension != undefined)
       axios
-        .get("https://localhost:7203/api/ExtDept/ExtDepts/" + { extension })
+        .get(`https://localhost:7203/api/ExtDept/ExtDepts/${extension}`)
         .then((res) => {
           setExtensions(res.data);
           setRows(res.data);
@@ -183,6 +197,20 @@ function ExtensionDepartments({ extension }) {
           });
           console.log(err);
         });
+
+    axios
+      .get("https://localhost:7203/api/Departments/names/")
+      .then((res) => {
+        setDepartmentList(res.data);
+      })
+      .catch((err) => {
+        enqueueSnackbar("Fetching departments failed.", {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        console.log(err);
+      });
   }, [extension]);
 
   const handleOpenDialog = (id) => {
@@ -261,9 +289,14 @@ function ExtensionDepartments({ extension }) {
     //here send data to server
     newRow.id < 0
       ? axios
-          .post(
-            `https://localhost:7203/api/ExtDept/${extension}/${newRow.department}`
-          )
+          .post(`https://localhost:7203/api/ExtDept/${extension}`, {
+            Department: newRow.department,
+            LocalPath: "",
+            NetPath: "",
+            Direction: newRow.direction,
+            Note: "",
+            Enabled: true,
+          })
           .then((res) => {
             enqueueSnackbar(
               `Extension ${extension} and department ${newRow.department} mapped successfuly.`,
@@ -339,7 +372,7 @@ function ExtensionDepartments({ extension }) {
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
-
+  const toolbarHeight = 40.5;
   return (
     <div>
       <DraggableDialog
@@ -356,7 +389,7 @@ function ExtensionDepartments({ extension }) {
 
       <Box
         sx={{
-          height: 500,
+          height: extension != undefined ? 500 : 500 - toolbarHeight,
           width: "100%",
           "& .actions": {
             color: "text.secondary",
@@ -366,6 +399,9 @@ function ExtensionDepartments({ extension }) {
           },
         }}
       >
+        {extension == undefined ? (
+          <Box height={toolbarHeight}></Box>
+        ) : undefined}
         <DataGrid
           rows={rows}
           columns={columns}
@@ -375,7 +411,7 @@ function ExtensionDepartments({ extension }) {
           onProcessRowUpdateError={handleProcessRowUpdateError}
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
-          slots={{ toolbar: EditToolbar }}
+          slots={extension != undefined ? { toolbar: EditToolbar } : undefined}
           slotProps={{
             toolbar: { setRows, setRowModesModel },
           }}

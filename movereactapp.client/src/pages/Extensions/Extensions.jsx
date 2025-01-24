@@ -359,7 +359,7 @@ function Extensions() {
           </Box>
         </Grid2>
         <Grid2 size={{ md: 12, lg: 6 }}>
-          <Typography variant="h4">Extension Departments</Typography>
+          <Typography variant="h4">{ext} Departments</Typography>
           <ExtensionDepartments extension={ext} />
         </Grid2>
       </Grid2>

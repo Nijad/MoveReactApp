@@ -48,13 +48,13 @@ namespace MoveReactApp.Server.Controllers
         //}
 
         // POST api/<ExtDeptController>
-        [HttpPost("{ext}/{dept}")]
-        public IEnumerable<ExtensionDepts> Post(string ext, string dept)
+        [HttpPost("{ext}")]
+        public IEnumerable<ExtensionDepts> Post(string ext, [FromBody] ExtensionDepts dept)
         {
             extensionDepts.Add(new ExtensionDepts()
             {
-                Department = dept,
-                Direction = 3,
+                Department = dept.Department,
+                Direction = dept.Direction,
                 Enabled = true,
                 Id = extensionDepts.Count + 1,
                 LocalPath = "Local Path",

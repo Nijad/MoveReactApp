@@ -11,11 +11,44 @@ namespace MoveReactApp.Server.Controllers
     [ApiController]
     public class DepartmentsController : ControllerBase
     {
+        List<Department> departments = new() {
+            new Department()
+            {
+                Dept="IT",
+                LocalPath="Local Path",
+                NetPath= "Net Path",
+                Note="",
+                Enabled=true
+            },
+            new Department()
+            {
+                Dept="RISK",
+                LocalPath="Local Path",
+                NetPath= "Net Path",
+                Note="",
+                Enabled=true
+            },
+            new Department()
+            {
+                Dept="AUDIT",
+                LocalPath="Local Path",
+                NetPath= "Net Path",
+                Note="",
+                Enabled=true
+            },
+        };
         // GET: api/<Departments>
         [HttpGet]
         public IEnumerable<Department> Get()
         {
+            return departments;
             return Operations.GetDepartments();
+        }
+
+        [HttpGet("names")]
+        public string[] DepartmenstName()
+        {
+            return departments.Select(x => x.Dept).ToArray();
         }
 
         // GET api/<Departments>/5
