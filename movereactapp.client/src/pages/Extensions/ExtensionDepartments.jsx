@@ -27,10 +27,10 @@ function EditToolbar(props) {
       {
         id,
         dept: "",
-        localPath: "will",
-        netPath: "update",
+        localPath: "",
+        netPath: "",
         direction: "",
-        note: "automatically",
+        note: "",
         isNew: true,
       },
     ]);
@@ -170,11 +170,18 @@ function ExtensionDepartments({ extension }) {
             color="inherit"
           />,
           <GridActionsCellItem
+            key={"edit" + id}
+            icon={<EditIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={() => handleEditClick(id)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
             key={"delete" + id}
             icon={<DeleteIcon />}
             label="Delete"
             onClick={() => handleOpenDialog(id)}
-            //onClick={handleDeleteClick(id)}
             color="inherit"
           />,
         ];
@@ -196,7 +203,7 @@ function ExtensionDepartments({ extension }) {
         });
         console.log(err);
       });
-    //if (extension != undefined)
+
     axios
       .get(`https://localhost:7203/api/ExtDept/ExtDepts/${extension}`)
       .then((res) => {
@@ -233,28 +240,14 @@ function ExtensionDepartments({ extension }) {
     }
   };
 
-  // const handleEditClick = (id) => () => {
-  //   setRowModesModel({
-  //     ...rowModesModel,
-  //     [id]: { mode: GridRowModes.Edit },
-  //   });
-  // };
+  const handleEditClick = (id) => {
+    setRowModesModel({
+      ...rowModesModel,
+      [id]: { mode: GridRowModes.Edit },
+    });
+  };
 
   const handleSaveClick = (id) => () => {
-    // if (id >= 0) {
-    //   setRowModesModel({
-    //     ...rowModesModel,
-    //     [id]: { mode: GridRowModes.View, ignoreModifications: true },
-    //   });
-    //   enqueueSnackbar(
-    //     `It is not allowed to edit. You can only add and delete departmens.`,
-    //     {
-    //       variant: "error",
-    //       anchorOrigin: { horizontal: "center", vertical: "top" },
-    //       autoHideDuration: 5000,
-    //     }
-    //   );
-    // } else
     setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View },
@@ -453,6 +446,7 @@ function ExtensionDepartments({ extension }) {
             toolbar: { setRows, setRowModesModel },
           }}
           onRowClick={handleClick}
+          pageSizeOptions={[5, 10, 25, 100, { value: -1, label: "All" }]}
         />
       </Box>
     </div>
