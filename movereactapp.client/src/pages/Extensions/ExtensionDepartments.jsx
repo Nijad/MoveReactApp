@@ -10,6 +10,7 @@ import {
 } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Close";
@@ -70,7 +71,7 @@ function ExtensionDepartments({ extension }) {
       field: "department",
       headerName: "Dept",
       width: 80,
-      //editable: true,
+      editable: true,
       align: "center",
       headerAlign: "center",
       type: "singleSelect",
@@ -82,13 +83,13 @@ function ExtensionDepartments({ extension }) {
       width: 120,
       align: "center",
       headerAlign: "center",
-      //editable: true,
+      editable: true,
     },
     {
       field: "netPath",
       headerName: "Net Path",
       width: 120,
-      //editable: true,
+      editable: true,
       align: "center",
       headerAlign: "center",
     },
@@ -96,7 +97,7 @@ function ExtensionDepartments({ extension }) {
       field: "direction",
       headerName: "Direction",
       width: 60,
-      //editable: true,
+      editable: true,
       align: "center",
       headerAlign: "center",
       type: "singleSelect",
@@ -123,7 +124,7 @@ function ExtensionDepartments({ extension }) {
       field: "enabled",
       headerName: "Enabled",
       width: 80,
-      //editable: true,
+      editable: true,
       align: "center",
       headerAlign: "center",
       type: "boolean",
@@ -160,14 +161,14 @@ function ExtensionDepartments({ extension }) {
         }
 
         return [
-          // <GridActionsCellItem
-          //   key={"edit" + id}
-          //   icon={<EditIcon />}
-          //   label="Edit"
-          //   className="textPrimary"
-          //   onClick={handleEditClick(id)}
-          //   color="inherit"
-          // />,
+          <GridActionsCellItem
+            key={"go" + id}
+            icon={<ArrowOutwardIcon />}
+            label="go"
+            className="textPrimary"
+            onClick={() => handleGoDepartment(id)}
+            color="inherit"
+          />,
           <GridActionsCellItem
             key={"delete" + id}
             icon={<DeleteIcon />}
@@ -182,22 +183,6 @@ function ExtensionDepartments({ extension }) {
   ];
 
   useEffect(() => {
-    if (extension != undefined)
-      axios
-        .get(`https://localhost:7203/api/ExtDept/ExtDepts/${extension}`)
-        .then((res) => {
-          setExtensions(res.data);
-          setRows(res.data);
-        })
-        .catch((err) => {
-          enqueueSnackbar("Fetching extensions failed.", {
-            variant: "error",
-            anchorOrigin: { horizontal: "center", vertical: "top" },
-            autoHideDuration: 5000,
-          });
-          console.log(err);
-        });
-
     axios
       .get("https://localhost:7203/api/Departments/names/")
       .then((res) => {
@@ -211,12 +196,33 @@ function ExtensionDepartments({ extension }) {
         });
         console.log(err);
       });
-  }, [extension]);
+    //if (extension != undefined)
+    axios
+      .get(`https://localhost:7203/api/ExtDept/ExtDepts/${extension}`)
+      .then((res) => {
+        setExtensions(res.data);
+        setRows(res.data);
+      })
+      .catch((err) => {
+        enqueueSnackbar("Fetching extensions failed.", {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        console.log(err);
+      });
+  }, [extension, rows]);
+
+  const handleGoDepartment = (id) => {
+    const row = rows.find((r) => r.id == id);
+    window.open(
+      `https://localhost:54785/departments?dept=${row.department}`,
+      "_self"
+    );
+  };
 
   const handleOpenDialog = (id) => {
     const row = rows.find((r) => r.id == id);
-    console.log(row);
-
     setDept(row.department);
     setOpen({ id: id, open: true });
   };
@@ -227,14 +233,28 @@ function ExtensionDepartments({ extension }) {
     }
   };
 
-  const handleEditClick = (id) => () => {
-    setRowModesModel({
-      ...rowModesModel,
-      [id]: { mode: GridRowModes.Edit },
-    });
-  };
+  // const handleEditClick = (id) => () => {
+  //   setRowModesModel({
+  //     ...rowModesModel,
+  //     [id]: { mode: GridRowModes.Edit },
+  //   });
+  // };
 
   const handleSaveClick = (id) => () => {
+    // if (id >= 0) {
+    //   setRowModesModel({
+    //     ...rowModesModel,
+    //     [id]: { mode: GridRowModes.View, ignoreModifications: true },
+    //   });
+    //   enqueueSnackbar(
+    //     `It is not allowed to edit. You can only add and delete departmens.`,
+    //     {
+    //       variant: "error",
+    //       anchorOrigin: { horizontal: "center", vertical: "top" },
+    //       autoHideDuration: 5000,
+    //     }
+    //   );
+    // } else
     setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View },
@@ -283,81 +303,101 @@ function ExtensionDepartments({ extension }) {
     }
   };
 
-  const processRowUpdate = (newRow) => {
+  const processRowUpdate = (newRow, originalRow) => {
     const updatedRow = { ...newRow, isNew: false };
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
     //here send data to server
-    newRow.id < 0
-      ? axios
-          .post(`https://localhost:7203/api/ExtDept/${extension}`, {
+    if (newRow.id < 0)
+      axios
+        .post(`https://localhost:7203/api/ExtDept/${extension}`, {
+          Department: newRow.department,
+          LocalPath: "",
+          NetPath: "",
+          Direction: newRow.direction,
+          Note: "",
+          Enabled: true,
+        })
+        .then((res) => {
+          enqueueSnackbar(
+            `Extension ${extension} and department ${newRow.department} mapped successfuly.`,
+            {
+              variant: "success",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            }
+          );
+          setRows(res.data);
+        })
+        .catch((err) => {
+          enqueueSnackbar(
+            `Mapping ${extension} and ${newRow.department} failed.`,
+            {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            }
+          );
+          const editedRow = rows.find((row) => row.id === newRow.id);
+          if (editedRow.isNew)
+            setRows(rows.filter((row) => row.id !== newRow.id));
+          console.log(err);
+        });
+    else if (newRow.department == originalRow.department)
+      axios
+        .put(
+          `https://localhost:7203/api/ExtDept/${extension}`,
+          {
+            Department: newRow.department,
+            LocalPath: newRow.localPath,
+            NetPath: newRow.netPath,
+            Direction: newRow.direction,
+            Note: newRow.note,
+            Enabled: newRow.Enabled,
+          },
+          {
             Department: newRow.department,
             LocalPath: "",
             NetPath: "",
             Direction: newRow.direction,
             Note: "",
             Enabled: true,
-          })
-          .then((res) => {
-            enqueueSnackbar(
-              `Extension ${extension} and department ${newRow.department} mapped successfuly.`,
-              {
-                variant: "success",
-                anchorOrigin: { horizontal: "center", vertical: "top" },
-                autoHideDuration: 5000,
-              }
-            );
-            setRows(res.data);
-          })
-          .catch((err) => {
-            enqueueSnackbar(
-              `Mapping ${extension} and ${newRow.department} failed.`,
-              {
-                variant: "error",
-                anchorOrigin: { horizontal: "center", vertical: "top" },
-                autoHideDuration: 5000,
-              }
-            );
-            const editedRow = rows.find((row) => row.id === newRow.id);
-            if (editedRow.isNew)
-              setRows(rows.filter((row) => row.id !== newRow.id));
-            console.log(err);
-          })
-      : axios
-          .put(
-            "https://localhost:7203/api/Extensions/" + ext,
+          }
+        )
+        .then((res) => {
+          enqueueSnackbar(
+            `Extension ${extension} mapped department ${newRow.department} updated successfuly.`,
             {
-              id: newRow.id,
-              ext: newRow.ext,
-              program: newRow.program,
-              note: newRow.note,
-              enabled: newRow.enabled == "" ? false : true,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              variant: "success",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
             }
-          )
-          .then((res) => {
-            enqueueSnackbar(
-              "Extension " + newRow.ext + " updated successfuly.",
-              {
-                variant: "success",
-                anchorOrigin: { horizontal: "center", vertical: "top" },
-                autoHideDuration: 5000,
-              }
-            );
-            setRows(res.data);
-          })
-          .catch((err) => {
-            enqueueSnackbar("Updating " + ext + " failed.", {
+          );
+          setRows(res.data);
+        })
+        .catch((err) => {
+          enqueueSnackbar(
+            `updating mapped ${extension} and ${newRow.department} failed.`,
+            {
               variant: "error",
               anchorOrigin: { horizontal: "center", vertical: "top" },
               autoHideDuration: 5000,
-            });
-            setRows(rows);
-            console.log(err);
-          });
+            }
+          );
+          setRows(rows);
+          console.log(err);
+        });
+    else {
+      enqueueSnackbar(
+        `It is not allowed to edit department name. You can only add and delete departmens.`,
+        {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        }
+      );
+      setRows(rows);
+    }
+
     return updatedRow;
   };
 
@@ -372,7 +412,7 @@ function ExtensionDepartments({ extension }) {
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
-  const toolbarHeight = 40.5;
+
   return (
     <div>
       <DraggableDialog
@@ -389,7 +429,7 @@ function ExtensionDepartments({ extension }) {
 
       <Box
         sx={{
-          height: extension != undefined ? 500 : 500 - toolbarHeight,
+          height: 500,
           width: "100%",
           "& .actions": {
             color: "text.secondary",
@@ -399,9 +439,6 @@ function ExtensionDepartments({ extension }) {
           },
         }}
       >
-        {extension == undefined ? (
-          <Box height={toolbarHeight}></Box>
-        ) : undefined}
         <DataGrid
           rows={rows}
           columns={columns}
@@ -411,7 +448,7 @@ function ExtensionDepartments({ extension }) {
           onProcessRowUpdateError={handleProcessRowUpdateError}
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
-          slots={extension != undefined ? { toolbar: EditToolbar } : undefined}
+          slots={{ toolbar: EditToolbar }}
           slotProps={{
             toolbar: { setRows, setRowModesModel },
           }}

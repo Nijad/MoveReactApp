@@ -7,6 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Close";
+import queryString from "query-string";
 import {
   GridRowModes,
   DataGrid,
@@ -46,7 +47,7 @@ function Extensions() {
   const [rows, setRows] = useState(extensions);
   const [rowModesModel, setRowModesModel] = useState({});
   const [ext, setExt] = useState();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState({ id: -1, open: false });
 
   const columns = [
     // {
@@ -149,6 +150,7 @@ function Extensions() {
       .then((res) => {
         setExtensions(res.data);
         setRows(res.data);
+        handleQueryString();
       })
       .catch((err) => {
         enqueueSnackbar("Fetching extensions failed.", {
@@ -159,6 +161,12 @@ function Extensions() {
         console.log(err);
       });
   }, []);
+
+  const handleQueryString = () => {
+    // Parsing the query string from the window.location.search
+    const queries = queryString.parse(window.location.search);
+    if (queries.ext != undefined) setExt(queries.ext);
+  };
 
   const handleOpenDialog = (id) => {
     const row = rows.find((r) => r.id == id);
@@ -326,7 +334,7 @@ function Extensions() {
       />
 
       <Grid2 container spacing={2}>
-        <Grid2 size={{ md: 12, lg: 6 }}>
+        <Grid2 size={{ md: 12, lg: 6 }} minWidth={642.5}>
           <Typography variant="h4">Extensions</Typography>
           <Box
             sx={{
@@ -358,9 +366,21 @@ function Extensions() {
             />
           </Box>
         </Grid2>
-        <Grid2 size={{ md: 12, lg: 6 }}>
+        <Grid2 size={{ md: 12, lg: 6 }} minWidth={642.5}>
           <Typography variant="h4">{ext} Departments</Typography>
-          <ExtensionDepartments extension={ext} />
+          {ext != undefined ? (
+            <ExtensionDepartments extension={ext} />
+          ) : (
+            <Box
+              sx={{ border: "1px solid #e0e0e0", borderRadius: 1 }}
+              height={500}
+              alignContent="center"
+            >
+              <Typography variant="h4" color="#ababab" align="center">
+                Select Extension
+              </Typography>
+            </Box>
+          )}
         </Grid2>
       </Grid2>
     </div>

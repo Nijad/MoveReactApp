@@ -44,7 +44,7 @@ export default function DraggableDialog({
 
   return (
     <Dialog
-      open={open.open}
+      open={open.open || false}
       onClose={handleClose}
       PaperComponent={PaperComponent}
       aria-labelledby="draggable-dialog-title"
