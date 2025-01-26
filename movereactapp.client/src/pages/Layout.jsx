@@ -44,7 +44,7 @@ const Layout = () => {
           </Stack>
         </Toolbar>
       </AppBar>
-      <Box paddingY={10} paddingX={3}>
+      <Box paddingTop={10} alignContent="center" sx={{ width: "100vw" }}>
         <Outlet />
       </Box>
     </>

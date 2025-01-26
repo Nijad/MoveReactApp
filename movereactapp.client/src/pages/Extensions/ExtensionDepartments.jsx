@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
 import axios from "axios";
 import { Box, Button, Typography } from "@mui/material";
 import {
@@ -218,7 +219,7 @@ function ExtensionDepartments({ extension }) {
         });
         console.log(err);
       });
-  }, [extension, rows]);
+  }, [extension]);
 
   const handleGoDepartment = (id) => {
     const row = rows.find((r) => r.id == id);
