@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
-using MoveReactApp.Server.DTO;
 using MoveReactApp.Server.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -36,6 +35,46 @@ namespace MoveReactApp.Server.Controllers
                 Note="",
                 Enabled=true
             },
+            new Department()
+            {
+                Dept="RETAIL",
+                LocalPath="Local Path",
+                NetPath= "Net Path",
+                Note="",
+                Enabled=true
+            },
+            new Department()
+            {
+                Dept="CREDIT",
+                LocalPath="Local Path",
+                NetPath= "Net Path",
+                Note="",
+                Enabled=true
+            },
+            new Department()
+            {
+                Dept="INFORMATION SECURITY",
+                LocalPath="Local Path",
+                NetPath= "Net Path",
+                Note="",
+                Enabled=true
+            },
+            new Department()
+            {
+                Dept="INTERNATIONAL",
+                LocalPath="Local Path",
+                NetPath= "Net Path",
+                Note="",
+                Enabled=true
+            },
+            new Department()
+            {
+                Dept="BACK OFFICE",
+                LocalPath="Local Path",
+                NetPath= "Net Path",
+                Note="",
+                Enabled=true
+            },
         };
         // GET: api/<Departments>
         [HttpGet]
@@ -53,7 +92,7 @@ namespace MoveReactApp.Server.Controllers
 
         // GET api/<Departments>/5
         [HttpGet("{dept}")]
-        public IEnumerable<DepartmentExts> Get(string dept)
+        public IEnumerable<ExtensionDepts> Get(string dept)
         {
             return Operations.GetDeptExtensions(dept);
         }

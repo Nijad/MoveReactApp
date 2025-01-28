@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MoveReactApp.Server.DTO;
+using MoveReactApp.Server.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,23 +13,15 @@ namespace MoveReactApp.Server.Controllers
         {
             new ExtensionDepts()
             {
-                Id=1,
+                Ext="doc",
                 Department="IT",
                 Direction=3,
-                Enabled=true,
-                LocalPath="path to local",
-                NetPath="net to path",
-                Note="Note 1"
             },
             new ExtensionDepts()
             {
-                Id=2,
+                Ext="docx",
                 Department="RISK",
                 Direction=3,
-                Enabled=true,
-                LocalPath="path to local",
-                NetPath="net to path",
-                Note="Note 1"
             }
         };
 
@@ -53,13 +45,9 @@ namespace MoveReactApp.Server.Controllers
         {
             extensionDepts.Add(new ExtensionDepts()
             {
+                Ext = ext,
                 Department = dept.Department,
                 Direction = dept.Direction,
-                Enabled = true,
-                Id = extensionDepts.Count + 1,
-                LocalPath = "Local Path",
-                NetPath = "Net Path",
-                Note = ""
             });
             return extensionDepts;
         }

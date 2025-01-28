@@ -1,5 +1,4 @@
-﻿using MoveReactApp.Server.DTO;
-using MoveReactApp.Server.Models;
+﻿using MoveReactApp.Server.Models;
 using System.Data;
 
 namespace MoveReactApp.Server.Database
@@ -58,7 +57,6 @@ namespace MoveReactApp.Server.Database
             {
                 Extension ext = new()
                 {
-                    Id = i++,
                     Ext = dr["ext"].ToString(),
                     Program = dr["program"].ToString(),
                     Note = dr["note"].ToString(),
@@ -94,9 +92,9 @@ namespace MoveReactApp.Server.Database
             dB.ExecuteNonQuery(query);
         }
 
-        public static List<DepartmentExts> GetDeptExtensions(string dept, bool enabledExt = true)
+        public static List<ExtensionDepts> GetDeptExtensions(string dept, bool enabledExt = true)
         {
-            List<DepartmentExts> extensionDepts = new();
+            List<ExtensionDepts> extensionDepts = new();
             string query = $"select e.ext, e.program, ed.direction, e.note, e.enabled " +
                 $"from extension as e, dept_ext as ed, department as d " +
                 $"where e.ext = ed.ext and ed.dept = d.dept and d.dept = '{dept}'";
@@ -104,13 +102,11 @@ namespace MoveReactApp.Server.Database
             DataTable dt = dB.ExecuteReader(query);
             foreach (DataRow dr in dt.Rows)
             {
-                DepartmentExts ext = new()
+                ExtensionDepts ext = new()
                 {
-                    Extenion = dr["ext"].ToString(),
-                    Program = dr["program"].ToString(),
+                    Ext = dr["ext"].ToString(),
+                    Department = dr["department"].ToString(),
                     Direction = int.Parse(dr["direction"].ToString()),
-                    Note = dr["note"].ToString(),
-                    Enabled = dr["enabled"].ToString() == "1" ? true : false
                 };
 
                 extensionDepts.Add(ext);
@@ -130,12 +126,9 @@ namespace MoveReactApp.Server.Database
             {
                 ExtensionDepts depts = new()
                 {
+                    Ext = dr["ext"].ToString(),
                     Department = dr["dept"].ToString(),
-                    LocalPath = dr["local_path"].ToString(),
-                    NetPath = dr["net_path"].ToString(),
                     Direction = int.Parse(dr["direction"].ToString()),
-                    Note = dr["note"].ToString(),
-                    Enabled = dr["enabled"].ToString() == "1" ? true : false
                 };
                 extDepts.Add(depts);
             }

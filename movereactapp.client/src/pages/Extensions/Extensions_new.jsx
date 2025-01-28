@@ -1,53 +1,101 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
-import { AccountCircle } from "@mui/icons-material";
 import {
   Box,
   Button,
-  Card,
-  Divider,
   Grid2,
-  IconButton,
   InputBase,
   Paper,
-  Stack,
-  TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import ExtForm from "../../components/Extension/ExtForm";
+import queryString from "query-string";
+import { useSnackbar } from "notistack";
+import axios from "axios";
+import ExtDepts from "../../components/Extension/ExtDepts";
 
 function Extensions_new() {
-  const ext = [
-    "doc",
-    "docx",
-    "xls",
-    "xlsx",
-    // "ppt",
-    // "pptx",
-    // "jpg",
-    // "jpeg",
-    // "png",
-    // "gif",
-    // "zip",
-    // "rar",
-    // "py",
-    // "cs",
-    // "vb",
-    // "js",
-    // "css",
-  ];
+  const [ext, setExt] = useState();
+  const [extensionsList, setExtensionsList] = useState([]);
+  const [extensionDetails, setExtensionDetails] = useState({});
+  const [departmnetsList, setDepartmentsList] = useState([]);
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleQueryString = () => {
+    // Parsing the query string from the window.location.search
+    const queries = queryString.parse(window.location.search);
+    if (queries.ext != undefined) handleExtClick(queries.ext);
+  };
+
+  const handleExtClick = (extension) => {
+    setExt(extension);
+    axios
+      .get(`https://localhost:7203/api/Extensions/${extension}`)
+      .then((res) => {
+        setExtensionDetails(res.data);
+      })
+      .catch((err) => {
+        enqueueSnackbar("Fetching extension details failed.", {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        console.log(err);
+      });
+  };
+
+  const handleAddNewClick = () => {
+    setExt(null);
+    //add
+  };
+
+  useEffect(() => {
+    axios
+      .get("https://localhost:7203/api/Extensions/names")
+      .then((res) => {
+        setExtensionsList(res.data);
+        handleQueryString();
+      })
+      .catch((err) => {
+        enqueueSnackbar("Fetching extensions failed.", {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        console.log(err);
+      });
+
+    axios("https://localhost:7203/api/Departments/names")
+      .then((res) => {
+        setDepartmentsList(res.data);
+      })
+      .catch((err) => {
+        enqueueSnackbar("Fetching departments name failed.", {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        console.log(err);
+      });
+  }, []);
+
   return (
-    <Grid2 container direction="row" columns={100} height="calc(100vh - 64px)">
+    <Grid2
+      container
+      direction="row"
+      columns={100}
+      minHeight="calc(100vh - 64px)"
+    >
       <Grid2
         container
         direction="column"
         size={{ md: 25, lg: 18, xl: 15 }}
         bgcolor="#1976d2"
-        height="calc(100vh - 64px)"
       >
         <Grid2
-          height="25%"
+          height="100px"
           borderBottom="1px solid white"
           display="flex"
           flexDirection="column"
@@ -61,19 +109,16 @@ function Extensions_new() {
               backgroundColor: "white",
               width: "100%",
             }}
+            size="small"
+            onClick={() => handleAddNewClick()}
           >
             Add New Extension
           </Button>
           <Paper
             component="form"
             sx={{
-              //p: "2px 4px",
               display: "flex",
               alignItems: "center",
-              //marginX: 1,
-              //marginTop: 2,
-              //ml: 1,
-              //flexGrow: 1,
               width: "100%",
             }}
           >
@@ -85,29 +130,55 @@ function Extensions_new() {
             />
           </Paper>
         </Grid2>
-        <Grid2 height="75%" overflow="auto" sx={{ direction: "rtl" }}>
-          {ext.map((e) => (
+        <Grid2 overflow="auto" sx={{ direction: "rtl" }}>
+          {extensionsList.map((e) => (
             <Box
               key={e}
               textAlign="center"
-              margin={1}
+              marginX={2}
+              marginY={1}
+              borderRadius={1}
               bgcolor="white"
               color="#1976d2"
-              borderRadius={1}
               boxShadow="10"
               paddingY={0.5}
+              onClick={() => handleExtClick(e)}
+              sx={{ cursor: "pointer" }}
             >
               <Typography sx={{ fontWeight: 500 }}>{e}</Typography>
             </Box>
           ))}
         </Grid2>
       </Grid2>
-      <Grid2 size="grow" container direction="column">
-        <Grid2 height="25%">
-          <Typography>header</Typography>
+      <Grid2 size="grow" container direction="column" margin={2} spacing={2}>
+        <Grid2>
+          <Box borderRadius={1}>
+            {ext === undefined ? (
+              <span></span>
+            ) : ext === null ? (
+              <ExtForm isNew={true} ext="" enabled="" note="" program="" />
+            ) : (
+              <ExtForm
+                isNew={false}
+                ext={extensionDetails.ext}
+                enabled={extensionDetails.enabled}
+                note={extensionDetails.note}
+                program={extensionDetails.program}
+              />
+            )}
+          </Box>
         </Grid2>
-        <Grid2 height="75%">
-          <Typography>main</Typography>
+        <Grid2>
+          <Box>
+            {ext != null ? (
+              <ExtDepts
+                extDepartmens={extensionDetails.departmens}
+                allDepartments={departmnetsList}
+              />
+            ) : (
+              <></>
+            )}
+          </Box>
         </Grid2>
       </Grid2>
     </Grid2>

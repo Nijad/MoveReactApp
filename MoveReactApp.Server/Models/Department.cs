@@ -7,5 +7,6 @@
         public string NetPath { get; set; }
         public bool Enabled { get; set; }
         public string Note { get; set; }
+        public List<ExtensionDepts> Extensions { get; set; }
     }
 }
