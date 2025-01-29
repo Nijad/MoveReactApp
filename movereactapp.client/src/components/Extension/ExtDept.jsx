@@ -1,29 +1,24 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import {
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Stack,
-  Switch,
-  Typography,
-} from "@mui/material";
+import { Card, CardContent, CardHeader, IconButton, Link } from "@mui/material";
 import DirectionMenu from "./DirectionMenu";
 import { useState } from "react";
+import CancelIcon from "@mui/icons-material/Close";
 
 function ExtDept({ department }) {
-  const [direction, setDirection] = useState("IN/OUT");
   return (
     <Card>
-      <CardHeader title={department} action={<Switch />} />
+      <CardHeader
+        subheader={<Link href="#">{department}</Link>}
+        action={
+          <IconButton>
+            <CancelIcon />
+          </IconButton>
+        }
+      />
       <CardContent>
-        <Stack direction="row" alignItems="center">
-          <DirectionMenu setDirection={() => setDirection} />
-          <Typography>{direction}</Typography>
-        </Stack>
+        <DirectionMenu />
       </CardContent>
-      <CardActions></CardActions>
     </Card>
   );
 }
