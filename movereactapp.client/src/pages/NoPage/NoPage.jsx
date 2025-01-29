@@ -1,8 +1,10 @@
+import { Box, Typography } from "@mui/material";
+
 function NoPage() {
   return (
-    <div>
-      <h1>404</h1>
-    </div>
+    <Box alignContent="center" textAlign="center" minHeight="80vh">
+      <Typography variant="h1">404 Not Found</Typography>
+    </Box>
   );
 }
 
