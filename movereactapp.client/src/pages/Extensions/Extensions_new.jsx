@@ -14,22 +14,22 @@ import ExtForm from "../../components/Extension/ExtForm";
 import queryString from "query-string";
 import { useSnackbar } from "notistack";
 import axios from "axios";
-import ExtDepts from "../../components/Extension/ExtDepts";
+import ExtensionTransfer from "../../components/Extension/ExtensionTransfer";
 
 function Extensions_new() {
   const [ext, setExt] = useState();
   const [extensionsList, setExtensionsList] = useState([]);
   const [extensionDetails, setExtensionDetails] = useState({});
-  const [departmnetsList, setDepartmentsList] = useState([]);
+  const [departmentsList, setDepartmentsList] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
 
   const handleQueryString = () => {
     // Parsing the query string from the window.location.search
     const queries = queryString.parse(window.location.search);
-    if (queries.ext != undefined) handleExtClick(queries.ext);
+    if (queries.ext != undefined) handleExtChange(queries.ext);
   };
 
-  const handleExtClick = (extension) => {
+  const handleExtChange = (extension) => {
     setExt(extension);
     axios
       .get(`https://localhost:7203/api/Extensions/${extension}`)
@@ -44,6 +44,15 @@ function Extensions_new() {
         });
         console.log(err);
       });
+  };
+
+  const handleExtClick = (extension) => {
+    history.pushState(
+      null,
+      null,
+      `https://localhost:54785/new?ext=${extension}`
+    );
+    handleExtChange(extension);
   };
 
   const handleAddNewClick = () => {
@@ -131,9 +140,9 @@ function Extensions_new() {
           </Paper>
         </Grid2>
         <Grid2 overflow="auto" sx={{ direction: "rtl" }}>
-          {extensionsList.map((e) => (
+          {extensionsList.map((e, index) => (
             <Box
-              key={e}
+              key={index}
               textAlign="center"
               marginX={2}
               marginY={1}
@@ -170,10 +179,11 @@ function Extensions_new() {
         </Grid2>
         <Grid2>
           <Box>
-            {ext != null ? (
-              <ExtDepts
-                extDepartmens={extensionDetails.departmens}
-                allDepartments={departmnetsList}
+            {extensionDetails?.departments !== undefined ? (
+              <ExtensionTransfer
+                ext={ext}
+                choisesList={extensionDetails?.remainDepartments}
+                chosenList={extensionDetails?.departments}
               />
             ) : (
               <></>

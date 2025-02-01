@@ -15,13 +15,13 @@ namespace MoveReactApp.Server.Controllers
             {
                 Ext="doc",
                 Department="IT",
-                Direction=3,
+                Direction="IN/OUT",
             },
             new ExtensionDepts()
             {
                 Ext="docx",
                 Department="RISK",
-                Direction=3,
+                Direction="IN/OUT",
             }
         };
 

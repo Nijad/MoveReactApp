@@ -4,6 +4,6 @@
     {
         public string Ext { get; set; }
         public string Department { get; set; }
-        public int Direction { get; set; }
+        public string Direction { get; set; }
     }
 }

@@ -10,6 +10,7 @@ namespace MoveReactApp.Server.Controllers
     [ApiController]
     public class ExtensionsController : ControllerBase
     {
+        
         List<Extension> extensions = new()
             {
                 new Extension()
@@ -23,27 +24,27 @@ namespace MoveReactApp.Server.Controllers
                         new ExtensionDepts()
                         {
                             Department="IT",
-                            Direction=3
+                            Direction="IN/OUT"
                         },
                         new ExtensionDepts()
                         {
                             Department="RISK",
-                            Direction=3
+                            Direction="IN/OUT"
                         },
                         new ExtensionDepts()
                         {
                             Department="AUDIT",
-                            Direction=2
+                            Direction="OUT"
                         },
                         new ExtensionDepts()
                         {
                             Department="CREDIT",
-                            Direction=1
+                            Direction="IN"
                         },
                         new ExtensionDepts()
                         {
                             Department="RETAIL",
-                            Direction=1
+                            Direction="IN"
                         }
                     }
                 },
@@ -58,27 +59,27 @@ namespace MoveReactApp.Server.Controllers
                         new ExtensionDepts()
                         {
                             Department="IT",
-                            Direction=2
+                            Direction="OUT"
                         },
                         new ExtensionDepts()
                         {
                             Department="RISK",
-                            Direction=1
+                            Direction="IN"
                         },
                         new ExtensionDepts()
                         {
                             Department="AUDIT",
-                            Direction=1
+                            Direction="IN"
                         },
                         new ExtensionDepts()
                         {
                             Department="CREDIT",
-                            Direction=1
+                            Direction="IN"
                         },
                         new ExtensionDepts()
                         {
                             Department="RETAIL",
-                            Direction=3
+                            Direction="IN/OUT"
                         }
                     }
                 },
@@ -93,27 +94,27 @@ namespace MoveReactApp.Server.Controllers
                         new ExtensionDepts()
                         {
                             Department="IT",
-                            Direction=1
+                            Direction="IN"
                         },
                         new ExtensionDepts()
                         {
                             Department="RISK",
-                            Direction=2
+                            Direction="OUT"
                         },
                         new ExtensionDepts()
                         {
                             Department="AUDIT",
-                            Direction=3
+                            Direction="IN/OUT"
                         },
                         new ExtensionDepts()
                         {
                             Department="CREDIT",
-                            Direction=3
+                            Direction="IN/OUT"
                         },
                         new ExtensionDepts()
                         {
                             Department="RETAIL",
-                            Direction=2
+                            Direction="OUT"
                         }
                     }
                 },
@@ -128,27 +129,27 @@ namespace MoveReactApp.Server.Controllers
                         new ExtensionDepts()
                         {
                             Department="IT",
-                            Direction=3
+                            Direction="IN/OUT"
                         },
                         new ExtensionDepts()
                         {
                             Department="RISK",
-                            Direction=2
+                            Direction="OUT"
                         },
                         new ExtensionDepts()
                         {
                             Department="AUDIT",
-                            Direction=2
+                            Direction="OUT"
                         },
                         new ExtensionDepts()
                         {
                             Department="CREDIT",
-                            Direction=2
+                            Direction="OUT"
                         },
                         new ExtensionDepts()
                         {
                             Department="RETAIL",
-                            Direction=3
+                            Direction="IN/OUT"
                         }
                     }
                 },
@@ -184,7 +185,8 @@ namespace MoveReactApp.Server.Controllers
         [HttpGet("{ext}")]
         public Extension Get(string ext)
         {
-            Extension? s = extensions.Where(X => X.Ext == ext).FirstOrDefault();
+            Extension? s = Operations.GetExtensions().Where(x => x.Ext == ext).FirstOrDefault();
+            //Extension? s = extensions.Where(X => X.Ext == ext).FirstOrDefault();
             return s;
         }
 

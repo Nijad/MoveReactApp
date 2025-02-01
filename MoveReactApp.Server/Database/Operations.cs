@@ -1,11 +1,26 @@
 ﻿using MoveReactApp.Server.Models;
 using System.Data;
+using System.Reflection.Metadata.Ecma335;
 
 namespace MoveReactApp.Server.Database
 {
     public static class Operations
     {
         private static readonly DB dB = new DB();
+        private static string DicrectionConvert(int direnction)
+        {
+            switch (direnction)
+            {
+                case 1:
+                    return "IN";
+                case 2:
+                    return "OUT";
+                case 3:
+                    return "IN/OUT";
+                default:
+                    return "IN/OUT";
+            }
+        }
 
         public static List<Configuration> GetConfig()
         {
@@ -26,6 +41,8 @@ namespace MoveReactApp.Server.Database
 
         public static List<Department> GetDepartments()
         {
+            return FakeData.Departments();
+
             List<Department> departments = new();
             string query = "select * from department";
             DataTable dt = dB.ExecuteReader(query);
@@ -47,10 +64,10 @@ namespace MoveReactApp.Server.Database
 
         public static List<Extension> GetExtensions()
         {
+            return FakeData.Extensions();
+
             string query = "select * from extension";
-
             DataTable dt = dB.ExecuteReader(query);
-
             List<Extension> extensions = new List<Extension>();
             int i = 0;
             foreach (DataRow dr in dt.Rows)
@@ -64,7 +81,6 @@ namespace MoveReactApp.Server.Database
                 };
                 extensions.Add(ext);
             }
-
             return extensions;
         }
 
@@ -106,7 +122,7 @@ namespace MoveReactApp.Server.Database
                 {
                     Ext = dr["ext"].ToString(),
                     Department = dr["department"].ToString(),
-                    Direction = int.Parse(dr["direction"].ToString()),
+                    Direction = DicrectionConvert(int.Parse(dr["direction"].ToString())),
                 };
 
                 extensionDepts.Add(ext);
@@ -116,6 +132,8 @@ namespace MoveReactApp.Server.Database
 
         public static List<ExtensionDepts> GetExtDepartments(string ext, bool enabledDept = true)
         {
+            return FakeData.ExtensionDepts().Where(x => x.Ext == ext).ToList();
+
             List<ExtensionDepts> extDepts = new();
             string query = $"select ed.dept, d.local_path, d.net_path, ed.direction, d.note, d.enabled " +
                 "from extension as e, dept_ext as ed, department as d " +
@@ -128,7 +146,7 @@ namespace MoveReactApp.Server.Database
                 {
                     Ext = dr["ext"].ToString(),
                     Department = dr["dept"].ToString(),
-                    Direction = int.Parse(dr["direction"].ToString()),
+                    Direction = DicrectionConvert(int.Parse(dr["direction"].ToString())),
                 };
                 extDepts.Add(depts);
             }

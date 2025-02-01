@@ -1,15 +1,21 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
 import * as React from "react";
-import Grid2 from "@mui/material/Grid2";
-import List from "@mui/material/List";
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Checkbox from "@mui/material/Checkbox";
-import Button from "@mui/material/Button";
-import Divider from "@mui/material/Divider";
-import { ListItem } from "@mui/material";
+import {
+  ListItem,
+  Grid2,
+  List,
+  Card,
+  CardHeader,
+  ListItemButton,
+  ListItemText,
+  ListItemIcon,
+  Checkbox,
+  Button,
+  Divider,
+  Stack,
+  Typography,
+} from "@mui/material";
 import DirectionMenu from "./DirectionMenu";
 
 function not(a, b) {
@@ -28,12 +34,14 @@ export default function ExtensionTransfer({ choisesList, chosenList }) {
   const [checked, setChecked] = React.useState([]);
   const [left, setLeft] = React.useState(choisesList);
   const [right, setRight] = React.useState(chosenList);
-
+  const [listHeigh, setListHeigh] = React.useState();
+  const [direction, setDirection] = React.useState();
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
+
     const newChecked = [...checked];
 
     if (currentIndex === -1) {
@@ -67,104 +75,118 @@ export default function ExtensionTransfer({ choisesList, chosenList }) {
     setChecked(not(checked, rightChecked));
   };
 
-  const customList = (title, items) => (
-    <Card>
-      <CardHeader
-        sx={{ px: 2, py: 1 }}
-        avatar={
-          <Checkbox
-            onClick={handleToggleAll(items)}
-            checked={
-              numberOfChecked(items) === items.length && items.length !== 0
-            }
-            indeterminate={
-              numberOfChecked(items) !== items.length &&
-              numberOfChecked(items) !== 0
-            }
-            disabled={items.length === 0}
-            inputProps={{
-              "aria-label": "all items selected",
-            }}
-          />
-        }
-        title={title}
-        subheader={`${numberOfChecked(items)}/${items.length} selected`}
-      />
-      <Divider />
-      <List
-        sx={{
-          width: 400,
-          height: 230,
-          bgcolor: "background.paper",
-          overflow: "auto",
-        }}
-        dense
-        component="div"
-        role="list"
-      >
-        {items.map((value) => {
-          const labelId = `transfer-list-all-item-${value}-label`;
+  const customList = (title, items) => {
+    return (
+      <Card sx={{ width: "100%" }}>
+        <CardHeader
+          sx={{ px: 2, py: 1 }}
+          avatar={
+            <Checkbox
+              onClick={handleToggleAll(items)}
+              checked={
+                numberOfChecked(items) === items?.length && items?.length !== 0
+              }
+              indeterminate={
+                numberOfChecked(items) !== items?.length &&
+                numberOfChecked(items) !== 0
+              }
+              disabled={items?.length === 0}
+              inputProps={{
+                "aria-label": "all items selected",
+              }}
+            />
+          }
+          title={title}
+          subheader={`${numberOfChecked(items)}/${items?.length} selected`}
+        />
+        <Divider />
+        <List
+          className="list"
+          sx={{
+            height: `calc(100vh - ${listHeigh + 50}px)`,
+            bgcolor: "background.paper",
+            overflow: "auto",
+          }}
+          dense
+          component="div"
+          role="list"
+        >
+          {items.map((value, index) => {
+            const labelId = `transfer-list-all-item-${value}-label`;
+            return (
+              <ListItemButton
+                key={index}
+                role="listitem"
+                onClick={handleToggle(value)}
+              >
+                <ListItemIcon>
+                  <Checkbox
+                    checked={checked.includes(value)}
+                    tabIndex={-1}
+                    disableRipple
+                    inputProps={{
+                      "aria-labelledby": labelId,
+                    }}
+                  />
+                </ListItemIcon>
+                <ListItem>
+                  <ListItemText
+                    id={labelId}
+                    primary={`${value?.department ? value?.department : value}`}
+                  />
+                  <Stack direction="row" alignItems="center">
+                    <DirectionMenu
+                      direction={value?.direction ? value?.direction : "IN/OUT"}
+                      setDirection={setDirection}
+                    />
+                  </Stack>
+                </ListItem>
+              </ListItemButton>
+            );
+          })}
+        </List>
+      </Card>
+    );
+  };
 
-          return (
-            <ListItemButton
-              key={value}
-              role="listitem"
-              onClick={handleToggle(value)}
-            >
-              <ListItemIcon>
-                <Checkbox
-                  checked={checked.includes(value)}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{
-                    "aria-labelledby": labelId,
-                  }}
-                />
-              </ListItemIcon>
-
-              <ListItem>
-                <ListItemText id={labelId} primary={`${value}`} />
-                <DirectionMenu />
-              </ListItem>
-            </ListItemButton>
-          );
-        })}
-      </List>
-    </Card>
-  );
+  React.useEffect(() => {
+    const list = document.getElementsByClassName("list");
+    const y = list[0]?.getBoundingClientRect().y;
+    setListHeigh(y);
+  }, []);
 
   return (
-    <Grid2
-      container
-      spacing={2}
-      sx={{ justifyContent: "center", alignItems: "center" }}
-    >
-      <Grid2 item>{customList("Choices", left)}</Grid2>
-      <Grid2 item>
-        <Grid2 container direction="column" sx={{ alignItems: "center" }}>
+    <Grid2 container spacing={2} size="grow">
+      <Grid2 item size="grow">
+        {customList("Unmapped", left)}
+      </Grid2>
+      <Grid2 item display="flex" alignSelf="center">
+        <Grid2 container direction="column">
           <Button
-            sx={{ my: 0.5 }}
+            sx={{ height: "35px", width: "100px", my: 0.5 }}
             variant="outlined"
             size="small"
             onClick={handleCheckedRight}
             disabled={leftChecked.length === 0}
             aria-label="move selected right"
           >
-            &gt;
+            Map &gt;&gt;
           </Button>
           <Button
-            sx={{ my: 0.5 }}
+            sx={{ height: "35px", width: "100px", my: 0.5 }}
             variant="outlined"
             size="small"
             onClick={handleCheckedLeft}
             disabled={rightChecked.length === 0}
             aria-label="move selected left"
           >
-            &lt;
+            &lt;&lt; Unmap
           </Button>
         </Grid2>
       </Grid2>
-      <Grid2 item>{customList("Chosen", right)}</Grid2>
+      <Grid2 item size="grow">
+        {customList("Mapped", right)}
+      </Grid2>
     </Grid2>
   );
 }
