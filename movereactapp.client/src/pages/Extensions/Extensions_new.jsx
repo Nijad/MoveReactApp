@@ -14,14 +14,14 @@ import ExtForm from "../../components/Extension/ExtForm";
 import queryString from "query-string";
 import { useSnackbar } from "notistack";
 import axios from "axios";
-import ExtensionTransfer from "../../components/Extension/ExtensionTransfer";
 import Datagrid from "../../components/Extension/Datagrid";
 
 function Extensions_new() {
   const [ext, setExt] = useState();
   const [extensionsList, setExtensionsList] = useState([]);
   const [extensionDetails, setExtensionDetails] = useState({});
-  const [departmentsList, setDepartmentsList] = useState([]);
+  const [contentHeigh, setContentHeigh] = useState();
+
   const { enqueueSnackbar } = useSnackbar();
 
   const handleQueryString = () => {
@@ -77,18 +77,9 @@ function Extensions_new() {
         console.log(err);
       });
 
-    axios("https://localhost:7203/api/Departments/names")
-      .then((res) => {
-        setDepartmentsList(res.data);
-      })
-      .catch((err) => {
-        enqueueSnackbar("Fetching departments name failed.", {
-          variant: "error",
-          anchorOrigin: { horizontal: "center", vertical: "top" },
-          autoHideDuration: 5000,
-        });
-        console.log(err);
-      });
+    const content = document.getElementById("sidebar");
+    const y = content?.getBoundingClientRect().y;
+    setContentHeigh(y);
   }, []);
 
   return (
@@ -140,7 +131,14 @@ function Extensions_new() {
             />
           </Paper>
         </Grid2>
-        <Grid2 overflow="auto" sx={{ direction: "rtl" }}>
+        <Grid2
+          id="sidebar"
+          sx={{
+            direction: "rtl",
+            overflowY: "auto",
+            height: `calc(100vh - ${contentHeigh}px)`,
+          }}
+        >
           {extensionsList.map((e, index) => (
             <Box
               key={index}
@@ -161,7 +159,7 @@ function Extensions_new() {
         </Grid2>
       </Grid2>
       <Grid2 size="grow" container direction="column" margin={2} spacing={2}>
-        <Grid2>
+        <Grid2 id="head">
           <Box borderRadius={1}>
             {ext === undefined ? (
               <span></span>

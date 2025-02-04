@@ -159,12 +159,13 @@ namespace MoveReactApp.Server.Controllers
         public List<Extension> Get()
         {
             //List<Extension> extensions = Operations.GetExtensions();
-            return extensions;
+            return Operations.GetExtensions();
         }
 
         [HttpGet("names")]
         public string[] ExtensionstName()
         {
+            return Operations.GetExtensions().Select(x => x.Ext).ToArray();
             return extensions.Select(x => x.Ext).ToArray();
         }
 

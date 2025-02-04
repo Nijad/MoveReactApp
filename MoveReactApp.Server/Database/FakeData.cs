@@ -82,7 +82,7 @@ namespace MoveReactApp.Server.Database
             foreach (string ext in extensionNames.Order())
             {
                 List<ExtensionDepts> depts = allDepartments.Where(x => x.Ext == ext).ToList();
-                List<ExtensionDepts> remainDepts = GetRemainDepts(depts, ext);
+                List<string> remainDepts = GetRemainDepts(depts, ext);
                 extensions.Add(new()
                 {
                     Ext = ext,
@@ -96,20 +96,21 @@ namespace MoveReactApp.Server.Database
             return extensions;
         }
 
-        private static List<ExtensionDepts> GetRemainDepts(List<ExtensionDepts> depts, string ext)
+        private static List<string> GetRemainDepts(List<ExtensionDepts> depts, string ext)
         {
-            string[] remainDeptNames = departmentNames.Except(depts.Select(x => x.Department)).ToArray();
-            List<ExtensionDepts> remainDepartments = new();
-            foreach (string dept in remainDeptNames)
-            {
-                remainDepartments.Add(new()
-                {
-                    Ext = ext,
-                    Department = dept,
-                    Direction = "IN/OUT"
-                });
-            }
-            return remainDepartments;
+            return departmentNames.ToList();
+            //string[] remainDeptNames = departmentNames.Except(depts.Select(x => x.Department)).ToArray();
+            //List<ExtensionDepts> remainDepartments = new();
+            //foreach (string dept in remainDeptNames)
+            //{
+            //    remainDepartments.Add(new()
+            //    {
+            //        Ext = ext,
+            //        Department = dept,
+            //        Direction = "IN/OUT"
+            //    });
+            //}
+            //return remainDepartments;
         }
 
         public static List<ExtensionDepts> ExtensionDepts()

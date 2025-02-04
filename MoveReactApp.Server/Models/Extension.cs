@@ -7,6 +7,6 @@
         public bool Enabled { get; set; }
         public string Note { get; set; }
         public List<ExtensionDepts> Departments { get; set; }
-        public List<ExtensionDepts> RemainDepartments { get; set; }
+        public List<string> RemainDepartments { get; set; }
     }
 }

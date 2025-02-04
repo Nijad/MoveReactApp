@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import axios from "axios";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import {
   DataGrid,
   GridActionsCellItem,
@@ -58,6 +58,7 @@ function Datagrid({ extension }) {
   const [dept, setDept] = useState();
   const [open, setOpen] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
+  const [contentHeigh, setContentHeigh] = useState();
 
   const columns = [
     // {
@@ -70,22 +71,24 @@ function Datagrid({ extension }) {
     // },
     {
       field: "department",
-      headerName: "Dept",
-      width: 120,
+      headerName: "Deptartment",
+      width: 220,
       editable: true,
       align: "center",
       headerAlign: "center",
       type: "singleSelect",
       valueOptions: departmentList,
+      flex: 2,
     },
     {
       field: "direction",
       headerName: "Direction",
-      width: 120,
+      width: 220,
       editable: true,
       align: "center",
       headerAlign: "center",
       type: "singleSelect",
+      flex: 1,
       valueOptions: [
         { key: 1, label: "IN" },
         { key: 2, label: "OUT" },
@@ -101,8 +104,9 @@ function Datagrid({ extension }) {
       field: "actions",
       type: "actions",
       headerName: "Actions",
-      width: 120,
+      width: 220,
       cellClassName: "actions",
+      flex: 1,
       getActions: ({ id }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
@@ -158,26 +162,10 @@ function Datagrid({ extension }) {
   ];
 
   useEffect(() => {
-    // axios
-    //   .get("https://localhost:7203/api/Departments/names/")
-    //   .then((res) => {
-    //     setDepartmentList(res.data);
-    //   })
-    //   .catch((err) => {
-    //     enqueueSnackbar("Fetching departments failed.", {
-    //       variant: "error",
-    //       anchorOrigin: { horizontal: "center", vertical: "top" },
-    //       autoHideDuration: 5000,
-    //     });
-    //     console.log(err);
-    //   });
-
     axios
-      .get(`https://localhost:7203/api/ExtDept/ExtDepts/${extension}`)
+      .get(`https://localhost:7203/api/Extensions/${extension}`)
       .then((res) => {
-        console.log(res.data);
-
-        setExtensions(res.data.departments);
+        //setExtensions(res.data.departments);
         setRows(res.data.departments);
         setDepartmentList(res.data.remainDepartments);
       })
@@ -189,6 +177,10 @@ function Datagrid({ extension }) {
         });
         console.log(err);
       });
+
+    const content = document.getElementById("content");
+    const y = content?.getBoundingClientRect().y;
+    setContentHeigh(y);
   }, [extension]);
 
   const handleGoDepartment = (id) => {
@@ -392,8 +384,9 @@ function Datagrid({ extension }) {
       />
 
       <Box
+        id="content"
         sx={{
-          height: 500,
+          height: `calc(100vh - ${contentHeigh + 16}px)`,
           width: "100%",
           "& .actions": {
             color: "text.secondary",
