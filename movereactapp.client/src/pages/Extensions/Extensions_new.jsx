@@ -15,6 +15,7 @@ import queryString from "query-string";
 import { useSnackbar } from "notistack";
 import axios from "axios";
 import ExtensionTransfer from "../../components/Extension/ExtensionTransfer";
+import Datagrid from "../../components/Extension/Datagrid";
 
 function Extensions_new() {
   const [ext, setExt] = useState();
@@ -180,11 +181,7 @@ function Extensions_new() {
         <Grid2>
           <Box>
             {extensionDetails?.departments !== undefined ? (
-              <ExtensionTransfer
-                ext={ext}
-                choisesList={extensionDetails?.remainDepartments}
-                chosenList={extensionDetails?.departments}
-              />
+              <Datagrid extension={ext} />
             ) : (
               <></>
             )}

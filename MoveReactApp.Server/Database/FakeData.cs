@@ -114,6 +114,7 @@ namespace MoveReactApp.Server.Database
 
         public static List<ExtensionDepts> ExtensionDepts()
         {
+            int id = 0;
             List<ExtensionDepts> extDepts = new();
             foreach (string ext in extensionNames)
             {
@@ -123,6 +124,7 @@ namespace MoveReactApp.Server.Database
                 {
                     ExtensionDepts dept = new()
                     {
+                        Id = id,
                         Ext = ext,
                         Department = departmentNames[random.Next(departmentNames.Length)],
                         Direction = direction[random.Next(3)]
@@ -132,6 +134,7 @@ namespace MoveReactApp.Server.Database
                         deptsAdded.Add(dept.Department);
                         extDepts.Add(dept);
                         i++;
+                        id++;
                     }
                 }
             }

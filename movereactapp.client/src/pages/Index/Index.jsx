@@ -6,7 +6,7 @@ function Index() {
     <Box
       sx={{
         height: "400px",
-        width: { xs: 100, sm: 600, md: 800, lg: 1200, xl: 1500 },
+        width: "100%",
       }}
       alignContent="center"
     >
