@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
-function ExtForm({ isNew, ext, program, note, enabled }) {
+function ExtForm({ isNew, ext, program, note, enabled, setExt }) {
   const [editable, setEditable] = useState(false);
   // const [defaultValues, setDefaultValues] = useState({
   //   extension: "",
@@ -51,6 +51,11 @@ function ExtForm({ isNew, ext, program, note, enabled }) {
 
   const handleEdit = () => {
     setEditable(true);
+  };
+
+  const handleCancel = () => {
+    setEditable(false);
+    setExt(undefined);
   };
 
   return (
@@ -120,7 +125,9 @@ function ExtForm({ isNew, ext, program, note, enabled }) {
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Loading..." : isNew ? "Add" : "Update"}
               </Button>
-              <Button type="reset">Cancel</Button>
+              <Button type="reset" onClick={() => handleCancel()}>
+                Cancel
+              </Button>
             </>
           ) : (
             <Button type="button" onClick={() => handleEdit()}>

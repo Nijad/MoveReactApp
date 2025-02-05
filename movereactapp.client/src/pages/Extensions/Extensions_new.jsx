@@ -33,20 +33,23 @@ function Extensions_new() {
   };
 
   const handleExtChange = (extension) => {
+    console.log(extension);
+
     setExt(extension);
-    axios
-      .get(`https://localhost:7203/api/Extensions/${extension}`)
-      .then((res) => {
-        setExtensionDetails(res.data);
-      })
-      .catch((err) => {
-        enqueueSnackbar("Fetching extension details failed.", {
-          variant: "error",
-          anchorOrigin: { horizontal: "center", vertical: "top" },
-          autoHideDuration: 5000,
+    if (extension != null)
+      axios
+        .get(`https://localhost:7203/api/Extensions/${extension}`)
+        .then((res) => {
+          setExtensionDetails(res.data);
+        })
+        .catch((err) => {
+          enqueueSnackbar("Fetching extension details failed.", {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
+          console.log(err);
         });
-        console.log(err);
-      });
   };
 
   const handleExtClick = (extension) => {
@@ -59,7 +62,8 @@ function Extensions_new() {
   };
 
   const handleAddNewClick = () => {
-    setExt(null);
+    history.pushState(null, null, `https://localhost:54785/new`);
+    handleExtChange(null);
     //add
   };
 
@@ -173,12 +177,12 @@ function Extensions_new() {
         </Grid2>
       </Grid2>
       <Grid2
-        //size="grow"
-        size={{ md: 75, lg: 82, xl: 85 }}
-        sx={{
-          width: { md: "100%", lg: "70%" },
-          marginX: "auto",
-        }}
+        size="grow"
+        //size={{ md: 75, lg: 82, xl: 85 }}
+        // sx={{
+        //   width: { md: "100%", lg: "70%" },
+        //   marginX: "auto",
+        // }}
         container
         direction="column"
         margin={2}
@@ -191,7 +195,14 @@ function Extensions_new() {
             ) : ext === null ? (
               <>
                 <Typography fontWeight="600">Extension Details</Typography>
-                <ExtForm isNew={true} ext="" enabled="" note="" program="" />
+                <ExtForm
+                  isNew={true}
+                  ext=""
+                  enabled=""
+                  note=""
+                  program=""
+                  setExt={setExt}
+                />
               </>
             ) : (
               <>
@@ -209,7 +220,17 @@ function Extensions_new() {
         </Grid2>
         <Grid2>
           <Box>
-            {extensionDetails?.departments !== undefined ? (
+            {ext === undefined ? (
+              <Box
+                textAlign="center"
+                alignContent="center"
+                height="calc(100vh - 128px)"
+                color="lightgray"
+              >
+                <Typography fontSize={48}>Select Extension</Typography>
+                <Typography fontSize={48}>or Add New One</Typography>
+              </Box>
+            ) : ext !== null ? (
               <>
                 <Typography fontWeight="600">Extension Departments</Typography>
                 <Datagrid extension={ext} />
