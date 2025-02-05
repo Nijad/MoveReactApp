@@ -52,8 +52,7 @@ function EditToolbar(props) {
 
 function Datagrid({ extension }) {
   const { enqueueSnackbar } = useSnackbar();
-  const [extensions, setExtensions] = useState([]);
-  const [rows, setRows] = useState(extensions);
+  const [rows, setRows] = useState([]);
   const [rowModesModel, setRowModesModel] = useState({});
   const [dept, setDept] = useState();
   const [open, setOpen] = useState(false);
@@ -88,7 +87,7 @@ function Datagrid({ extension }) {
       align: "center",
       headerAlign: "center",
       type: "singleSelect",
-      flex: 1,
+      flex: 2,
       valueOptions: [
         { key: 1, label: "IN" },
         { key: 2, label: "OUT" },
@@ -181,7 +180,7 @@ function Datagrid({ extension }) {
     const content = document.getElementById("content");
     const y = content?.getBoundingClientRect().y;
     setContentHeigh(y);
-  }, [extension]);
+  }, [enqueueSnackbar, extension]);
 
   const handleGoDepartment = (id) => {
     const row = rows.find((r) => r.id == id);
@@ -387,7 +386,6 @@ function Datagrid({ extension }) {
         id="content"
         sx={{
           height: `calc(100vh - ${contentHeigh + 16}px)`,
-          width: "100%",
           "& .actions": {
             color: "text.secondary",
           },
@@ -411,6 +409,7 @@ function Datagrid({ extension }) {
           }}
           onRowClick={handleClick}
           pageSizeOptions={[5, 10, 25, 100, { value: -1, label: "All" }]}
+          sx={{ fontSize: "1.1em" }}
         />
       </Box>
     </div>

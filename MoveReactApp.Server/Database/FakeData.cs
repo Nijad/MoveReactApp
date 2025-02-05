@@ -98,6 +98,8 @@ namespace MoveReactApp.Server.Database
 
         private static List<string> GetRemainDepts(List<ExtensionDepts> depts, string ext)
         {
+            for (int i = 0; i < departmentNames.Count(); i++)
+                departmentNames[i]= departmentNames[i].ToUpper();
             return departmentNames.ToList();
             //string[] remainDeptNames = departmentNames.Except(depts.Select(x => x.Department)).ToArray();
             //List<ExtensionDepts> remainDepartments = new();
