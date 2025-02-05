@@ -21,6 +21,8 @@ function Extensions_new() {
   const [extensionsList, setExtensionsList] = useState([]);
   const [extensionDetails, setExtensionDetails] = useState({});
   const [contentHeigh, setContentHeigh] = useState();
+  const [filter, setFilter] = useState("");
+  const [filterList, setFilterList] = useState([]);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -61,11 +63,21 @@ function Extensions_new() {
     //add
   };
 
+  const handleFilter = (e) => {
+    setFilter(e.target.value);
+    setFilterList(
+      e.target.value.length > 0
+        ? extensionsList.filter((x) => x.includes(e.target.value))
+        : extensionsList
+    );
+  };
+
   useEffect(() => {
     axios
       .get("https://localhost:7203/api/Extensions/names")
       .then((res) => {
         setExtensionsList(res.data);
+        setFilterList(res.data);
         handleQueryString();
       })
       .catch((err) => {
@@ -128,6 +140,8 @@ function Extensions_new() {
               sx={{ ml: 1, flex: 1 }}
               placeholder="filter"
               inputProps={{ "aria-label": "filter extension" }}
+              value={filter}
+              onChange={handleFilter}
             />
           </Paper>
         </Grid2>
@@ -139,7 +153,7 @@ function Extensions_new() {
             height: `calc(100vh - ${contentHeigh}px)`,
           }}
         >
-          {extensionsList.map((e, index) => (
+          {filterList.map((e, index) => (
             <Box
               key={index}
               textAlign="center"

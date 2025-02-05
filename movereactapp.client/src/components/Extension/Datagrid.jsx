@@ -409,7 +409,7 @@ function Datagrid({ extension }) {
           }}
           onRowClick={handleClick}
           pageSizeOptions={[5, 10, 25, 100, { value: -1, label: "All" }]}
-          sx={{ fontSize: "1.1em" }}
+          sx={{ fontSize: { lg: "1em", xl: "1.1em" } }}
         />
       </Box>
     </div>
