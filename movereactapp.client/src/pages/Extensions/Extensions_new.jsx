@@ -189,27 +189,31 @@ function Extensions_new() {
             {ext === undefined ? (
               <span></span>
             ) : ext === null ? (
-              <ExtForm isNew={true} ext="" enabled="" note="" program="" />
+              <>
+                <Typography fontWeight="600">Extension Details</Typography>
+                <ExtForm isNew={true} ext="" enabled="" note="" program="" />
+              </>
             ) : (
-              <ExtForm
-                isNew={false}
-                ext={extensionDetails.ext}
-                enabled={extensionDetails.enabled}
-                note={extensionDetails.note}
-                program={extensionDetails.program}
-              />
+              <>
+                <Typography fontWeight="600">Extension Details</Typography>
+                <ExtForm
+                  isNew={false}
+                  ext={extensionDetails.ext}
+                  enabled={extensionDetails.enabled}
+                  note={extensionDetails.note}
+                  program={extensionDetails.program}
+                />
+              </>
             )}
           </Box>
         </Grid2>
         <Grid2>
-          <Box
-          // sx={{
-          //   width: { md: "100%", lg: "75%" },
-          //   marginX: "auto",
-          // }}
-          >
+          <Box>
             {extensionDetails?.departments !== undefined ? (
-              <Datagrid extension={ext} />
+              <>
+                <Typography fontWeight="600">Extension Departments</Typography>
+                <Datagrid extension={ext} />
+              </>
             ) : (
               <></>
             )}
