@@ -20,21 +20,30 @@ import { useSnackbar } from "notistack";
 import DraggableDialog from "../../components/DraggableDialog";
 
 function EditToolbar(props) {
-  const { setRows, setRowModesModel } = props;
+  const { setRows, setRowModesModel, page, pageSize, rows } = props;
+
   const handleClick = () => {
     const id = -Math.random();
-    setRows((oldRows) => [
-      ...oldRows,
-      {
-        id,
-        dept: "",
-        localPath: "",
-        netPath: "",
-        direction: "",
-        note: "",
-        isNew: true,
-      },
-    ]);
+
+    const i = (page + 1) * pageSize - 1;
+    const left = rows.slice(0, i);
+    const right = rows.slice(i);
+
+    setRows(
+      left.concat(
+        {
+          id,
+          dept: "",
+          localPath: "",
+          netPath: "",
+          direction: "",
+          note: "",
+          isNew: true,
+        },
+        right
+      )
+    );
+
     setRowModesModel((oldModel) => ({
       ...oldModel,
       [id]: { mode: GridRowModes.Edit, fieldToFocus: "department" },
@@ -58,6 +67,8 @@ function Datagrid({ extension }) {
   const [open, setOpen] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
   const [contentHeigh, setContentHeigh] = useState();
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(0);
 
   const columns = [
     // {
@@ -368,6 +379,11 @@ function Datagrid({ extension }) {
     setRowModesModel(newRowModesModel);
   };
 
+  const handlePageChange = (newPage) => {
+    setPage(newPage.page);
+    setPageSize(newPage.pageSize);
+  };
+
   return (
     <div>
       <DraggableDialog
@@ -402,10 +418,11 @@ function Datagrid({ extension }) {
           onRowModesModelChange={handleRowModesModelChange}
           onProcessRowUpdateError={handleProcessRowUpdateError}
           onRowEditStop={handleRowEditStop}
+          onPaginationModelChange={(params) => handlePageChange(params)}
           processRowUpdate={processRowUpdate}
           slots={{ toolbar: EditToolbar }}
           slotProps={{
-            toolbar: { setRows, setRowModesModel },
+            toolbar: { setRows, setRowModesModel, page, pageSize, rows },
           }}
           onRowClick={handleClick}
           pageSizeOptions={[5, 10, 25, 100, { value: -1, label: "All" }]}
