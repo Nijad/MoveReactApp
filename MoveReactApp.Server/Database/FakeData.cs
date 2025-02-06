@@ -11,6 +11,7 @@ namespace MoveReactApp.Server.Database
         private static string[] direction = ["IN", "OUT", "IN/OUT"];
 
         public static string[] departmentNames = [
+            "",
             "accounting",
             "administrative",
             "audit",
@@ -82,7 +83,7 @@ namespace MoveReactApp.Server.Database
             foreach (string ext in extensionNames.Order())
             {
                 List<ExtensionDepts> depts = allDepartments.Where(x => x.Ext == ext).ToList();
-                List<string> remainDepts = GetRemainDepts(depts, ext);
+                //List<string> remainDepts = GetRemainDepts(depts, ext);
                 extensions.Add(new()
                 {
                     Ext = ext,
@@ -90,7 +91,7 @@ namespace MoveReactApp.Server.Database
                     Note = "",// random.Next(2) == 0 ? false : true,
                     Enabled = true,
                     Departments = depts,
-                    RemainDepartments = remainDepts
+                    //RemainDepartments = remainDepts
                 });
             }
             return extensions;

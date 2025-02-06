@@ -1,6 +1,5 @@
 ﻿using MoveReactApp.Server.Models;
 using System.Data;
-using System.Runtime.CompilerServices;
 
 namespace MoveReactApp.Server.Database
 {
@@ -41,7 +40,7 @@ namespace MoveReactApp.Server.Database
 
         public static List<Department> GetDepartments()
         {
-            //return FakeData.Departments();
+            return FakeData.Departments();
 
             List<Department> departments = new();
             string query = "select * from department";
@@ -86,7 +85,7 @@ namespace MoveReactApp.Server.Database
 
         public static string[] GetExtensionNames()
         {
-            //return FakeData.Extensions().Select(x => x.Ext).ToArray();
+            return FakeData.Extensions().Select(x => x.Ext).ToArray();
 
             string query = "select ext from extension";
             DataTable dt = dB.ExecuteReader(query);
@@ -103,7 +102,7 @@ namespace MoveReactApp.Server.Database
 
         public static Extension GetExtension(string ext)
         {
-            //return GetExtensions().Where(x => x.Ext == ext).FirstOrDefault();
+            return GetExtensions().Where(x => x.Ext == ext).FirstOrDefault();
 
             Extension extension = new();
             string query = $"select * from extension where ext = '{ext}'";
@@ -210,7 +209,7 @@ namespace MoveReactApp.Server.Database
 
         internal static string[] GetDepartmentNames()
         {
-            //return FakeData.departmentNames;
+            return FakeData.departmentNames;
 
             string query = "select dept from department";
             DataTable dt = dB.ExecuteReader(query);
