@@ -23,6 +23,7 @@ function Extensions_new() {
   const [contentHeigh, setContentHeigh] = useState();
   const [filter, setFilter] = useState("");
   const [filterList, setFilterList] = useState([]);
+  const [departmentsList, setDepartmentList] = useState([]);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -86,6 +87,20 @@ function Extensions_new() {
       })
       .catch((err) => {
         enqueueSnackbar("Fetching extensions failed.", {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        console.log(err);
+      });
+
+    axios
+      .get("https://localhost:7203/api/Departments/names")
+      .then((res) => {
+        setDepartmentList(res.data);
+      })
+      .catch((err) => {
+        enqueueSnackbar("Fetching departments failed.", {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
@@ -233,7 +248,7 @@ function Extensions_new() {
             ) : ext !== null ? (
               <>
                 <Typography fontWeight="600">Extension Departments</Typography>
-                <Datagrid extension={ext} />
+                <Datagrid extension={ext} departmentsList={departmentsList} />
               </>
             ) : (
               <></>

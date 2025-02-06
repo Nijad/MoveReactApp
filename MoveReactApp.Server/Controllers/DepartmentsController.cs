@@ -10,84 +10,18 @@ namespace MoveReactApp.Server.Controllers
     [ApiController]
     public class DepartmentsController : ControllerBase
     {
-        List<Department> departments = new() {
-            new Department()
-            {
-                Dept="IT",
-                LocalPath="Local Path",
-                NetPath= "Net Path",
-                Note="",
-                Enabled=true
-            },
-            new Department()
-            {
-                Dept="RISK",
-                LocalPath="Local Path",
-                NetPath= "Net Path",
-                Note="",
-                Enabled=true
-            },
-            new Department()
-            {
-                Dept="AUDIT",
-                LocalPath="Local Path",
-                NetPath= "Net Path",
-                Note="",
-                Enabled=true
-            },
-            new Department()
-            {
-                Dept="RETAIL",
-                LocalPath="Local Path",
-                NetPath= "Net Path",
-                Note="",
-                Enabled=true
-            },
-            new Department()
-            {
-                Dept="CREDIT",
-                LocalPath="Local Path",
-                NetPath= "Net Path",
-                Note="",
-                Enabled=true
-            },
-            new Department()
-            {
-                Dept="INFORMATION SECURITY",
-                LocalPath="Local Path",
-                NetPath= "Net Path",
-                Note="",
-                Enabled=true
-            },
-            new Department()
-            {
-                Dept="INTERNATIONAL",
-                LocalPath="Local Path",
-                NetPath= "Net Path",
-                Note="",
-                Enabled=true
-            },
-            new Department()
-            {
-                Dept="BACK OFFICE",
-                LocalPath="Local Path",
-                NetPath= "Net Path",
-                Note="",
-                Enabled=true
-            },
-        };
         // GET: api/<Departments>
         [HttpGet]
         public IEnumerable<Department> Get()
         {
-            return departments;
             return Operations.GetDepartments();
         }
 
         [HttpGet("names")]
         public string[] DepartmenstName()
         {
-            return departments.Select(x => x.Dept).ToArray();
+            return Operations.GetDepartmentNames();
+            
         }
 
         // GET api/<Departments>/5

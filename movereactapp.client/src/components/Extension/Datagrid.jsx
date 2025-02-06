@@ -25,6 +25,17 @@ function EditToolbar(props) {
   const handleClick = () => {
     const id = -Math.random();
 
+    if (page == Math.ceil(rows.length / pageSize)) {
+      if (rows.length % pageSize == 0) {
+        console.log("111 : ", rows.length % pageSize);
+      } else {
+        console.log("222 : ", rows.length % pageSize);
+      }
+    } else {
+      console.log("333 : ", Math.ceil(rows.length / pageSize));
+    }
+    console.log("page size : ", pageSize);
+
     const i = (page + 1) * pageSize - 1;
     const left = rows.slice(0, i);
     const right = rows.slice(i);
@@ -59,13 +70,13 @@ function EditToolbar(props) {
   );
 }
 
-function Datagrid({ extension }) {
+function Datagrid({ extension, departmentsList }) {
   const { enqueueSnackbar } = useSnackbar();
   const [rows, setRows] = useState([]);
   const [rowModesModel, setRowModesModel] = useState({});
   const [dept, setDept] = useState();
   const [open, setOpen] = useState(false);
-  const [departmentList, setDepartmentList] = useState([]);
+  //const [departmentList, setDepartmentList] = useState([]);
   const [contentHeigh, setContentHeigh] = useState();
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(0);
@@ -87,7 +98,7 @@ function Datagrid({ extension }) {
       align: "center",
       headerAlign: "center",
       type: "singleSelect",
-      valueOptions: departmentList,
+      valueOptions: departmentsList,
       flex: 2,
     },
     {
@@ -177,7 +188,7 @@ function Datagrid({ extension }) {
       .then((res) => {
         //setExtensions(res.data.departments);
         setRows(res.data.departments);
-        setDepartmentList(res.data.remainDepartments);
+        //setDepartmentList(res.data.remainDepartments);
       })
       .catch((err) => {
         enqueueSnackbar("Fetching extensions failed.", {

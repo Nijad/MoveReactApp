@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Models;
+using System.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -165,8 +166,7 @@ namespace MoveReactApp.Server.Controllers
         [HttpGet("names")]
         public string[] ExtensionstName()
         {
-            return Operations.GetExtensions().Select(x => x.Ext).ToArray();
-            return extensions.Select(x => x.Ext).ToArray();
+            return Operations.GetExtensionNames();
         }
 
         //[HttpGet("GetExtensions")]
@@ -186,7 +186,7 @@ namespace MoveReactApp.Server.Controllers
         [HttpGet("{ext}")]
         public Extension Get(string ext)
         {
-            Extension? s = Operations.GetExtensions().Where(x => x.Ext == ext).FirstOrDefault();
+            Extension? s = Operations.GetExtension(ext);
             //Extension? s = extensions.Where(X => X.Ext == ext).FirstOrDefault();
             return s;
         }

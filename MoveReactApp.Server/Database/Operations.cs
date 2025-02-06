@@ -1,6 +1,6 @@
 ﻿using MoveReactApp.Server.Models;
 using System.Data;
-using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 
 namespace MoveReactApp.Server.Database
 {
@@ -41,7 +41,7 @@ namespace MoveReactApp.Server.Database
 
         public static List<Department> GetDepartments()
         {
-            return FakeData.Departments();
+            //return FakeData.Departments();
 
             List<Department> departments = new();
             string query = "select * from department";
@@ -82,6 +82,61 @@ namespace MoveReactApp.Server.Database
                 extensions.Add(ext);
             }
             return extensions;
+        }
+
+        public static string[] GetExtensionNames()
+        {
+            //return FakeData.Extensions().Select(x => x.Ext).ToArray();
+
+            string query = "select ext from extension";
+            DataTable dt = dB.ExecuteReader(query);
+
+            string[] extensions = new string[dt.Rows.Count];
+            int i = 0;
+            foreach (DataRow dr in dt.Rows)
+            {
+                extensions[i] = dr["ext"].ToString();
+                i++;
+            }
+            return extensions;
+        }
+
+        public static Extension GetExtension(string ext)
+        {
+            //return GetExtensions().Where(x => x.Ext == ext).FirstOrDefault();
+
+            Extension extension = new();
+            string query = $"select * from extension where ext = '{ext}'";
+            DataTable dt = dB.ExecuteReader(query);
+            if (dt.Rows.Count > 0)
+            {
+                extension.Ext = dt.Rows[0]["ext"].ToString();
+                extension.Program = dt.Rows[0]["program"].ToString();
+                extension.Note = dt.Rows[0]["note"].ToString();
+                extension.Enabled = dt.Rows[0]["enabled"].ToString() == "1" ? true : false;
+
+                query = $"select * from dept_ext where ext = '{ext}'";
+                DataTable dt2 = dB.ExecuteReader(query);
+                if (dt2.Rows.Count > 0)
+                {
+                    int i = 0;
+                    extension.Departments = new List<ExtensionDepts>();
+                    foreach (DataRow dr in dt2.Rows)
+                    {
+                        extension.Departments.Add(
+                            new ExtensionDepts()
+                            {
+                                Department = dr["dept"].ToString(),
+                                Direction = DicrectionConvert(int.Parse(dr["direction"].ToString())),
+                                Ext = ext,
+                                Id = i
+                            }
+                        );
+                        i++;
+                    }
+                }
+            }
+            return extension;
         }
 
         public static void AddExtension(Extension extension)
@@ -153,5 +208,20 @@ namespace MoveReactApp.Server.Database
             return extDepts;
         }
 
+        internal static string[] GetDepartmentNames()
+        {
+            //return FakeData.departmentNames;
+
+            string query = "select dept from department";
+            DataTable dt = dB.ExecuteReader(query);
+            string[] departments = new string[dt.Rows.Count];
+            int i = 0;
+            foreach (DataRow dr in dt.Rows)
+            {
+                departments[i] = dr["dept"].ToString();
+                i++;
+            }
+            return departments;
+        }
     }
 }
