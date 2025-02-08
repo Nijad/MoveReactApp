@@ -26,36 +26,13 @@ function EditToolbar(props) {
     const id = -Math.random();
     console.log("page no:", page);
 
-    // if (page == Math.ceil(rows.length / pageSize)) {
-    //   if (rows.length % pageSize == 0) {
-    //     console.log("111 : ", rows.length % pageSize);
-    //   } else {
-    //     console.log("222 : ", rows.length % pageSize);
-    //   }
-    // } else {
-    //   console.log("333 : ", Math.ceil(rows.length / pageSize));
-    // }
-    // console.log("page size : ", pageSize);
     let i = 0;
-    if (pageSize < 0) {
-      console.log("01-index:", rows.length);
-      i = rows.length;
-    } else {
-      if (rows.length == (page + 1) * pageSize) {
-        console.log("02-index:", (page + 1) * pageSize - 1);
-        i = (page + 1) * pageSize - 1;
-      } else {
-        if (page == Math.floor(rows.length / pageSize)) {
-          console.log("03-index:", rows.length);
-          i = rows.length;
-        } else {
-          console.log("04-index:", (page + 1) * pageSize - 1);
-          i = (page + 1) * pageSize - 1;
-        }
-      }
-    }
+    if (pageSize < 0) i = rows.length;
+    else if (rows.length == (page + 1) * pageSize)
+      i = (page + 1) * pageSize - 1;
+    else if (page == Math.floor(rows.length / pageSize)) i = rows.length;
+    else i = (page + 1) * pageSize - 1;
 
-    //const i = (page + 1) * pageSize - 1;
     const left = rows.slice(0, i);
     const right = rows.slice(i);
 

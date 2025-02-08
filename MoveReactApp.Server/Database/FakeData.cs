@@ -1,6 +1,4 @@
 ﻿using MoveReactApp.Server.Models;
-using System.Collections.Generic;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MoveReactApp.Server.Database
 {
@@ -11,7 +9,6 @@ namespace MoveReactApp.Server.Database
         private static string[] direction = ["IN", "OUT", "IN/OUT"];
 
         public static string[] departmentNames = [
-            "",
             "accounting",
             "administrative",
             "audit",
@@ -88,8 +85,8 @@ namespace MoveReactApp.Server.Database
                 {
                     Ext = ext,
                     Program = "any program",
-                    Note = "",// random.Next(2) == 0 ? false : true,
-                    Enabled = true,
+                    Note = "",
+                    Enabled = true,// random.Next(2) == 0 ? false : true,
                     Departments = depts,
                     //RemainDepartments = remainDepts
                 });

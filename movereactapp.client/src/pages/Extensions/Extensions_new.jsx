@@ -34,8 +34,6 @@ function Extensions_new() {
   };
 
   const handleExtChange = (extension) => {
-    console.log(extension);
-
     setExt(extension);
     if (extension != null)
       axios
@@ -212,11 +210,12 @@ function Extensions_new() {
                 <Typography fontWeight="600">Extension Details</Typography>
                 <ExtForm
                   isNew={true}
-                  ext=""
-                  enabled=""
-                  note=""
-                  program=""
+                  ext={null}
+                  enabled={false}
+                  note={null}
+                  program={null}
                   setExt={setExt}
+                  setFilterList={setFilterList}
                 />
               </>
             ) : (
@@ -228,6 +227,7 @@ function Extensions_new() {
                   enabled={extensionDetails.enabled}
                   note={extensionDetails.note}
                   program={extensionDetails.program}
+                  setExt={setExt}
                 />
               </>
             )}

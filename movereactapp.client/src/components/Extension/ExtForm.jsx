@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import { useController, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import {
   Box,
   Button,
@@ -10,38 +10,68 @@ import {
   TextField,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { enqueueSnackbar } from "notistack";
 
-function ExtForm({ isNew, ext, program, note, enabled, setExt }) {
+function ExtForm({
+  isNew,
+  ext,
+  program,
+  note,
+  enabled,
+  setFilterList,
+  setExt,
+}) {
   const [editable, setEditable] = useState(false);
-  // const [defaultValues, setDefaultValues] = useState({
-  //   extension: "",
-  //   program: "",
-  //   note: "",
-  //   enabled: false,
-  // });
-  // const defaultValues = {
-  //   extension: ext,
-  //   program: program,
-  //   note: note,
-  //   enabled: enabled,
-  // };
-
-  //useEffect(() => {}, [ext]);
-
+  const [isNewRec, setIsNewRec] = useState(isNew);
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm();
+    control,
+  } = useForm({
+    defaultValues: {
+      enabled: enabled,
+    },
+  });
 
-  const onSubmit = async (data) => {
+  const onSubmit = (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      //await new Promise((resolve) => setTimeout(resolve, 1000));
       //throw new Error("backend error");
+      if (isNewRec) {
+        console.log("add data: ", data);
+        axios
+          .post("https://localhost:7203/api/Extensions", {
+            ...data,
+            Departments: [],
+          })
+          .then((res) => {
+            console.log(res.data);
 
-      console.log(data);
+            setExt(data.ext);
+            setIsNewRec(false);
+            setEditable(false);
+            setFilterList(res.data);
+
+            history.pushState(
+              null,
+              null,
+              `https://localhost:54785/new?ext=${data.ext}`
+            );
+            //handleExtClick(data.ext);
+          })
+          .catch((err) => {
+            enqueueSnackbar("Fetching extensions failed.", {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            });
+            console.log(err);
+          });
+      } else console.log("update data: ", data);
     } catch (error) {
       setError("root", {
         message: error.message,
@@ -53,13 +83,23 @@ function ExtForm({ isNew, ext, program, note, enabled, setExt }) {
     setEditable(true);
   };
 
-  const handleCancel = () => {
-    setEditable(false);
-    setExt(undefined);
+  const handleDelete = () => {
+    console.log("delete function");
   };
 
+  const handleCancel = () => {
+    if (isNewRec) setExt(undefined);
+    reset();
+    setEditable(false);
+  };
+
+  useEffect(() => {
+    reset({ ext: ext, program: program, note: note, enabled: enabled });
+    setIsNewRec(isNew);
+  }, [isNew, ext, program, note, enabled, reset]);
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form /*onSubmit={handleSubmit(onSubmit)}*/>
       <Grid2
         spacing={2}
         container
@@ -82,18 +122,17 @@ function ExtForm({ isNew, ext, program, note, enabled, setExt }) {
             size="small"
             fullWidth
             label="Extension"
-            disabled={!isNew && !editable}
-            value={ext}
+            disabled={!isNewRec && !editable}
           />
         </Grid2>
+
         <Grid2 size={{ sm: 12, md: 6 }} display="flex">
           <TextField
             {...register("program")}
             size="small"
             fullWidth
             label="Program"
-            disabled={!isNew && !editable}
-            value={program}
+            disabled={!isNewRec && !editable}
           />
         </Grid2>
 
@@ -103,36 +142,51 @@ function ExtForm({ isNew, ext, program, note, enabled, setExt }) {
             size="small"
             fullWidth
             label="Note"
-            disabled={!isNew && !editable}
-            value={note}
+            disabled={!isNewRec && !editable}
           />
         </Grid2>
 
         <Grid2 size={{ sm: 12, md: 6 }} display="flex">
-          <FormControlLabel
-            control={
-              <Switch
-                checked={enabled}
-                {...register("enabled")}
-                inputProps={{ "aria-label": "controlled" }}
-                disabled={!isNew && !editable}
+          <Controller
+            name="enabled"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Switch
+                    {...field}
+                    checked={field.value}
+                    inputProps={{ "aria-label": "controlled" }}
+                    disabled={!isNewRec && !editable}
+                  />
+                }
+                label="Enabled"
               />
-            }
-            label="Enabled"
+            )}
           />
-          {isNew || editable ? (
+
+          {isNewRec || editable ? (
             <>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Loading..." : isNew ? "Add" : "Update"}
+              <Button
+                type="button"
+                disabled={isSubmitting}
+                onClick={handleSubmit(onSubmit)}
+              >
+                {isSubmitting ? "Loading..." : isNewRec ? "Add" : "Update"}
               </Button>
-              <Button type="reset" onClick={() => handleCancel()}>
+              <Button type="button" onClick={() => handleCancel()}>
                 Cancel
               </Button>
             </>
           ) : (
-            <Button type="button" onClick={() => handleEdit()}>
-              Edit
-            </Button>
+            <>
+              <Button type="button" onClick={() => handleEdit()}>
+                Edit
+              </Button>
+              <Button type="button" onClick={() => handleDelete()}>
+                Delete
+              </Button>
+            </>
           )}
         </Grid2>
 
@@ -141,9 +195,9 @@ function ExtForm({ isNew, ext, program, note, enabled, setExt }) {
             {errors.root.message}
           </Box>
         )}
-        {errors.extension && (
+        {errors.ext && (
           <Box color="red" display="">
-            {errors.extension.message}
+            {errors.ext.message}
           </Box>
         )}
       </Grid2>
