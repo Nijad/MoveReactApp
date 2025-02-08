@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
+import DraggableDialog from "../DraggableDialog";
 
 function ExtForm({
   isNew,
@@ -21,9 +22,17 @@ function ExtForm({
   enabled,
   setFilterList,
   setExt,
+  extensionsList,
+  setExtensionsList,
 }) {
   const [editable, setEditable] = useState(false);
   const [isNewRec, setIsNewRec] = useState(isNew);
+  const [open, setOpen] = useState({ open: false });
+  const [title, setTitle] = useState("");
+  const [msg, setMsg] = useState("");
+  const [yesTitle, setYesTitle] = useState("");
+  const [cancelTitle, setCancelTitle] = useState("Cancel");
+  const [yesFunction, setYesFunction] = useState();
   const {
     register,
     handleSubmit,
@@ -42,18 +51,16 @@ function ExtForm({
       //await new Promise((resolve) => setTimeout(resolve, 1000));
       //throw new Error("backend error");
       if (isNewRec) {
-        console.log("add data: ", data);
         axios
           .post("https://localhost:7203/api/Extensions", {
             ...data,
             Departments: [],
           })
           .then((res) => {
-            console.log(res.data);
-
             setExt(data.ext);
             setIsNewRec(false);
             setEditable(false);
+            setExtensionsList(res.data);
             setFilterList(res.data);
 
             history.pushState(
@@ -61,6 +68,11 @@ function ExtForm({
               null,
               `https://localhost:54785/new?ext=${data.ext}`
             );
+            enqueueSnackbar(`Extension ${data.ext} added successfuly.`, {
+              variant: "success",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            });
             //handleExtClick(data.ext);
           })
           .catch((err) => {
@@ -83,8 +95,45 @@ function ExtForm({
     setEditable(true);
   };
 
+  const handleOpenDeleteDialog = () => {
+    setTitle("Delete Extension");
+    setMsg(`Are you sure to delete ${ext}.`);
+    setYesTitle("Delete");
+    setCancelTitle("Cancel");
+    setYesFunction(() => handleDelete);
+    setOpen({ open: true });
+  };
+
   const handleDelete = () => {
-    console.log("delete function");
+    try {
+      axios
+        .delete(`https://localhost:7203/api/Extensions/${ext}`)
+        .then((res) => {
+          //setFilterList(res.data);
+          setExtensionsList(extensionsList.filter((x) => x != ext));
+          setFilterList(extensionsList.filter((x) => x != ext));
+          setExt(undefined);
+          history.pushState(null, null, `https://localhost:54785/new`);
+
+          enqueueSnackbar(`Extension ${ext} deleted successfuly.`, {
+            variant: "success",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
+        })
+        .catch((err) => {
+          enqueueSnackbar("Deleteing extensions failed.", {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
+          console.log(err);
+        });
+    } catch (error) {
+      setError("root", {
+        message: error.message,
+      });
+    }
   };
 
   const handleCancel = () => {
@@ -183,7 +232,7 @@ function ExtForm({
               <Button type="button" onClick={() => handleEdit()}>
                 Edit
               </Button>
-              <Button type="button" onClick={() => handleDelete()}>
+              <Button type="button" onClick={() => handleOpenDeleteDialog()}>
                 Delete
               </Button>
             </>
@@ -201,6 +250,18 @@ function ExtForm({
           </Box>
         )}
       </Grid2>
+
+      <DraggableDialog
+        title={title}
+        msg={msg}
+        yesTitle={yesTitle}
+        cancelTitle={cancelTitle}
+        open={open}
+        setOpen={setOpen}
+        yesFunction={yesFunction}
+        fullWidth={true}
+        maxWidth="sm"
+      />
     </form>
   );
 }

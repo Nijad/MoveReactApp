@@ -55,6 +55,7 @@ namespace MoveReactApp.Server.Controllers
         [HttpDelete("{ext}")]
         public void Delete(string ext)
         {
+            return;
             Operations.DeleteExtension(ext);
         }
     }

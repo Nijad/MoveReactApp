@@ -215,6 +215,7 @@ function Extensions_new() {
                   note={null}
                   program={null}
                   setExt={setExt}
+                  setExtensionsList={setExtensionsList}
                   setFilterList={setFilterList}
                 />
               </>
@@ -228,6 +229,9 @@ function Extensions_new() {
                   note={extensionDetails.note}
                   program={extensionDetails.program}
                   setExt={setExt}
+                  extensionsList={extensionsList}
+                  setExtensionsList={setExtensionsList}
+                  setFilterList={setFilterList}
                 />
               </>
             )}
