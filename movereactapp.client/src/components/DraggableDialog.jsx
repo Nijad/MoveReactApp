@@ -33,19 +33,21 @@ export default function DraggableDialog({
   yesFunction,
   fullWidth,
   maxWidth,
+  modalData,
 }) {
   const handleClose = () => {
-    setOpen({ ...open, open: false });
+    setOpen(false);
   };
 
   const handleYes = () => {
-    yesFunction(open.id);
+    if (modalData != null) yesFunction(modalData);
+    else yesFunction();
     handleClose();
   };
 
   return (
     <Dialog
-      open={open.open || false}
+      open={open || false}
       onClose={handleClose}
       PaperComponent={PaperComponent}
       aria-labelledby="draggable-dialog-title"

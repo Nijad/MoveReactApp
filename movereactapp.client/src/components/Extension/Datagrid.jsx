@@ -75,6 +75,7 @@ function Datagrid({ extension, departmentsList }) {
   const [contentHeigh, setContentHeigh] = useState();
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(0);
+  const [modalData, setModalData] = useState(null);
 
   const columns = [
     // {
@@ -209,7 +210,8 @@ function Datagrid({ extension, departmentsList }) {
   const handleOpenDialog = (id) => {
     const row = rows.find((r) => r.id == id);
     setDept(row.department);
-    setOpen({ id: id, open: true });
+    setOpen(true);
+    setModalData(id);
   };
 
   const handleRowEditStop = (params, event) => {
@@ -401,6 +403,7 @@ function Datagrid({ extension, departmentsList }) {
         yesFunction={handleDeleteClick}
         fullWidth={true}
         maxWidth="sm"
+        modalData={modalData}
       />
 
       <Box

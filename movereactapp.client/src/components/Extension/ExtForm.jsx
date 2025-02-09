@@ -33,6 +33,7 @@ function ExtForm({
   const [yesTitle, setYesTitle] = useState("");
   const [cancelTitle, setCancelTitle] = useState("Cancel");
   const [yesFunction, setYesFunction] = useState();
+  const [modalData, setModalData] = useState(null);
   const {
     register,
     handleSubmit,
@@ -50,45 +51,74 @@ function ExtForm({
     try {
       //await new Promise((resolve) => setTimeout(resolve, 1000));
       //throw new Error("backend error");
-      if (isNewRec) {
-        axios
-          .post("https://localhost:7203/api/Extensions", {
-            ...data,
-            Departments: [],
-          })
-          .then((res) => {
-            setExt(data.ext);
-            setIsNewRec(false);
-            setEditable(false);
-            setExtensionsList(res.data);
-            setFilterList(res.data);
-
-            history.pushState(
-              null,
-              null,
-              `https://localhost:54785/new?ext=${data.ext}`
-            );
-            enqueueSnackbar(`Extension ${data.ext} added successfuly.`, {
-              variant: "success",
-              anchorOrigin: { horizontal: "center", vertical: "top" },
-              autoHideDuration: 5000,
-            });
-            //handleExtClick(data.ext);
-          })
-          .catch((err) => {
-            enqueueSnackbar("Fetching extensions failed.", {
-              variant: "error",
-              anchorOrigin: { horizontal: "center", vertical: "top" },
-              autoHideDuration: 5000,
-            });
-            console.log(err);
-          });
-      } else console.log("update data: ", data);
+      if (isNewRec) handleAddNewExtension(data);
+      else handleOpenUpdateDialog(data);
     } catch (error) {
       setError("root", {
         message: error.message,
       });
     }
+  };
+
+  const handleAddNewExtension = (data) => {
+    axios
+      .post("https://localhost:7203/api/Extensions", {
+        ...data,
+        Departments: [],
+      })
+      .then((res) => {
+        setExt(data.ext);
+        setIsNewRec(false);
+        setEditable(false);
+        setExtensionsList(res.data);
+        setFilterList(res.data);
+
+        history.pushState(
+          null,
+          null,
+          `https://localhost:54785/new?ext=${data.ext}`
+        );
+        enqueueSnackbar(`Extension ${data.ext} added successfuly.`, {
+          variant: "success",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        //handleExtClick(data.ext);
+      })
+      .catch((err) => {
+        enqueueSnackbar(`Adding new extension ${data.ext} failed.`, {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        console.log(err);
+      });
+  };
+
+  const handleUpdateExtension = (data) => {
+    axios
+      .put(`https://localhost:7203/api/Extensions/${ext}`, {
+        ...data,
+        Departments: [],
+      })
+      .then((res) => {
+        setEditable(false);
+
+        enqueueSnackbar(`Extension ${ext} updated successfuly.`, {
+          variant: "success",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        //handleExtClick(data.ext);
+      })
+      .catch((err) => {
+        enqueueSnackbar(`Updating extension ${ext} failed.`, {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        console.log(err);
+      });
   };
 
   const handleEdit = () => {
@@ -101,6 +131,16 @@ function ExtForm({
     setYesTitle("Delete");
     setCancelTitle("Cancel");
     setYesFunction(() => handleDelete);
+    setOpen({ open: true });
+  };
+
+  const handleOpenUpdateDialog = (data) => {
+    setTitle("Update Extension");
+    setMsg(`Are you sure to Update ${ext} information.`);
+    setYesTitle("Update");
+    setCancelTitle("Cancel");
+    setYesFunction(() => handleUpdateExtension);
+    setModalData(data);
     setOpen({ open: true });
   };
 
@@ -252,6 +292,7 @@ function ExtForm({
       </Grid2>
 
       <DraggableDialog
+        modalData={modalData}
         title={title}
         msg={msg}
         yesTitle={yesTitle}
