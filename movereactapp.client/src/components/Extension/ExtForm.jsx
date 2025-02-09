@@ -27,7 +27,7 @@ function ExtForm({
 }) {
   const [editable, setEditable] = useState(false);
   const [isNewRec, setIsNewRec] = useState(isNew);
-  const [open, setOpen] = useState({ open: false });
+  const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [msg, setMsg] = useState("");
   const [yesTitle, setYesTitle] = useState("");
@@ -131,7 +131,7 @@ function ExtForm({
     setYesTitle("Delete");
     setCancelTitle("Cancel");
     setYesFunction(() => handleDelete);
-    setOpen({ open: true });
+    setOpen(true);
   };
 
   const handleOpenUpdateDialog = (data) => {
@@ -141,7 +141,7 @@ function ExtForm({
     setCancelTitle("Cancel");
     setYesFunction(() => handleUpdateExtension);
     setModalData(data);
-    setOpen({ open: true });
+    setOpen(true);
   };
 
   const handleDelete = () => {

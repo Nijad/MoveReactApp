@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -9,6 +10,8 @@ namespace MoveReactApp.Server.Controllers
     [ApiController]
     public class ExtDeptController : ControllerBase
     {
+        Operations operations = new();
+
         List<ExtensionDepts> extensionDepts = new()
         {
             new ExtensionDepts()
@@ -40,16 +43,18 @@ namespace MoveReactApp.Server.Controllers
         //}
 
         // POST api/<ExtDeptController>
-        [HttpPost("{ext}")]
-        public IEnumerable<ExtensionDepts> Post(string ext, [FromBody] ExtensionDepts dept)
+        [HttpPost]
+        public IEnumerable<ExtensionDepts> Post([FromBody] ExtensionDepts extensionDepts)
         {
-            extensionDepts.Add(new ExtensionDepts()
-            {
-                Ext = ext,
-                Department = dept.Department,
-                Direction = dept.Direction,
-            });
-            return extensionDepts;
+            //extensionDepts.Add(new ExtensionDepts()
+            //{
+            //    Ext = extensionDepts.Ext,
+            //    Department = extensionDepts.Department,
+            //    Direction = extensionDepts.Direction,
+            //});
+            //return extensionDepts;
+            operations.AddExtDept(extensionDepts);
+            return operations.GetExtDepartments(extensionDepts.Ext);
         }
 
         // PUT api/<ExtDeptController>/5
@@ -60,8 +65,10 @@ namespace MoveReactApp.Server.Controllers
 
         // DELETE api/<ExtDeptController>/5
         [HttpDelete("{ext}/{dept}")]
-        public void Delete(string ext, string dept)
+        public IEnumerable<ExtensionDepts> Delete(string ext, string dept)
         {
+            operations.DeleteExtDept(ext, dept);
+            return operations.GetExtDepartments(ext);
         }
     }
 }

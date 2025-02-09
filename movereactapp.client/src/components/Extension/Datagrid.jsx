@@ -40,11 +40,8 @@ function EditToolbar(props) {
       left.concat(
         {
           id,
-          dept: "",
-          localPath: "",
-          netPath: "",
+          department: "",
           direction: "",
-          note: "",
           isNew: true,
         },
         right
@@ -107,9 +104,9 @@ function Datagrid({ extension, departmentsList }) {
       type: "singleSelect",
       flex: 2,
       valueOptions: [
-        { key: 1, label: "IN" },
-        { key: 2, label: "OUT" },
-        { key: 3, label: "IN/OUT" },
+        { key: "IN", label: "IN" },
+        { key: "OUT", label: "OUT" },
+        { key: "IN/OUT", label: "IN/OUT" },
       ],
       valueFormatter: (value) => {
         return value.key;
@@ -280,15 +277,20 @@ function Datagrid({ extension, departmentsList }) {
     const updatedRow = { ...newRow, isNew: false };
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
     //here send data to server
-    if (newRow.id < 0)
+    if (newRow.id < 0) {
+      console.log("add ext dept :", {
+        Id: newRow.id,
+        Ext: extension,
+        Department: newRow.department,
+        Direction: newRow.direction,
+      });
+
       axios
-        .post(`https://localhost:7203/api/ExtDept/${extension}`, {
-          Department: newRow.department,
-          LocalPath: "",
-          NetPath: "",
-          Direction: newRow.direction,
-          Note: "",
-          Enabled: true,
+        .post(`https://localhost:7203/api/ExtDept`, {
+          id: newRow.id,
+          ext: extension,
+          department: newRow.department,
+          direction: newRow.direction,
         })
         .then((res) => {
           enqueueSnackbar(
@@ -315,7 +317,7 @@ function Datagrid({ extension, departmentsList }) {
             setRows(rows.filter((row) => row.id !== newRow.id));
           console.log(err);
         });
-    else if (newRow.department == originalRow.department)
+    } else if (newRow.department == originalRow.department)
       axios
         .put(
           `https://localhost:7203/api/ExtDept/${extension}`,

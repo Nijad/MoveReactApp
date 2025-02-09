@@ -3,12 +3,12 @@ using System.Data;
 
 namespace MoveReactApp.Server.Database
 {
-    public  class Operations
+    public class Operations
     {
-        private  readonly DB dB = new DB();
-        private  string DicrectionConvert(int direnction)
+        private readonly DB dB = new DB();
+        private string DirectionConvert(int direction)
         {
-            switch (direnction)
+            switch (direction)
             {
                 case 1:
                     return "IN";
@@ -21,7 +21,28 @@ namespace MoveReactApp.Server.Database
             }
         }
 
-        public  List<Configuration> GetConfig()
+        private int DirectionConvertInverse(string dirction)
+        {
+            switch (dirction)
+            {
+                case "IN":
+                    return 1;
+                case "in":
+                    return 1;
+                case "OUT":
+                    return 2;
+                case "out":
+                    return 2;
+                case "IN/OUT":
+                    return 3;
+                case "in/out":
+                    return 3;
+                default:
+                    return 3;
+            }
+        }
+
+        public List<Configuration> GetConfig()
         {
             List<Configuration> configs = new();
             string query = "select * from config";
@@ -38,7 +59,7 @@ namespace MoveReactApp.Server.Database
             return configs;
         }
 
-        public  List<Department> GetDepartments()
+        public List<Department> GetDepartments()
         {
             //return FakeData.Departments();
 
@@ -61,7 +82,7 @@ namespace MoveReactApp.Server.Database
             return departments;
         }
 
-        public  List<Extension> GetExtensions()
+        public List<Extension> GetExtensions()
         {
             //return FakeData.Extensions();
 
@@ -83,7 +104,7 @@ namespace MoveReactApp.Server.Database
             return extensions;
         }
 
-        public  string[] GetExtensionNames()
+        public string[] GetExtensionNames()
         {
             //return FakeData.Extensions().Select(x => x.Ext).ToArray();
 
@@ -100,7 +121,7 @@ namespace MoveReactApp.Server.Database
             return extensions;
         }
 
-        public  Extension GetExtension(string ext)
+        public Extension GetExtension(string ext)
         {
             //return GetExtensions().Where(x => x.Ext == ext).FirstOrDefault();
 
@@ -113,32 +134,14 @@ namespace MoveReactApp.Server.Database
                 extension.Program = dt.Rows[0]["program"].ToString();
                 extension.Note = dt.Rows[0]["note"].ToString();
                 extension.Enabled = dt.Rows[0]["enabled"].ToString() == "1" ? true : false;
-                extension.Departments = new List<ExtensionDepts>();
-                query = $"select * from dept_ext where ext = '{ext}'";
-                DataTable dt2 = dB.ExecuteReader(query);
-                if (dt2.Rows.Count > 0)
-                {
-                    int i = 0;
-                    
-                    foreach (DataRow dr in dt2.Rows)
-                    {
-                        extension.Departments.Add(
-                            new ExtensionDepts()
-                            {
-                                Department = dr["dept"].ToString(),
-                                Direction = DicrectionConvert(int.Parse(dr["direction"].ToString())),
-                                Ext = ext,
-                                Id = i
-                            }
-                        );
-                        i++;
-                    }
-                }
+                extension.Departments = GetExtDepartments(ext);
             }
             return extension;
         }
 
-        public  void AddExtension(Extension extension)
+        
+
+        public void AddExtension(Extension extension)
         {
             string query = "INSERT INTO `movedb`.`extension` " +
                 "(`ext`,`program`,`enabled`,`note`)" +
@@ -147,7 +150,7 @@ namespace MoveReactApp.Server.Database
             dB.ExecuteNonQuery(query);
         }
 
-        public  void UpdateExtension(string ext, Extension extension)
+        public void UpdateExtension(string ext, Extension extension)
         {
             string query = "UPDATE `movedb`.`extension` SET " +
                 $"`ext` = '{extension.Ext}', `program` ='{extension.Program}', `enabled` = {extension.Enabled}, " +
@@ -156,13 +159,13 @@ namespace MoveReactApp.Server.Database
             dB.ExecuteNonQuery(query);
         }
 
-        public  void DeleteExtension(string ext)
+        public void DeleteExtension(string ext)
         {
             string query = $"DELETE FROM `movedb`.`extension` WHERE `ext` =  '{ext}'";
             dB.ExecuteNonQuery(query);
         }
 
-        public  List<ExtensionDepts> GetDeptExtensions(string dept, bool enabledExt = true)
+        public List<ExtensionDepts> GetDeptExtensions(string dept, bool enabledExt = true)
         {
             List<ExtensionDepts> extensionDepts = new();
             string query = $"select e.ext, e.program, ed.direction, e.note, e.enabled " +
@@ -176,7 +179,7 @@ namespace MoveReactApp.Server.Database
                 {
                     Ext = dr["ext"].ToString(),
                     Department = dr["department"].ToString(),
-                    Direction = DicrectionConvert(int.Parse(dr["direction"].ToString())),
+                    Direction = DirectionConvert(int.Parse(dr["direction"].ToString())),
                 };
 
                 extensionDepts.Add(ext);
@@ -184,30 +187,32 @@ namespace MoveReactApp.Server.Database
             return extensionDepts;
         }
 
-        public  List<ExtensionDepts> GetExtDepartments(string ext, bool enabledDept = true)
+        public List<ExtensionDepts> GetExtDepartments(string ext)
         {
             //return FakeData.ExtensionDepts().Where(x => x.Ext == ext).ToList();
 
             List<ExtensionDepts> extDepts = new();
-            string query = $"select ed.dept, d.local_path, d.net_path, ed.direction, d.note, d.enabled " +
-                "from extension as e, dept_ext as ed, department as d " +
-                $"where e.ext = ed.ext and ed.dept = d.dept and e.ext = '{ext}'";
-            query += enabledDept ? " and d.enabled = 1" : "";
+            string query = $"select * from dept_ext where ext = '{ext}'";
             DataTable dt = dB.ExecuteReader(query);
+            int i = 0;
+
             foreach (DataRow dr in dt.Rows)
             {
-                ExtensionDepts depts = new()
-                {
-                    Ext = dr["ext"].ToString(),
-                    Department = dr["dept"].ToString(),
-                    Direction = DicrectionConvert(int.Parse(dr["direction"].ToString())),
-                };
-                extDepts.Add(depts);
+                extDepts.Add(
+                    new ExtensionDepts()
+                    {
+                        Department = dr["dept"].ToString(),
+                        Direction = DirectionConvert(int.Parse(dr["direction"].ToString())),
+                        Ext = ext,
+                        Id = i
+                    }
+                );
+                i++;
             }
             return extDepts;
         }
 
-        internal  string[] GetDepartmentNames()
+        internal string[] GetDepartmentNames()
         {
             //return FakeData.departmentNames;
 
@@ -221,6 +226,19 @@ namespace MoveReactApp.Server.Database
                 i++;
             }
             return departments;
+        }
+
+        internal void AddExtDept(ExtensionDepts extensionDepts)
+        {
+            string query = $"INSERT INTO dept_ext (dept,ext,direction) " +
+                $"VALUES ('{extensionDepts.Department}', '{extensionDepts.Ext}',{DirectionConvertInverse(extensionDepts.Direction)})";
+            dB.ExecuteNonQuery(query);
+        }
+
+        internal void DeleteExtDept(string ext, string dept)
+        {
+            string query = $"DELETE FROM dept_ext WHERE ext = '{ext}' AND dept = '{dept}'";
+            dB.ExecuteNonQuery (query);
         }
     }
 }

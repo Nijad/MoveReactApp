@@ -2,7 +2,7 @@
 {
     public class ExtensionDepts
     {
-        public int Id { get; set; }
+        public double Id { get; set; }
         public string Ext { get; set; }
         public string Department { get; set; }
         public string Direction { get; set; }
