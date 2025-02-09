@@ -10,23 +10,24 @@ namespace MoveReactApp.Server.Controllers
     [ApiController]
     public class ExtensionsController : ControllerBase
     {
+        Operations operations = new();
         // GET: api/<ExtensionController>
         [HttpGet]
         public List<Extension> Get()
         {
-            return Operations.GetExtensions();
+            return operations.GetExtensions();
         }
 
         [HttpGet("names")]
         public string[] ExtensiontNames()
         {
-            return Operations.GetExtensionNames();
+            return operations.GetExtensionNames();
         }
 
         [HttpGet("{ext}")]
         public Extension Get(string ext)
         {
-            Extension? s = Operations.GetExtension(ext);
+            Extension? s = operations.GetExtension(ext);
             //Extension? s = extensions.Where(X => X.Ext == ext).FirstOrDefault();
             return s;
         }
@@ -35,11 +36,11 @@ namespace MoveReactApp.Server.Controllers
         [HttpPost]
         public string[] Post([FromBody] Extension extension)
         {
-            List<Extension> s = FakeData.Extensions();
-            s.Add(extension);
-            return s.Select(x => x.Ext).ToArray();
+            //List<Extension> s = FakeData.Extensions();
+            //s.Add(extension);
+            //return s.Select(x => x.Ext).ToArray();
 
-            Operations.AddExtension(extension);
+            operations.AddExtension(extension);
             return ExtensiontNames();
         }
 
@@ -47,16 +48,16 @@ namespace MoveReactApp.Server.Controllers
         [HttpPut("{ext}")]
         public List<Extension> Put(string ext, [FromBody] Extension extension)
         {
-            Operations.UpdateExtension(ext, extension);
-            return Operations.GetExtensions();
+            operations.UpdateExtension(ext, extension);
+            return operations.GetExtensions();
         }
 
         // DELETE api/<ExtensionController>/5
         [HttpDelete("{ext}")]
         public void Delete(string ext)
         {
-            return;
-            Operations.DeleteExtension(ext);
+            //return;
+            operations.DeleteExtension(ext);
         }
     }
 }

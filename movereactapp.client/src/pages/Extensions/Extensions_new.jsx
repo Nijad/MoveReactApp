@@ -75,7 +75,7 @@ function Extensions_new() {
     );
   };
 
-  useEffect(() => {
+  const GetExtensionNames = () => {
     axios
       .get("https://localhost:7203/api/Extensions/names")
       .then((res) => {
@@ -91,7 +91,9 @@ function Extensions_new() {
         });
         console.log(err);
       });
+  };
 
+  const GetDepartmentNames = () => {
     axios
       .get("https://localhost:7203/api/Departments/names")
       .then((res) => {
@@ -105,7 +107,41 @@ function Extensions_new() {
         });
         console.log(err);
       });
+  };
 
+  useEffect(() => {
+    // axios
+    //   .get("https://localhost:7203/api/Extensions/names")
+    //   .then((res) => {
+    //     setExtensionsList(res.data);
+    //     setFilterList(res.data);
+    //     handleQueryString();
+    //   })
+    //   .catch((err) => {
+    //     enqueueSnackbar("Fetching extensions failed.", {
+    //       variant: "error",
+    //       anchorOrigin: { horizontal: "center", vertical: "top" },
+    //       autoHideDuration: 5000,
+    //     });
+    //     console.log(err);
+    //   });
+
+    // axios
+    //   .get("https://localhost:7203/api/Departments/names")
+    //   .then((res) => {
+    //     setDepartmentList(res.data);
+    //   })
+    //   .catch((err) => {
+    //     enqueueSnackbar("Fetching departments failed.", {
+    //       variant: "error",
+    //       anchorOrigin: { horizontal: "center", vertical: "top" },
+    //       autoHideDuration: 5000,
+    //     });
+    //     console.log(err);
+    //   });
+
+    GetExtensionNames();
+    GetDepartmentNames();
     const content = document.getElementById("sidebar");
     const y = content?.getBoundingClientRect().y;
     setContentHeigh(y);

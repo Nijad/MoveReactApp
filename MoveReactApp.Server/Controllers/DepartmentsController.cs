@@ -10,17 +10,18 @@ namespace MoveReactApp.Server.Controllers
     [ApiController]
     public class DepartmentsController : ControllerBase
     {
+        Operations operations = new();
         // GET: api/<Departments>
         [HttpGet]
         public IEnumerable<Department> Get()
         {
-            return Operations.GetDepartments();
+            return operations.GetDepartments();
         }
 
         [HttpGet("names")]
         public string[] DepartmenstName()
         {
-            return Operations.GetDepartmentNames();
+            return operations.GetDepartmentNames();
             
         }
 
@@ -28,7 +29,7 @@ namespace MoveReactApp.Server.Controllers
         [HttpGet("{dept}")]
         public IEnumerable<ExtensionDepts> Get(string dept)
         {
-            return Operations.GetDeptExtensions(dept);
+            return operations.GetDeptExtensions(dept);
         }
 
         // POST api/<Departments>

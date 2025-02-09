@@ -28,9 +28,9 @@ function EditToolbar(props) {
 
     let i = 0;
     if (pageSize < 0) i = rows.length;
-    else if (rows.length == (page + 1) * pageSize)
+    else if (rows?.length == (page + 1) * pageSize)
       i = (page + 1) * pageSize - 1;
-    else if (page == Math.floor(rows.length / pageSize)) i = rows.length;
+    else if (page == Math.floor(rows?.length / pageSize)) i = rows.length;
     else i = (page + 1) * pageSize - 1;
 
     const left = rows.slice(0, i);

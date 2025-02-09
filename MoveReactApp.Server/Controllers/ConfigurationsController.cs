@@ -10,11 +10,12 @@ namespace MoveReactApp.Server.Controllers
     [ApiController]
     public class ConfigurationsController : ControllerBase
     {
+        Operations operations = new();
         // GET: api/<ConfigurationsController>
         [HttpGet]
         public IEnumerable<Configuration> Get()
         {
-            return Operations.GetConfig();
+            return operations.GetConfig();
         }
 
         // GET api/<ConfigurationsController>/5

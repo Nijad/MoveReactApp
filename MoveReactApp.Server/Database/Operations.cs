@@ -3,10 +3,10 @@ using System.Data;
 
 namespace MoveReactApp.Server.Database
 {
-    public static class Operations
+    public  class Operations
     {
-        private static readonly DB dB = new DB();
-        private static string DicrectionConvert(int direnction)
+        private  readonly DB dB = new DB();
+        private  string DicrectionConvert(int direnction)
         {
             switch (direnction)
             {
@@ -21,7 +21,7 @@ namespace MoveReactApp.Server.Database
             }
         }
 
-        public static List<Configuration> GetConfig()
+        public  List<Configuration> GetConfig()
         {
             List<Configuration> configs = new();
             string query = "select * from config";
@@ -38,9 +38,9 @@ namespace MoveReactApp.Server.Database
             return configs;
         }
 
-        public static List<Department> GetDepartments()
+        public  List<Department> GetDepartments()
         {
-            return FakeData.Departments();
+            //return FakeData.Departments();
 
             List<Department> departments = new();
             string query = "select * from department";
@@ -61,9 +61,9 @@ namespace MoveReactApp.Server.Database
             return departments;
         }
 
-        public static List<Extension> GetExtensions()
+        public  List<Extension> GetExtensions()
         {
-            return FakeData.Extensions();
+            //return FakeData.Extensions();
 
             string query = "select * from extension";
             DataTable dt = dB.ExecuteReader(query);
@@ -83,9 +83,9 @@ namespace MoveReactApp.Server.Database
             return extensions;
         }
 
-        public static string[] GetExtensionNames()
+        public  string[] GetExtensionNames()
         {
-            return FakeData.Extensions().Select(x => x.Ext).ToArray();
+            //return FakeData.Extensions().Select(x => x.Ext).ToArray();
 
             string query = "select ext from extension";
             DataTable dt = dB.ExecuteReader(query);
@@ -100,9 +100,9 @@ namespace MoveReactApp.Server.Database
             return extensions;
         }
 
-        public static Extension GetExtension(string ext)
+        public  Extension GetExtension(string ext)
         {
-            return GetExtensions().Where(x => x.Ext == ext).FirstOrDefault();
+            //return GetExtensions().Where(x => x.Ext == ext).FirstOrDefault();
 
             Extension extension = new();
             string query = $"select * from extension where ext = '{ext}'";
@@ -113,13 +113,13 @@ namespace MoveReactApp.Server.Database
                 extension.Program = dt.Rows[0]["program"].ToString();
                 extension.Note = dt.Rows[0]["note"].ToString();
                 extension.Enabled = dt.Rows[0]["enabled"].ToString() == "1" ? true : false;
-
+                extension.Departments = new List<ExtensionDepts>();
                 query = $"select * from dept_ext where ext = '{ext}'";
                 DataTable dt2 = dB.ExecuteReader(query);
                 if (dt2.Rows.Count > 0)
                 {
                     int i = 0;
-                    extension.Departments = new List<ExtensionDepts>();
+                    
                     foreach (DataRow dr in dt2.Rows)
                     {
                         extension.Departments.Add(
@@ -138,7 +138,7 @@ namespace MoveReactApp.Server.Database
             return extension;
         }
 
-        public static void AddExtension(Extension extension)
+        public  void AddExtension(Extension extension)
         {
             string query = "INSERT INTO `movedb`.`extension` " +
                 "(`ext`,`program`,`enabled`,`note`)" +
@@ -147,7 +147,7 @@ namespace MoveReactApp.Server.Database
             dB.ExecuteNonQuery(query);
         }
 
-        public static void UpdateExtension(string ext, Extension extension)
+        public  void UpdateExtension(string ext, Extension extension)
         {
             string query = "UPDATE `movedb`.`extension` SET " +
                 $"`ext` = '{extension.Ext}', `program` ='{extension.Program}', `enabled` = {extension.Enabled}, " +
@@ -156,13 +156,13 @@ namespace MoveReactApp.Server.Database
             dB.ExecuteNonQuery(query);
         }
 
-        public static void DeleteExtension(string ext)
+        public  void DeleteExtension(string ext)
         {
             string query = $"DELETE FROM `movedb`.`extension` WHERE `ext` =  '{ext}'";
             dB.ExecuteNonQuery(query);
         }
 
-        public static List<ExtensionDepts> GetDeptExtensions(string dept, bool enabledExt = true)
+        public  List<ExtensionDepts> GetDeptExtensions(string dept, bool enabledExt = true)
         {
             List<ExtensionDepts> extensionDepts = new();
             string query = $"select e.ext, e.program, ed.direction, e.note, e.enabled " +
@@ -184,9 +184,9 @@ namespace MoveReactApp.Server.Database
             return extensionDepts;
         }
 
-        public static List<ExtensionDepts> GetExtDepartments(string ext, bool enabledDept = true)
+        public  List<ExtensionDepts> GetExtDepartments(string ext, bool enabledDept = true)
         {
-            return FakeData.ExtensionDepts().Where(x => x.Ext == ext).ToList();
+            //return FakeData.ExtensionDepts().Where(x => x.Ext == ext).ToList();
 
             List<ExtensionDepts> extDepts = new();
             string query = $"select ed.dept, d.local_path, d.net_path, ed.direction, d.note, d.enabled " +
@@ -207,9 +207,9 @@ namespace MoveReactApp.Server.Database
             return extDepts;
         }
 
-        internal static string[] GetDepartmentNames()
+        internal  string[] GetDepartmentNames()
         {
-            return FakeData.departmentNames;
+            //return FakeData.departmentNames;
 
             string query = "select dept from department";
             DataTable dt = dB.ExecuteReader(query);
