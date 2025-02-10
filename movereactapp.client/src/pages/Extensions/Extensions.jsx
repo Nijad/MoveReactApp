@@ -55,13 +55,13 @@ function Extensions_new() {
     history.pushState(
       null,
       null,
-      `https://localhost:54785/new?ext=${extension}`
+      `https://localhost:54785/extensions?ext=${extension}`
     );
     handleExtChange(extension);
   };
 
   const handleAddNewClick = () => {
-    history.pushState(null, null, `https://localhost:54785/new`);
+    history.pushState(null, null, `https://localhost:54785/extensions`);
     handleExtChange(null);
     //add
   };
