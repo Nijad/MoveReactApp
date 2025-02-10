@@ -1,156 +1,86 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { Typography, Box, Button, Grid2 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/DeleteOutlined";
-import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Close";
-import queryString from "query-string";
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import {
-  GridRowModes,
-  DataGrid,
-  GridToolbarContainer,
-  GridActionsCellItem,
-  GridRowEditStopReasons,
-} from "@mui/x-data-grid";
-import DraggableDialog from "../../components/DraggableDialog";
+  Box,
+  Button,
+  Grid2,
+  InputBase,
+  Paper,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import ExtForm from "../../components/Extension/ExtForm";
+import queryString from "query-string";
 import { useSnackbar } from "notistack";
-import ExtensionDepartments from "./ExtensionDepartments";
+import axios from "axios";
+import Datagrid from "../../components/Extension/Datagrid";
 
-function EditToolbar(props) {
-  const { setRows, setRowModesModel } = props;
-  const handleClick = () => {
-    const id = -Math.random();
-    setRows((oldRows) => [
-      ...oldRows,
-      { id, ext: "", program: "", note: "", enabled: "", isNew: true },
-    ]);
-    setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "ext" },
-    }));
+function Extensions_new() {
+  const [ext, setExt] = useState();
+  const [extensionsList, setExtensionsList] = useState([]);
+  const [extensionDetails, setExtensionDetails] = useState({});
+  const [contentHeigh, setContentHeigh] = useState();
+  const [filter, setFilter] = useState("");
+  const [filterList, setFilterList] = useState([]);
+  const [departmentsList, setDepartmentList] = useState([]);
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleQueryString = () => {
+    // Parsing the query string from the window.location.search
+    const queries = queryString.parse(window.location.search);
+    if (queries.ext != undefined) handleExtChange(queries.ext);
   };
 
-  return (
-    <GridToolbarContainer>
-      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        Add Extension
-      </Button>
-    </GridToolbarContainer>
-  );
-}
-function Extensions() {
-  const { enqueueSnackbar } = useSnackbar();
-  const [extensions, setExtensions] = useState([]);
-  const [rows, setRows] = useState(extensions);
-  const [rowModesModel, setRowModesModel] = useState({});
-  const [ext, setExt] = useState();
-  const [open, setOpen] = useState({ id: -1, open: false });
+  const handleExtChange = (extension) => {
+    setExt(extension);
+    if (extension != null)
+      axios
+        .get(`https://localhost:7203/api/Extensions/${extension}`)
+        .then((res) => {
+          setExtensionDetails(res.data);
+        })
+        .catch((err) => {
+          enqueueSnackbar("Fetching extension details failed.", {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
+          console.log(err);
+        });
+  };
 
-  const columns = [
-    // {
-    //   field: "id",
-    //   headerName: "Id",
-    //   width: 80,
-    //   editable: true,
-    //   align: "center",
-    //   headerAlign: "center",
-    // },
-    {
-      field: "ext",
-      headerName: "Extension",
-      width: 120,
-      editable: true,
-      align: "center",
-      headerAlign: "center",
-    },
-    {
-      field: "program",
-      headerName: "Program",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      editable: true,
-    },
-    {
-      field: "note",
-      headerName: "Note",
-      width: 240,
-      editable: true,
-      align: "center",
-      headerAlign: "center",
-    },
-    {
-      field: "enabled",
-      headerName: "Enabled",
-      width: 120,
-      editable: true,
-      align: "center",
-      headerAlign: "center",
-      type: "boolean",
-    },
-    {
-      field: "actions",
-      type: "actions",
-      headerName: "Actions",
-      width: 120,
-      cellClassName: "actions",
-      getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+  const handleExtClick = (extension) => {
+    history.pushState(
+      null,
+      null,
+      `https://localhost:54785/new?ext=${extension}`
+    );
+    handleExtChange(extension);
+  };
 
-        if (isInEditMode) {
-          return [
-            <GridActionsCellItem
-              key={"save" + id}
-              icon={<SaveIcon />}
-              label="Save"
-              sx={{
-                color: "primary.main",
-              }}
-              onClick={handleSaveClick(id)}
-            />,
-            <GridActionsCellItem
-              key={"cancel" + id}
-              icon={<CancelIcon />}
-              label="Cancel"
-              className="textPrimary"
-              onClick={handleCancelClick(id)}
-              color="inherit"
-            />,
-          ];
-        }
+  const handleAddNewClick = () => {
+    history.pushState(null, null, `https://localhost:54785/new`);
+    handleExtChange(null);
+    //add
+  };
 
-        return [
-          <GridActionsCellItem
-            key={"edit" + id}
-            icon={<EditIcon />}
-            label="Edit"
-            className="textPrimary"
-            onClick={handleEditClick(id)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
-            key={"delete" + id}
-            icon={<DeleteIcon />}
-            label="Delete"
-            onClick={() => handleOpenDialog(id)}
-            //onClick={handleDeleteClick(id)}
-            color="inherit"
-          />,
-        ];
-      },
-    },
-  ];
+  const handleFilter = (e) => {
+    setFilter(e.target.value);
+    setFilterList(
+      e.target.value.length > 0
+        ? extensionsList.filter((x) => x.includes(e.target.value))
+        : extensionsList
+    );
+  };
 
-  useEffect(() => {
+  const GetExtensionNames = () => {
     axios
-      .get("https://localhost:7203/api/Extensions")
+      .get("https://localhost:7203/api/Extensions/names")
       .then((res) => {
-        setExtensions(res.data);
-        setRows(res.data);
+        setExtensionsList(res.data);
+        setFilterList(res.data);
         handleQueryString();
       })
       .catch((err) => {
@@ -161,54 +91,16 @@ function Extensions() {
         });
         console.log(err);
       });
-  }, []);
-
-  const handleQueryString = () => {
-    // Parsing the query string from the window.location.search
-    const queries = queryString.parse(window.location.search);
-    if (queries.ext != undefined) setExt(queries.ext);
   };
 
-  const handleOpenDialog = (id) => {
-    const row = rows.find((r) => r.id == id);
-    setExt(row.ext);
-    setOpen({ id: id, open: true });
-  };
-
-  const handleRowEditStop = (params, event) => {
-    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-      event.defaultMuiPrevented = true;
-    }
-  };
-
-  const handleEditClick = (id) => () => {
-    setRowModesModel({
-      ...rowModesModel,
-      [id]: { mode: GridRowModes.Edit },
-    });
-  };
-
-  const handleSaveClick = (id) => () => {
-    setRowModesModel({
-      ...rowModesModel,
-      [id]: { mode: GridRowModes.View },
-    });
-  };
-
-  const handleDeleteClick = (id) => {
-    const deletedRow = rows.find((row) => row.id === id);
+  const GetDepartmentNames = () => {
     axios
-      .delete("https://localhost:7203/api/Extensions/" + deletedRow.ext)
-      .then((/*res*/) => {
-        setRows(rows.filter((row) => row.id !== id));
-        enqueueSnackbar("Extension " + ext + " deleted successfuly.", {
-          variant: "success",
-          anchorOrigin: { horizontal: "center", vertical: "top" },
-          autoHideDuration: 5000,
-        });
+      .get("https://localhost:7203/api/Departments/names")
+      .then((res) => {
+        setDepartmentList(res.data);
       })
       .catch((err) => {
-        enqueueSnackbar("Deleting " + ext + " failed.", {
+        enqueueSnackbar("Fetching departments failed.", {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
@@ -217,175 +109,165 @@ function Extensions() {
       });
   };
 
-  const handleCancelClick = (id) => () => {
-    setRowModesModel({
-      ...rowModesModel,
-      [id]: { mode: GridRowModes.View, ignoreModifications: true },
-    });
-
-    const editedRow = rows.find((row) => row.id === id);
-    if (editedRow.isNew) {
-      setRows(rows.filter((row) => row.id !== id));
-    }
-  };
-
-  const processRowUpdate = (newRow) => {
-    const updatedRow = { ...newRow, isNew: false };
-    setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    //here send data to server
-    newRow.id < 0
-      ? axios
-          .post(
-            "https://localhost:7203/api/Extensions",
-            {
-              id: newRow.id,
-              ext: newRow.ext,
-              program: newRow.program,
-              note: newRow.note,
-              enabled: newRow.enabled == "" ? false : true,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          )
-          .then((res) => {
-            enqueueSnackbar("Extension " + newRow.ext + " added successfuly.", {
-              variant: "success",
-              anchorOrigin: { horizontal: "center", vertical: "top" },
-              autoHideDuration: 5000,
-            });
-            setRows(res.data);
-          })
-          .catch((err) => {
-            enqueueSnackbar("Adding " + ext + " failed.", {
-              variant: "error",
-              anchorOrigin: { horizontal: "center", vertical: "top" },
-              autoHideDuration: 5000,
-            });
-            const editedRow = rows.find((row) => row.id === newRow.id);
-            if (editedRow.isNew)
-              setRows(rows.filter((row) => row.id !== newRow.id));
-            console.log(err);
-          })
-      : axios
-          .put(
-            "https://localhost:7203/api/Extensions/" + ext,
-            {
-              id: newRow.id,
-              ext: newRow.ext,
-              program: newRow.program,
-              note: newRow.note,
-              enabled: newRow.enabled == "" ? false : true,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          )
-          .then((res) => {
-            enqueueSnackbar(
-              "Extension " + newRow.ext + " updated successfuly.",
-              {
-                variant: "success",
-                anchorOrigin: { horizontal: "center", vertical: "top" },
-                autoHideDuration: 5000,
-              }
-            );
-            setRows(res.data);
-          })
-          .catch((err) => {
-            enqueueSnackbar("Updating " + ext + " failed.", {
-              variant: "error",
-              anchorOrigin: { horizontal: "center", vertical: "top" },
-              autoHideDuration: 5000,
-            });
-            setRows(rows);
-            console.log(err);
-          });
-    return updatedRow;
-  };
-
-  const handleClick = (newRow) => {
-    setExt(newRow.row.ext);
-  };
-
-  const handleProcessRowUpdateError = (error) => {
-    console.log(error);
-  };
-
-  const handleRowModesModelChange = (newRowModesModel) => {
-    setRowModesModel(newRowModesModel);
-  };
+  useEffect(() => {
+    GetExtensionNames();
+    GetDepartmentNames();
+    const content = document.getElementById("sidebar");
+    const y = content?.getBoundingClientRect().y;
+    setContentHeigh(y);
+  }, []);
 
   return (
-    <div>
-      <DraggableDialog
-        title="Delete Extension"
-        msg={`Are you sure to delete ${ext} extension?`}
-        yesTitle="Delete"
-        cancelTitle="Cancel"
-        open={open}
-        setOpen={setOpen}
-        yesFunction={handleDeleteClick}
-        fullWidth={true}
-        maxWidth="sm"
-      />
-
-      <Grid2 container spacing={2}>
-        <Grid2 size={{ md: 12, lg: 6 }} minWidth={642.5}>
-          <Typography variant="h4">Extensions</Typography>
-          <Box
+    <Grid2
+      container
+      direction="row"
+      columns={100}
+      minHeight="calc(100vh - 64px)"
+    >
+      <Grid2
+        container
+        direction="column"
+        size={{ md: 25, lg: 18, xl: 15 }}
+        bgcolor="#1976d2"
+      >
+        <Grid2
+          height="100px"
+          borderBottom="1px solid white"
+          display="flex"
+          flexDirection="column"
+          paddingX={2}
+          alignItems="center"
+          sx={{ justifyContent: "space-evenly" }}
+        >
+          <Button
             sx={{
-              height: 500,
+              color: "#1976d2",
+              backgroundColor: "white",
               width: "100%",
-              "& .actions": {
-                color: "text.secondary",
-              },
-              "& .textPrimary": {
-                color: "text.primary",
-              },
+            }}
+            size="small"
+            onClick={() => handleAddNewClick()}
+          >
+            Add New Extension
+          </Button>
+          <Paper
+            component="form"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              width: "100%",
             }}
           >
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              editMode="row"
-              rowModesModel={rowModesModel}
-              onRowModesModelChange={handleRowModesModelChange}
-              onProcessRowUpdateError={handleProcessRowUpdateError}
-              onRowEditStop={handleRowEditStop}
-              processRowUpdate={processRowUpdate}
-              slots={{ toolbar: EditToolbar }}
-              slotProps={{
-                toolbar: { setRows, setRowModesModel },
-              }}
-              onRowClick={handleClick}
-              pageSizeOptions={[5, 10, 25, 100, { value: -1, label: "All" }]}
+            <ManageSearchIcon sx={{ ml: 1, color: "#1976d2" }} />
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              placeholder="filter"
+              inputProps={{ "aria-label": "filter extension" }}
+              value={filter}
+              onChange={handleFilter}
             />
-          </Box>
+          </Paper>
         </Grid2>
-        <Grid2 size={{ md: 12, lg: 6 }} minWidth={642.5}>
-          <Typography variant="h4">{ext} Departments</Typography>
-          {ext != undefined ? (
-            <ExtensionDepartments extension={ext} />
-          ) : (
+        <Grid2
+          id="sidebar"
+          sx={{
+            direction: "rtl",
+            overflowY: "auto",
+            height: `calc(100vh - ${contentHeigh}px)`,
+          }}
+        >
+          {filterList.map((e, index) => (
             <Box
-              sx={{ border: "1px solid #e0e0e0", borderRadius: 1 }}
-              height={500}
-              alignContent="center"
+              key={index}
+              textAlign="center"
+              marginX={2}
+              marginY={1}
+              borderRadius={1}
+              bgcolor="white"
+              color="#1976d2"
+              boxShadow="10"
+              paddingY={0.5}
+              onClick={() => handleExtClick(e)}
+              sx={{ cursor: "pointer" }}
             >
-              <Typography variant="h4" color="#ababab" align="center">
-                Select Extension
-              </Typography>
+              <Typography sx={{ fontWeight: 500 }}>{e}</Typography>
             </Box>
-          )}
+          ))}
         </Grid2>
       </Grid2>
-    </div>
+      <Grid2
+        size="grow"
+        //size={{ md: 75, lg: 82, xl: 85 }}
+        // sx={{
+        //   width: { md: "100%", lg: "70%" },
+        //   marginX: "auto",
+        // }}
+        container
+        direction="column"
+        margin={2}
+        spacing={2}
+      >
+        <Grid2 id="head">
+          <Box borderRadius={1}>
+            {ext === undefined ? (
+              <span></span>
+            ) : ext === null ? (
+              <>
+                <Typography fontWeight="600">Extension Details</Typography>
+                <ExtForm
+                  isNew={true}
+                  ext={null}
+                  enabled={false}
+                  note={null}
+                  program={null}
+                  setExt={setExt}
+                  setExtensionsList={setExtensionsList}
+                  setFilterList={setFilterList}
+                />
+              </>
+            ) : (
+              <>
+                <Typography fontWeight="600">Extension Details</Typography>
+                <ExtForm
+                  isNew={false}
+                  ext={extensionDetails.ext}
+                  enabled={extensionDetails.enabled}
+                  note={extensionDetails.note}
+                  program={extensionDetails.program}
+                  setExt={setExt}
+                  extensionsList={extensionsList}
+                  setExtensionsList={setExtensionsList}
+                  setFilterList={setFilterList}
+                />
+              </>
+            )}
+          </Box>
+        </Grid2>
+        <Grid2>
+          <Box>
+            {ext === undefined ? (
+              <Box
+                textAlign="center"
+                alignContent="center"
+                height="calc(100vh - 128px)"
+                color="lightgray"
+              >
+                <Typography fontSize={48}>Select Extension</Typography>
+                <Typography fontSize={48}>or Add New One</Typography>
+              </Box>
+            ) : ext !== null ? (
+              <>
+                <Typography fontWeight="600">Extension Departments</Typography>
+                <Datagrid extension={ext} departmentsList={departmentsList} />
+              </>
+            ) : (
+              <></>
+            )}
+          </Box>
+        </Grid2>
+      </Grid2>
+    </Grid2>
   );
 }
 
-export default Extensions;
+export default Extensions_new;
