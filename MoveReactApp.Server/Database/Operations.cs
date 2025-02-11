@@ -2,6 +2,7 @@
 using MySqlConnector;
 using System.Data;
 using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MoveReactApp.Server.Database
 {
@@ -171,26 +172,27 @@ namespace MoveReactApp.Server.Database
             dB.ExecuteNonQuery(query);
         }
 
-        public List<ExtensionDepts> GetDeptExtensions(string dept, bool enabledExt = true)
+        public List<ExtensionDepts> GetDeptExtensions(string dept)
         {
-            List<ExtensionDepts> extensionDepts = new();
-            string query = $"select e.ext, e.program, ed.direction, e.note, e.enabled " +
-                $"from extension as e, dept_ext as ed, department as d " +
-                $"where e.ext = ed.ext and ed.dept = d.dept and d.dept = '{dept}'";
-            query += enabledExt ? $" and e.enabled = 1" : "";
+            List<ExtensionDepts> extDepts = new();
+            string query = $"select * from dept_ext where dept = '{dept}'";
             DataTable dt = dB.ExecuteReader(query);
+            int i = 0;
+
             foreach (DataRow dr in dt.Rows)
             {
-                ExtensionDepts ext = new()
-                {
-                    Ext = dr["ext"].ToString(),
-                    Department = dr["department"].ToString(),
-                    Direction = DirectionConvert(int.Parse(dr["direction"].ToString())),
-                };
-
-                extensionDepts.Add(ext);
+                extDepts.Add(
+                    new ExtensionDepts()
+                    {
+                        Department = dept,
+                        Direction = DirectionConvert(int.Parse(dr["direction"].ToString())),
+                        Ext = dr["ext"].ToString(),
+                        Id = i
+                    }
+                );
+                i++;
             }
-            return extensionDepts;
+            return extDepts;
         }
 
         public List<ExtensionDepts> GetExtDepartments(string ext)
@@ -259,7 +261,7 @@ namespace MoveReactApp.Server.Database
                 department.Enabled= dt.Rows[0]["enabled"].ToString() == "1" ? true : false;
                 department.NetPath = dt.Rows[0]["net_path"].ToString();
                 department.LocalPath = dt.Rows[0]["local_path"].ToString();
-                department.Extensions = new List<ExtensionDepts>();
+                department.Extensions = GetDeptExtensions(dept);
             }
 
             return department;

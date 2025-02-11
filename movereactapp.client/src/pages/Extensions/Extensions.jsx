@@ -16,7 +16,7 @@ import { useSnackbar } from "notistack";
 import axios from "axios";
 import Datagrid from "../../components/Extension/Datagrid";
 
-function Extensions_new() {
+function Extensions() {
   const [ext, setExt] = useState();
   const [extensionsList, setExtensionsList] = useState([]);
   const [extensionDetails, setExtensionDetails] = useState({});
@@ -270,4 +270,4 @@ function Extensions_new() {
   );
 }
 
-export default Extensions_new;
+export default Extensions;

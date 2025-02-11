@@ -14,8 +14,9 @@ import queryString from "query-string";
 import { useSnackbar } from "notistack";
 import axios from "axios";
 import DeptForm from "../../components/Department/DeptForm";
+import Datagrid from "../../components/Department/Datagrid";
 
-function Extensions_new() {
+function Departemnts() {
   const [dept, setDept] = useState();
   const [extensionsList, setExtensionsList] = useState([]);
   const [departmentsList, setDepartmentsList] = useState([]);
@@ -261,7 +262,7 @@ function Extensions_new() {
             ) : dept !== null ? (
               <>
                 <Typography fontWeight="600">Department Extensions</Typography>
-                {/* <Datagrid extension={ext} departmentsList={departmentsList} /> */}
+                <Datagrid department={dept} extensionsList={extensionsList} />
               </>
             ) : (
               <></>
@@ -273,4 +274,4 @@ function Extensions_new() {
   );
 }
 
-export default Extensions_new;
+export default Departemnts;

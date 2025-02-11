@@ -40,7 +40,7 @@ function EditToolbar(props) {
       left.concat(
         {
           id,
-          department: "",
+          extension: "",
           direction: "",
           isNew: true,
         },
@@ -50,24 +50,24 @@ function EditToolbar(props) {
 
     setRowModesModel((oldModel) => ({
       ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "department" },
+      [id]: { mode: GridRowModes.Edit, fieldToFocus: "extension" },
     }));
   };
 
   return (
     <GridToolbarContainer>
       <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        Add Department
+        Add Extension
       </Button>
     </GridToolbarContainer>
   );
 }
 
-function Datagrid({ extension, departmentsList }) {
+function Datagrid({ department, extensionsList }) {
   const { enqueueSnackbar } = useSnackbar();
   const [rows, setRows] = useState([]);
   const [rowModesModel, setRowModesModel] = useState({});
-  const [dept, setDept] = useState();
+  const [ext, setExt] = useState();
   const [open, setOpen] = useState(false);
   const [contentHeigh, setContentHeigh] = useState();
   const [page, setPage] = useState(0);
@@ -84,14 +84,14 @@ function Datagrid({ extension, departmentsList }) {
     //   headerAlign: "center",
     // },
     {
-      field: "department",
-      headerName: "Deptartment",
+      field: "ext",
+      headerName: "Extension",
       width: 220,
       editable: true,
       align: "center",
       headerAlign: "center",
       type: "singleSelect",
-      valueOptions: departmentsList,
+      valueOptions: extensionsList,
       flex: 2,
     },
     {
@@ -152,7 +152,7 @@ function Datagrid({ extension, departmentsList }) {
             icon={<ArrowOutwardIcon />}
             label="go"
             className="textPrimary"
-            onClick={() => handleGoDepartment(id)}
+            onClick={() => handleGoExtension(id)}
             color="inherit"
           />,
           <GridActionsCellItem
@@ -178,9 +178,9 @@ function Datagrid({ extension, departmentsList }) {
   useEffect(() => {
     if (pageSize == 0) setPageSize(100);
     axios
-      .get(`https://localhost:7203/api/Extensions/${extension}`)
+      .get(`https://localhost:7203/api/Departments/${department}`)
       .then((res) => {
-        setRows(res.data.departments);
+        setRows(res.data.extensions);
       })
       .catch((err) => {
         enqueueSnackbar("Fetching extensions failed.", {
@@ -194,19 +194,19 @@ function Datagrid({ extension, departmentsList }) {
     const content = document.getElementById("content");
     const y = content?.getBoundingClientRect().y;
     setContentHeigh(y);
-  }, [enqueueSnackbar, extension]);
+  }, [enqueueSnackbar, department]);
 
-  const handleGoDepartment = (id) => {
+  const handleGoExtension = (id) => {
     const row = rows.find((r) => r.id == id);
     window.open(
-      `https://localhost:54785/departments?dept=${row.department}`,
+      `https://localhost:54785/extensions?dept=${row.extension}`,
       "_self"
     );
   };
 
   const handleOpenDialog = (id) => {
     const row = rows.find((r) => r.id == id);
-    setDept(row.department);
+    setExt(row.extension);
     setOpen(true);
     setModalData(id);
   };
@@ -235,12 +235,12 @@ function Datagrid({ extension, departmentsList }) {
     const deletedRow = rows.find((row) => row.id === id);
     axios
       .delete(
-        `https://localhost:7203/api/ExtDept/${extension}/${deletedRow.department}`
+        `https://localhost:7203/api/ExtDept/${deletedRow.extension}/${department}`
       )
       .then((/*res*/) => {
         setRows(rows.filter((row) => row.id !== id));
         enqueueSnackbar(
-          `Unmap ${extension} and ${deletedRow.department} successfuly`,
+          `Unmap ${department} and ${deletedRow.extension} successfuly`,
           {
             variant: "success",
             anchorOrigin: { horizontal: "center", vertical: "top" },
@@ -250,7 +250,7 @@ function Datagrid({ extension, departmentsList }) {
       })
       .catch((err) => {
         enqueueSnackbar(
-          `Unmapping ${extension} and ${deletedRow.department} failed.`,
+          `Unmapping ${department} and ${deletedRow.extension} failed.`,
           {
             variant: "error",
             anchorOrigin: { horizontal: "center", vertical: "top" },
@@ -280,21 +280,21 @@ function Datagrid({ extension, departmentsList }) {
     if (newRow.id < 0) {
       console.log("add ext dept :", {
         Id: newRow.id,
-        Ext: extension,
-        Department: newRow.department,
+        Ext: newRow.extension,
+        Department: department,
         Direction: newRow.direction,
       });
 
       axios
-        .post(`https://localhost:7203/api/ExtDept/ext`, {
+        .post(`https://localhost:7203/api/ExtDept/dept`, {
           id: newRow.id,
-          ext: extension,
-          department: newRow.department,
+          ext: newRow.extension,
+          department: department,
           direction: newRow.direction,
         })
         .then((res) => {
           enqueueSnackbar(
-            `Extension ${extension} and department ${newRow.department} mapped successfuly.`,
+            `Department ${department} and extension ${newRow.extension} mapped successfuly.`,
             {
               variant: "success",
               anchorOrigin: { horizontal: "center", vertical: "top" },
@@ -305,7 +305,7 @@ function Datagrid({ extension, departmentsList }) {
         })
         .catch((err) => {
           enqueueSnackbar(
-            `Mapping ${extension} and ${newRow.department} failed.`,
+            `Mapping ${department} and ${newRow.extension} failed.`,
             {
               variant: "error",
               anchorOrigin: { horizontal: "center", vertical: "top" },
@@ -317,30 +317,28 @@ function Datagrid({ extension, departmentsList }) {
             setRows(rows.filter((row) => row.id !== newRow.id));
           console.log(err);
         });
-    } else if (newRow.department == originalRow.department)
+    } else if (newRow.extension == originalRow.extension)
       axios
         .put(
-          `https://localhost:7203/api/ExtDept/${extension}`,
+          `https://localhost:7203/api/ExtDept/${department}`,
           {
-            Department: newRow.department,
-            LocalPath: newRow.localPath,
-            NetPath: newRow.netPath,
+            Ext: newRow.extnesion,
+            Program: newRow.program,
             Direction: newRow.direction,
             Note: newRow.note,
             Enabled: newRow.Enabled,
           },
           {
-            Department: newRow.department,
-            LocalPath: "",
-            NetPath: "",
+            Ext: newRow.extnesion,
+            Program: "",
             Direction: newRow.direction,
             Note: "",
-            Enabled: true,
+            Enabled: newRow.Enabled,
           }
         )
         .then((res) => {
           enqueueSnackbar(
-            `Extension ${extension} mapped department ${newRow.department} updated successfuly.`,
+            `Department ${department} mapped extension ${newRow.extension} updated successfuly.`,
             {
               variant: "success",
               anchorOrigin: { horizontal: "center", vertical: "top" },
@@ -351,7 +349,7 @@ function Datagrid({ extension, departmentsList }) {
         })
         .catch((err) => {
           enqueueSnackbar(
-            `updating mapped ${extension} and ${newRow.department} failed.`,
+            `updating mapped ${department} and ${newRow.extension} failed.`,
             {
               variant: "error",
               anchorOrigin: { horizontal: "center", vertical: "top" },
@@ -363,7 +361,7 @@ function Datagrid({ extension, departmentsList }) {
         });
     else {
       enqueueSnackbar(
-        `It is not allowed to edit department name. You can only add and delete departmens.`,
+        `It is not allowed to edit extension name. You can only add and delete departmens.`,
         {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
@@ -377,7 +375,7 @@ function Datagrid({ extension, departmentsList }) {
   };
 
   const handleClick = (newRow) => {
-    setDept(newRow.row.department);
+    setExt(newRow.row.extension);
   };
 
   const handleProcessRowUpdateError = (error) => {
@@ -397,7 +395,7 @@ function Datagrid({ extension, departmentsList }) {
     <div>
       <DraggableDialog
         title="Unmapping Department"
-        msg={`Are you sure to unmap ${extension} and ${dept}?`}
+        msg={`Are you sure to unmap ${department} and ${ext}?`}
         yesTitle="Delete"
         cancelTitle="Cancel"
         open={open}

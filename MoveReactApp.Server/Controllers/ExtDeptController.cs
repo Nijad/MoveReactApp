@@ -43,8 +43,8 @@ namespace MoveReactApp.Server.Controllers
         //}
 
         // POST api/<ExtDeptController>
-        [HttpPost]
-        public IEnumerable<ExtensionDepts> Post([FromBody] ExtensionDepts extensionDepts)
+        [HttpPost("{from}")]
+        public IEnumerable<ExtensionDepts> Post(string from, [FromBody] ExtensionDepts extensionDepts)
         {
             //extensionDepts.Add(new ExtensionDepts()
             //{
@@ -54,7 +54,13 @@ namespace MoveReactApp.Server.Controllers
             //});
             //return extensionDepts;
             operations.AddExtDept(extensionDepts);
-            return operations.GetExtDepartments(extensionDepts.Ext);
+            if (from == "ext")
+                return operations.GetExtDepartments(extensionDepts.Ext);
+
+            if (from == "dept")
+                return operations.GetDeptExtensions(extensionDepts.Department);
+
+            return new List<ExtensionDepts>();
         }
 
         // PUT api/<ExtDeptController>/5
