@@ -14,16 +14,16 @@ import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 import DraggableDialog from "../common/DraggableDialog";
 
-function ExtForm({
+function DeptForm({
   isNew,
-  ext,
-  program,
-  note,
+  dept,
   enabled,
+  note,
+  localPath,
+  netPath,
+  setDept,
+  setDepartmentsList,
   setFilterList,
-  setExt,
-  extensionsList,
-  setExtensionsList,
 }) {
   const [editable, setEditable] = useState(false);
   const [isNewRec, setIsNewRec] = useState(isNew);
@@ -62,21 +62,21 @@ function ExtForm({
 
   const handleAddNewExtension = (data) => {
     axios
-      .post("https://localhost:7203/api/Extensions", {
+      .post("https://localhost:7203/api/Departments", {
         ...data,
         Departments: [],
       })
       .then((res) => {
-        setExt(data.ext);
+        setDept(data.ext);
         setIsNewRec(false);
         setEditable(false);
-        setExtensionsList(res.data);
+        setDepartmentsList(res.data);
         setFilterList(res.data);
 
         history.pushState(
           null,
           null,
-          `https://localhost:54785/Extensions?ext=${data.ext}`
+          `https://localhost:54785/departments?dept=${data.dept}`
         );
         enqueueSnackbar(`Extension ${data.ext} added successfuly.`, {
           variant: "success",
@@ -86,7 +86,7 @@ function ExtForm({
         //handleExtClick(data.ext);
       })
       .catch((err) => {
-        enqueueSnackbar(`Adding new extension ${data.ext} failed.`, {
+        enqueueSnackbar(`Adding new department ${data.dept} failed.`, {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
@@ -97,14 +97,14 @@ function ExtForm({
 
   const handleUpdateExtension = (data) => {
     axios
-      .put(`https://localhost:7203/api/Extensions/${ext}`, {
+      .put(`https://localhost:7203/api/department/${dept}`, {
         ...data,
-        Departments: [],
+        Extensions: [],
       })
       .then((res) => {
         setEditable(false);
 
-        enqueueSnackbar(`Extension ${ext} updated successfuly.`, {
+        enqueueSnackbar(`Department ${dept} updated successfuly.`, {
           variant: "success",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
@@ -112,7 +112,7 @@ function ExtForm({
         //handleExtClick(data.ext);
       })
       .catch((err) => {
-        enqueueSnackbar(`Updating extension ${ext} failed.`, {
+        enqueueSnackbar(`Updating department ${dept} failed.`, {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
@@ -126,8 +126,8 @@ function ExtForm({
   };
 
   const handleOpenDeleteDialog = () => {
-    setTitle("Delete Extension");
-    setMsg(`Are you sure to delete ${ext}.`);
+    setTitle("Delete Department");
+    setMsg(`Are you sure to delete ${dept}.`);
     setYesTitle("Delete");
     setCancelTitle("Cancel");
     setYesFunction(() => handleDelete);
@@ -135,8 +135,8 @@ function ExtForm({
   };
 
   const handleOpenUpdateDialog = (data) => {
-    setTitle("Update Extension");
-    setMsg(`Are you sure to Update ${ext} information.`);
+    setTitle("Update Department");
+    setMsg(`Are you sure to Update ${dept} information.`);
     setYesTitle("Update");
     setCancelTitle("Cancel");
     setYesFunction(() => handleUpdateExtension);
@@ -147,22 +147,22 @@ function ExtForm({
   const handleDelete = () => {
     try {
       axios
-        .delete(`https://localhost:7203/api/Extensions/${ext}`)
+        .delete(`https://localhost:7203/api/Departments/${dept}`)
         .then((res) => {
           //setFilterList(res.data);
-          setExtensionsList(extensionsList.filter((x) => x != ext));
-          setFilterList(extensionsList.filter((x) => x != ext));
-          setExt(undefined);
-          history.pushState(null, null, `https://localhost:54785/Extensions`);
+          setDepartmentsList(setDepartmentsList.filter((x) => x != dept));
+          setFilterList(setDepartmentsList.filter((x) => x != dept));
+          setDept(undefined);
+          history.pushState(null, null, `https://localhost:54785/Departments`);
 
-          enqueueSnackbar(`Extension ${ext} deleted successfuly.`, {
+          enqueueSnackbar(`Extension ${dept} deleted successfuly.`, {
             variant: "success",
             anchorOrigin: { horizontal: "center", vertical: "top" },
             autoHideDuration: 5000,
           });
         })
         .catch((err) => {
-          enqueueSnackbar("Deleteing extensions failed.", {
+          enqueueSnackbar("Deleteing departments failed.", {
             variant: "error",
             anchorOrigin: { horizontal: "center", vertical: "top" },
             autoHideDuration: 5000,
@@ -177,15 +177,21 @@ function ExtForm({
   };
 
   const handleCancel = () => {
-    if (isNewRec) setExt(undefined);
+    if (isNewRec) setDept(undefined);
     reset();
     setEditable(false);
   };
 
   useEffect(() => {
-    reset({ ext: ext, program: program, note: note, enabled: enabled });
+    reset({
+      dept: dept,
+      netPath: netPath,
+      localPath: localPath,
+      note: note,
+      enabled: enabled,
+    });
     setIsNewRec(isNew);
-  }, [isNew, ext, program, note, enabled, reset]);
+  }, [isNew, dept, netPath, localPath, note, enabled, reset]);
 
   return (
     <form /*onSubmit={handleSubmit(onSubmit)}*/>
@@ -201,26 +207,36 @@ function ExtForm({
         borderRadius={1}
       >
         <Grid2
-          size={{ sm: 12, md: 6 }}
+          size={{ sm: 12, md: 12 }}
           display="flex"
           container
           direction="column"
         >
           <TextField
-            {...register("ext", { required: "Extension is required." })}
+            {...register("dept", { required: "Dept is required." })}
             size="small"
             fullWidth
-            label="Extension"
+            label="Department"
             disabled={!isNewRec && !editable}
           />
         </Grid2>
 
         <Grid2 size={{ sm: 12, md: 6 }} display="flex">
           <TextField
-            {...register("program")}
+            {...register("localPath", { required: "Local path is required." })}
             size="small"
             fullWidth
-            label="Program"
+            label="Local Path"
+            disabled={!isNewRec && !editable}
+          />
+        </Grid2>
+
+        <Grid2 size={{ sm: 12, md: 6 }} display="flex">
+          <TextField
+            {...register("netPath", { required: "Net Path is required." })}
+            size="small"
+            fullWidth
+            label="Net Path"
             disabled={!isNewRec && !editable}
           />
         </Grid2>
@@ -284,9 +300,21 @@ function ExtForm({
             {errors.root.message}
           </Box>
         )}
-        {errors.ext && (
+        {errors.dept && (
           <Box color="red" display="">
-            {errors.ext.message}
+            {errors.dept.message}
+          </Box>
+        )}
+
+        {errors.localPath && (
+          <Box color="red" display="">
+            {errors.localPath.message}
+          </Box>
+        )}
+
+        {errors.netPath && (
+          <Box color="red" display="">
+            {errors.netPath.message}
           </Box>
         )}
       </Grid2>
@@ -307,4 +335,4 @@ function ExtForm({
   );
 }
 
-export default ExtForm;
+export default DeptForm;

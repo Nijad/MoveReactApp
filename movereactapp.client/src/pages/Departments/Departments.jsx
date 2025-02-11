@@ -10,36 +10,34 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import ExtForm from "../../components/Extension/ExtForm";
 import queryString from "query-string";
 import { useSnackbar } from "notistack";
 import axios from "axios";
-import Datagrid from "../../components/Extension/Datagrid";
+import DeptForm from "../../components/Department/DeptForm";
 
 function Extensions_new() {
-  const [ext, setExt] = useState();
+  const [dept, setDept] = useState();
   const [extensionsList, setExtensionsList] = useState([]);
-  const [extensionDetails, setExtensionDetails] = useState({});
+  const [departmentsList, setDepartmentsList] = useState([]);
+  const [departmentDetails, setDepartmentDetails] = useState({});
   const [contentHeigh, setContentHeigh] = useState();
   const [filter, setFilter] = useState("");
   const [filterList, setFilterList] = useState([]);
-  const [departmentsList, setDepartmentList] = useState([]);
-
   const { enqueueSnackbar } = useSnackbar();
 
   const handleQueryString = () => {
     // Parsing the query string from the window.location.search
     const queries = queryString.parse(window.location.search);
-    if (queries.ext != undefined) handleExtChange(queries.ext);
+    if (queries.dept != undefined) handleDeptChange(queries.dept);
   };
 
-  const handleExtChange = (extension) => {
-    setExt(extension);
-    if (extension != null)
+  const handleDeptChange = (department) => {
+    setDept(department);
+    if (department != null)
       axios
-        .get(`https://localhost:7203/api/Extensions/${extension}`)
+        .get(`https://localhost:7203/api/Departments/${department}`)
         .then((res) => {
-          setExtensionDetails(res.data);
+          setDepartmentDetails(res.data);
         })
         .catch((err) => {
           enqueueSnackbar("Fetching extension details failed.", {
@@ -51,18 +49,18 @@ function Extensions_new() {
         });
   };
 
-  const handleExtClick = (extension) => {
+  const handleDeptClick = (extension) => {
     history.pushState(
       null,
       null,
-      `https://localhost:54785/departments?ext=${extension}`
+      `https://localhost:54785/departments?dept=${extension}`
     );
-    handleExtChange(extension);
+    handleDeptChange(extension);
   };
 
   const handleAddNewClick = () => {
     history.pushState(null, null, `https://localhost:54785/departments`);
-    handleExtChange(null);
+    handleDeptChange(null);
     //add
   };
 
@@ -95,7 +93,7 @@ function Extensions_new() {
     axios
       .get("https://localhost:7203/api/Departments/names")
       .then((res) => {
-        setDepartmentList(res.data);
+        setDepartmentsList(res.data);
         setFilterList(res.data);
         handleQueryString();
       })
@@ -148,7 +146,7 @@ function Extensions_new() {
             size="small"
             onClick={() => handleAddNewClick()}
           >
-            Add New Extension
+            Add New Department
           </Button>
           <Paper
             component="form"
@@ -187,7 +185,7 @@ function Extensions_new() {
               color="#1976d2"
               boxShadow="10"
               paddingY={0.5}
-              onClick={() => handleExtClick(e)}
+              onClick={() => handleDeptClick(e)}
               sx={{ cursor: "pointer" }}
             >
               <Typography sx={{ fontWeight: 500 }}>{e}</Typography>
@@ -209,34 +207,37 @@ function Extensions_new() {
       >
         <Grid2 id="head">
           <Box borderRadius={1}>
-            {ext === undefined ? (
+            {dept === undefined ? (
               <span></span>
-            ) : ext === null ? (
+            ) : dept === null ? (
               <>
                 <Typography fontWeight="600">Extension Details</Typography>
-                <ExtForm
-                  isNew={true}
-                  ext={null}
-                  enabled={false}
-                  note={null}
-                  program={null}
-                  setExt={setExt}
-                  setExtensionsList={setExtensionsList}
-                  setFilterList={setFilterList}
-                />
+                {
+                  <DeptForm
+                    isNew={true}
+                    dept={null}
+                    enabled={false}
+                    note={null}
+                    localPath={null}
+                    netPath={null}
+                    setDept={setDept}
+                    setDepartmentsList={setDepartmentsList}
+                    setFilterList={setFilterList}
+                  />
+                }
               </>
             ) : (
               <>
-                <Typography fontWeight="600">Extension Details</Typography>
-                <ExtForm
+                <Typography fontWeight="600">Department Details</Typography>
+                <DeptForm
                   isNew={false}
-                  ext={extensionDetails.ext}
-                  enabled={extensionDetails.enabled}
-                  note={extensionDetails.note}
-                  program={extensionDetails.program}
-                  setExt={setExt}
-                  extensionsList={extensionsList}
-                  setExtensionsList={setExtensionsList}
+                  dept={departmentDetails.dept}
+                  enabled={departmentDetails.enabled}
+                  note={departmentDetails.note}
+                  localPath={departmentDetails.localPath}
+                  netPath={departmentDetails.netPath}
+                  setDept={setDept}
+                  setDepartmentsList={setDepartmentsList}
                   setFilterList={setFilterList}
                 />
               </>
@@ -245,20 +246,20 @@ function Extensions_new() {
         </Grid2>
         <Grid2>
           <Box>
-            {ext === undefined ? (
+            {dept === undefined ? (
               <Box
                 textAlign="center"
                 alignContent="center"
                 height="calc(100vh - 128px)"
                 color="lightgray"
               >
-                <Typography fontSize={48}>Select Extension</Typography>
+                <Typography fontSize={48}>Select Departemnt</Typography>
                 <Typography fontSize={48}>or Add New One</Typography>
               </Box>
-            ) : ext !== null ? (
+            ) : dept !== null ? (
               <>
-                <Typography fontWeight="600">Extension Departments</Typography>
-                <Datagrid extension={ext} departmentsList={departmentsList} />
+                <Typography fontWeight="600">Department Extensions</Typography>
+                {/* <Datagrid extension={ext} departmentsList={departmentsList} /> */}
               </>
             ) : (
               <></>

@@ -139,8 +139,6 @@ namespace MoveReactApp.Server.Database
             return extension;
         }
 
-        
-
         public void AddExtension(Extension extension)
         {
             string query = "INSERT INTO `movedb`.`extension` " +
@@ -212,7 +210,7 @@ namespace MoveReactApp.Server.Database
             return extDepts;
         }
 
-        internal string[] GetDepartmentNames()
+        public string[] GetDepartmentNames()
         {
             //return FakeData.departmentNames;
 
@@ -228,17 +226,35 @@ namespace MoveReactApp.Server.Database
             return departments;
         }
 
-        internal void AddExtDept(ExtensionDepts extensionDepts)
+        public void AddExtDept(ExtensionDepts extensionDepts)
         {
             string query = $"INSERT INTO dept_ext (dept,ext,direction) " +
                 $"VALUES ('{extensionDepts.Department}', '{extensionDepts.Ext}',{DirectionConvertInverse(extensionDepts.Direction)})";
             dB.ExecuteNonQuery(query);
         }
 
-        internal void DeleteExtDept(string ext, string dept)
+        public void DeleteExtDept(string ext, string dept)
         {
             string query = $"DELETE FROM dept_ext WHERE ext = '{ext}' AND dept = '{dept}'";
             dB.ExecuteNonQuery (query);
+        }
+
+        public Department GetDepartment(string dept)
+        {
+            Department department = new Department();
+            string query = $"select * from department where dept = '{dept}'";
+            DataTable dt = dB.ExecuteReader(query);
+            if (dt.Rows.Count > 0)
+            {
+                department.Dept = dt.Rows[0]["dept"].ToString();
+                department.Note = dt.Rows[0]["note"].ToString();
+                department.Enabled= dt.Rows[0]["enabled"].ToString() == "1" ? true : false;
+                department.NetPath = dt.Rows[0]["net_path"].ToString();
+                department.LocalPath = dt.Rows[0]["local_path"].ToString();
+                department.Extensions = new List<ExtensionDepts>();
+            }
+
+            return department;
         }
     }
 }

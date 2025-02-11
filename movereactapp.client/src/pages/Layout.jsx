@@ -9,7 +9,7 @@ import FilterIcon from "@mui/icons-material/Filter";
 import LineStyleIcon from "@mui/icons-material/LineStyle";
 import HomeIcon from "@mui/icons-material/Home";
 import { Outlet } from "react-router-dom";
-import AppBarLink from "../components/AppBarLink";
+import AppBarLink from "../components/common/AppBarLink";
 
 const Layout = () => {
   return (

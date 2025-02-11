@@ -17,7 +17,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Close";
 import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
-import DraggableDialog from "../../components/DraggableDialog";
+import DraggableDialog from "../../components/common/DraggableDialog";
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel, page, pageSize, rows } = props;

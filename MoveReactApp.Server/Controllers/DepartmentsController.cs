@@ -27,9 +27,9 @@ namespace MoveReactApp.Server.Controllers
 
         // GET api/<Departments>/5
         [HttpGet("{dept}")]
-        public IEnumerable<ExtensionDepts> Get(string dept)
+        public Department Get(string dept)
         {
-            return operations.GetDeptExtensions(dept);
+            return operations.GetDepartment(dept);
         }
 
         // POST api/<Departments>
