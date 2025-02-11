@@ -52,7 +52,7 @@ namespace MoveReactApp.Server.Database
                     NetPath = $"{dept}-netPath",
                     Note = "",
                     Extensions = allExtensions.Where(x => x.Department == dept).ToList(),
-                    RemainExtensions = allExtensions.Where(x => x.Department != dept).ToList(),
+                    //RemainExtensions = allExtensions.Where(x => x.Department != dept).ToList(),
                 });
             }
             return departments;

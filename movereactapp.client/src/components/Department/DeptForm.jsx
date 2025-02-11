@@ -23,6 +23,7 @@ function DeptForm({
   netPath,
   setDept,
   setDepartmentsList,
+  departmentsList,
   setFilterList,
 }) {
   const [editable, setEditable] = useState(false);
@@ -64,10 +65,10 @@ function DeptForm({
     axios
       .post("https://localhost:7203/api/Departments", {
         ...data,
-        Departments: [],
+        Extensions: [],
       })
       .then((res) => {
-        setDept(data.ext);
+        setDept(data.dept);
         setIsNewRec(false);
         setEditable(false);
         setDepartmentsList(res.data);
@@ -78,7 +79,7 @@ function DeptForm({
           null,
           `https://localhost:54785/departments?dept=${data.dept}`
         );
-        enqueueSnackbar(`Extension ${data.ext} added successfuly.`, {
+        enqueueSnackbar(`Extension ${data.dept} added successfuly.`, {
           variant: "success",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
@@ -96,8 +97,11 @@ function DeptForm({
   };
 
   const handleUpdateExtension = (data) => {
+    console.log(data);
+    console.log({ ...data, Extensions: [] });
+
     axios
-      .put(`https://localhost:7203/api/department/${dept}`, {
+      .put(`https://localhost:7203/api/Departments/${dept}`, {
         ...data,
         Extensions: [],
       })
@@ -150,8 +154,8 @@ function DeptForm({
         .delete(`https://localhost:7203/api/Departments/${dept}`)
         .then((res) => {
           //setFilterList(res.data);
-          setDepartmentsList(setDepartmentsList.filter((x) => x != dept));
-          setFilterList(setDepartmentsList.filter((x) => x != dept));
+          setDepartmentsList(departmentsList.filter((x) => x != dept));
+          setFilterList(departmentsList.filter((x) => x != dept));
           setDept(undefined);
           history.pushState(null, null, `https://localhost:54785/Departments`);
 
@@ -213,7 +217,7 @@ function DeptForm({
           direction="column"
         >
           <TextField
-            {...register("dept", { required: "Dept is required." })}
+            {...register("dept", { required: "Department is required." })}
             size="small"
             fullWidth
             label="Department"

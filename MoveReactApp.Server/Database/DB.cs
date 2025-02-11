@@ -89,24 +89,24 @@ namespace MoveReactApp.Server.Database
             }
         }
 
-        public MySqlCommand InsertIntoMovedFile(string name, string extension, string realExtension,
-            long size, string dept, string destination)
-        {
-            try
-            {
-                string query = "INSERT INTO `movedfiles`(`name`, `Ext`, `RealExt`, `size`, `Dept`, `Destination`) " +
-                    $"VALUES ('{name}', '{extension}', '{realExtension}', '{size}', '{dept}', '{destination}')";
-                MySqlCommand cmd = ExecuteTransaction(query);
-                return cmd;
-            }
-            catch (Exception ex)
-            {
-                string msg = "Can not write in database";
-                //Logging.SendEmail(ex, msg);
-                //Logging.LogException(ex);
-            }
-            return null;
-        }
+        //public MySqlCommand InsertIntoMovedFile(string name, string extension, string realExtension,
+        //    long size, string dept, string destination)
+        //{
+        //    try
+        //    {
+        //        string query = "INSERT INTO `movedfiles`(`name`, `Ext`, `RealExt`, `size`, `Dept`, `Destination`) " +
+        //            $"VALUES ('{name}', '{extension}', '{realExtension}', '{size}', '{dept}', '{destination}')";
+        //        MySqlCommand cmd = ExecuteTransaction(query);
+        //        return cmd;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        string msg = "Can not write in database";
+        //        //Logging.SendEmail(ex, msg);
+        //        //Logging.LogException(ex);
+        //    }
+        //    return null;
+        //}
 
     }
 }

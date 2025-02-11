@@ -223,6 +223,7 @@ function Extensions_new() {
                     setDept={setDept}
                     setDepartmentsList={setDepartmentsList}
                     setFilterList={setFilterList}
+                    departmentsList={departmentsList}
                   />
                 }
               </>
@@ -239,6 +240,7 @@ function Extensions_new() {
                   setDept={setDept}
                   setDepartmentsList={setDepartmentsList}
                   setFilterList={setFilterList}
+                  departmentsList={departmentsList}
                 />
               </>
             )}

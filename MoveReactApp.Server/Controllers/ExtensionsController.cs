@@ -46,10 +46,10 @@ namespace MoveReactApp.Server.Controllers
 
         // PUT api/<ExtensionController>/5
         [HttpPut("{ext}")]
-        public List<Extension> Put(string ext, [FromBody] Extension extension)
+        public void Put(string ext, [FromBody] Extension extension)
         {
             operations.UpdateExtension(ext, extension);
-            return operations.GetExtensions();
+            //return operations.GetExtensions();
         }
 
         // DELETE api/<ExtensionController>/5

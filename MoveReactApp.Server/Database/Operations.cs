@@ -1,5 +1,7 @@
 ﻿using MoveReactApp.Server.Models;
+using MySqlConnector;
 using System.Data;
+using System.Xml.Linq;
 
 namespace MoveReactApp.Server.Database
 {
@@ -141,18 +143,24 @@ namespace MoveReactApp.Server.Database
 
         public void AddExtension(Extension extension)
         {
+            string escapeExt = MySqlHelper.EscapeString(extension.Ext);
+            string escapeProgram = MySqlHelper.EscapeString(extension.Program);
+            string escapeNote = MySqlHelper.EscapeString(extension.Note);
             string query = "INSERT INTO `movedb`.`extension` " +
                 "(`ext`,`program`,`enabled`,`note`)" +
-                $"VALUES ('{extension.Ext}','{extension.Program}',{extension.Enabled},'{extension.Note}')";
+                $"VALUES ('{escapeExt}','{escapeProgram}',{extension.Enabled},'{escapeNote}')";
 
             dB.ExecuteNonQuery(query);
         }
 
         public void UpdateExtension(string ext, Extension extension)
         {
+            string escapeExt = MySqlHelper.EscapeString(extension.Ext);
+            string escapeProgram = MySqlHelper.EscapeString(extension.Program);
+            string escapeNote = MySqlHelper.EscapeString(extension.Note);
             string query = "UPDATE `movedb`.`extension` SET " +
-                $"`ext` = '{extension.Ext}', `program` ='{extension.Program}', `enabled` = {extension.Enabled}, " +
-                $"`note` = '{extension.Note}' WHERE `ext` = '{ext}'";
+                $"`ext` = '{escapeExt}', `program` ='{escapeProgram}', `enabled` = {extension.Enabled}, " +
+                $"`note` = '{escapeNote}' WHERE `ext` = '{ext}'";
 
             dB.ExecuteNonQuery(query);
         }
@@ -255,6 +263,37 @@ namespace MoveReactApp.Server.Database
             }
 
             return department;
+        }
+
+        internal void AddDepartment(Department department)
+        {
+            string escapedDept= MySqlHelper.EscapeString(department.Dept);
+            string escapedLocalPath= MySqlHelper.EscapeString(department.LocalPath);
+            string escapedNetPath= MySqlHelper.EscapeString(department.NetPath);
+            string escapedNote= MySqlHelper.EscapeString(department.Note);
+
+            string query = $"insert into department (dept, local_path, net_path, enabled, note) " +
+                $"values ('{escapedDept}', '{escapedLocalPath}', '{escapedNetPath}', {department.Enabled}, '{escapedNote}')";
+
+            dB.ExecuteNonQuery(query);
+        }
+
+        internal void UpdateDepartment(string dept, Department department)
+        {
+            string escapedDept = MySqlHelper.EscapeString(department.Dept);
+            string escapedLocalPath = MySqlHelper.EscapeString(department.LocalPath);
+            string escapedNetPath = MySqlHelper.EscapeString(department.NetPath);
+            string escapedNote = MySqlHelper.EscapeString(department.Note);
+
+            string query = $"update department set dept = '{escapedDept}', local_path = '{escapedLocalPath}', net_path = '{escapedNetPath}', " +
+                $"note  = '{escapedNote}', enabled = {department.Enabled} where dept = '{dept}'";
+            dB.ExecuteNonQuery(query);
+        }
+
+        internal void DeleteDepartment(string dept)
+        {
+            string query = $"delete from department where dept = '{dept}'";
+            dB.ExecuteNonQuery(query);
         }
     }
 }
