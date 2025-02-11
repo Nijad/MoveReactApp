@@ -198,15 +198,12 @@ function Datagrid({ department, extensionsList }) {
 
   const handleGoExtension = (id) => {
     const row = rows.find((r) => r.id == id);
-    window.open(
-      `https://localhost:54785/extensions?dept=${row.extension}`,
-      "_self"
-    );
+    window.open(`https://localhost:54785/extensions?ext=${row.ext}`, "_self");
   };
 
   const handleOpenDialog = (id) => {
     const row = rows.find((r) => r.id == id);
-    setExt(row.extension);
+    setExt(row.ext);
     setOpen(true);
     setModalData(id);
   };
@@ -235,7 +232,7 @@ function Datagrid({ department, extensionsList }) {
     const deletedRow = rows.find((row) => row.id === id);
     axios
       .delete(
-        `https://localhost:7203/api/ExtDept/${deletedRow.extension}/${department}`
+        `https://localhost:7203/api/ExtDept/${deletedRow.ext}/${department}`
       )
       .then((/*res*/) => {
         setRows(rows.filter((row) => row.id !== id));
@@ -250,7 +247,7 @@ function Datagrid({ department, extensionsList }) {
       })
       .catch((err) => {
         enqueueSnackbar(
-          `Unmapping ${department} and ${deletedRow.extension} failed.`,
+          `Unmapping ${department} and ${deletedRow.ext} failed.`,
           {
             variant: "error",
             anchorOrigin: { horizontal: "center", vertical: "top" },
@@ -375,7 +372,7 @@ function Datagrid({ department, extensionsList }) {
   };
 
   const handleClick = (newRow) => {
-    setExt(newRow.row.extension);
+    setExt(newRow.row.ext);
   };
 
   const handleProcessRowUpdateError = (error) => {
