@@ -65,8 +65,17 @@ namespace MoveReactApp.Server.Controllers
 
         //PUT api/<ExtDeptController>/5
         [HttpPut("{ext}/{dept}/{direction}/{from}")]
-        public void Put(string ext, string dept, string direction, string from)
+        public List<ExtensionDepts> Put(string ext, string dept, string direction, string from)
         {
+            operations.UpdateDeptExt(ext, dept, direction);
+
+            if (from == "ext")
+                return operations.GetExtDepartments(ext);
+
+            if (from == "dept")
+                return operations.GetDeptExtensions(dept);
+            
+            return new List<ExtensionDepts>();
         }
 
         // DELETE api/<ExtDeptController>/5

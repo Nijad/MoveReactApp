@@ -26,18 +26,12 @@ namespace MoveReactApp.Server.Database
 
         private int DirectionConvertInverse(string dirction)
         {
-            switch (dirction)
+            switch (dirction.ToLower())
             {
-                case "IN":
-                    return 1;
                 case "in":
                     return 1;
-                case "OUT":
-                    return 2;
                 case "out":
                     return 2;
-                case "IN/OUT":
-                    return 3;
                 case "in/out":
                     return 3;
                 default:
@@ -295,6 +289,12 @@ namespace MoveReactApp.Server.Database
         internal void DeleteDepartment(string dept)
         {
             string query = $"delete from department where dept = '{dept}'";
+            dB.ExecuteNonQuery(query);
+        }
+
+        internal void UpdateDeptExt(string ext, string dept, string direction)
+        {
+            string query = $"update dept_ext set direction = {DirectionConvertInverse(direction)} where ext = '{ext}' and dept = '{dept}'";
             dB.ExecuteNonQuery(query);
         }
     }

@@ -343,7 +343,7 @@ function Datagrid({ department, extensionsList }) {
         });
     else {
       enqueueSnackbar(
-        `It is not allowed to edit extension name. You can only add and delete departmens.`,
+        `It is not allowed to edit extension name. You can only add and delete extension.`,
         {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
