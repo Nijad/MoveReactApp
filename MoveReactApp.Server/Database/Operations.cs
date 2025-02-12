@@ -50,7 +50,8 @@ namespace MoveReactApp.Server.Database
                 {
                     Key = dr["key"].ToString(),
                     Value = dr["value"].ToString(),
-                    Note = dr["note"].ToString()
+                    Note = dr["note"].ToString(), 
+                    FieldProps = dr["field_props"].ToString()
                 });
             };
             return configs;
