@@ -314,39 +314,24 @@ function Datagrid({ department, extensionsList }) {
             setRows(rows.filter((row) => row.id !== newRow.id));
           console.log(err);
         });
-    } else if (newRow.extension == originalRow.extension)
+    } else if (newRow.ext == originalRow.ext)
       axios
         .put(
-          `https://localhost:7203/api/ExtDept/${department}`,
-          {
-            Ext: newRow.extnesion,
-            Program: newRow.program,
-            Direction: newRow.direction,
-            Note: newRow.note,
-            Enabled: newRow.Enabled,
-          },
-          {
-            Ext: newRow.extnesion,
-            Program: "",
-            Direction: newRow.direction,
-            Note: "",
-            Enabled: newRow.Enabled,
-          }
+          `https://localhost:7203/api/ExtDept/${originalRow.ext}/${department}/${newRow.direction}/dept`
         )
         .then((res) => {
           enqueueSnackbar(
-            `Department ${department} mapped extension ${newRow.extension} updated successfuly.`,
+            `Department ${department} mapped extension ${originalRow.ext} updated successfuly.`,
             {
               variant: "success",
               anchorOrigin: { horizontal: "center", vertical: "top" },
               autoHideDuration: 5000,
             }
           );
-          setRows(res.data);
         })
         .catch((err) => {
           enqueueSnackbar(
-            `updating mapped ${department} and ${newRow.extension} failed.`,
+            `updating mapped ${department} and ${originalRow.ext} failed.`,
             {
               variant: "error",
               anchorOrigin: { horizontal: "center", vertical: "top" },

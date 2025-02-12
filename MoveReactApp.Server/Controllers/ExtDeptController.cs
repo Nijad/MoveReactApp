@@ -63,11 +63,11 @@ namespace MoveReactApp.Server.Controllers
             return new List<ExtensionDepts>();
         }
 
-        // PUT api/<ExtDeptController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
+        //PUT api/<ExtDeptController>/5
+        [HttpPut("{ext}/{dept}/{direction}/{from}")]
+        public void Put(string ext, string dept, string direction, string from)
+        {
+        }
 
         // DELETE api/<ExtDeptController>/5
         [HttpDelete("{ext}/{dept}")]
