@@ -10,11 +10,51 @@ import ConfigField from "../../components/Config/ConfigField";
 function Configurations() {
   const [configs, setConfigs] = useState([]);
 
+  const data = [
+    {
+      order: 1,
+      key: "Backup_Path",
+      value:
+        "\\\\192.168.10.197\\C$Users\\khourynj\\Desktop\\test_move\\audit\\",
+      fieldProps:
+        '{"desc": "path to backup directory", "props": {}, "DataType": "text"}',
+    },
+    {
+      order: 2,
+      key: "Duration",
+      value: "5,s",
+      fieldProps:
+        '{"desc": "time duration to pause program after each loop", "child": {"desc": "time unit (second, minute, hour)", "props": {"data": [{"label": "Second", "value": "s"}, {"label": "Minute", "value": "m"}, {"label": "Hour", "value": "h"}]}, "parent": "Duration", "DataType": "select"}, "props": {"max": 59, "min": 0}, "DataType": "number"}',
+    },
+    {
+      order: 3,
+      key: "Max_File_Size",
+      value: "30,M",
+      fieldProps:
+        '{"desc": "maximum size allowed to move", "child": {"desc": "size unit (KB, MB, GB)", "props": {"data": [{"label": "KB", "value": "K"}, {"label": "MB", "value": "M"}, {"label": "GB", "value": "G"}]}, "parent": "Max_File_Size", "DataType": "select"}, "props": {"min": 0}, "DataType": "number"}',
+    },
+    {
+      order: 4,
+      key: "Admins",
+      value: "mourado,daouda",
+      fieldProps:
+        '{"desc": "windows users separated by comma \\",\\"", "props": {}, "DataType": "text"}',
+    },
+    {
+      order: 5,
+      key: "Developers",
+      value: "khourynj,saabn",
+      fieldProps:
+        '{"desc": "windows users separated by comma \\",\\"", "props": {}, "DataType": "text"}',
+    },
+  ];
+
   useEffect(() => {
     axios
       .get("https://localhost:7203/api/Configurations")
       .then((res) => {
         setConfigs(res.data);
+        console.log(res.data);
       })
       .catch((err) => {
         enqueueSnackbar("Fetching configurations failed.", {

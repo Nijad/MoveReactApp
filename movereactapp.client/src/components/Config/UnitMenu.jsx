@@ -65,6 +65,7 @@ export default function UnitMenu({ child, itemValue }) {
   };
   const handleClose = (value, label) => {
     setMenuLabel(label);
+    console.log(value, label);
 
     setAnchorEl(null);
   };
@@ -114,16 +115,13 @@ export default function UnitMenu({ child, itemValue }) {
         onClose={handleClose}
       >
         {child.props.data.map((item, index) => (
-          // <MenuItem key={index} onClick={handleClose} disableRipple>
-          //   {item.label}
-          // </MenuItem>
-          <option
+          <MenuItem
             key={index}
-            value={item.value}
             onClick={() => handleClose(item.value, item.label)}
+            disableRipple
           >
             {item.label}
-          </option>
+          </MenuItem>
         ))}
       </StyledMenu>
     </div>
