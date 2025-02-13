@@ -9,7 +9,6 @@ import ConfigField from "../../components/Config/ConfigField";
 
 function Configurations() {
   const [configs, setConfigs] = useState([]);
-  console.log(configs);
 
   useEffect(() => {
     axios
@@ -29,13 +28,17 @@ function Configurations() {
 
   return (
     <Grid2 display="flex" justifyContent="center" paddingTop={5} paddingX={5}>
-      <Card sx={{ width: { xl: "50%", lg: "75%", md: "100%" } }}>
+      <Card sx={{ width: { xl: "40%", lg: "50%", md: "75%", sm: "100%" } }}>
         <CardHeader title="Configurations" subheader="Program setup" />
         <CardContent>
           <Stack spacing={1}>
-            {configs.map((fieldInfo, index) => (
-              <ConfigField key={index} fieldInfo={fieldInfo} />
-            ))}
+            {configs.map((fieldInfo, index) =>
+              JSON.parse(fieldInfo.fieldProps).parent?.length > 0 ? (
+                <></>
+              ) : (
+                <ConfigField key={index} fieldInfo={fieldInfo} />
+              )
+            )}
           </Stack>
         </CardContent>
       </Card>

@@ -42,15 +42,15 @@ namespace MoveReactApp.Server.Database
         public List<Configuration> GetConfig()
         {
             List<Configuration> configs = new();
-            string query = "select * from config";
+            string query = "select * from config order by `order`";
             DataTable dt = dB.ExecuteReader(query);
             foreach (DataRow dr in dt.Rows)
             {
                 configs.Add(new Configuration
                 {
+                    Order = int.Parse(dr["order"].ToString()),
                     Key = dr["key"].ToString(),
                     Value = dr["value"].ToString(),
-                    Note = dr["note"].ToString(), 
                     FieldProps = dr["field_props"].ToString()
                 });
             };
