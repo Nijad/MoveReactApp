@@ -32,8 +32,8 @@ namespace MoveReactApp.Server.Controllers
         }
 
         // PUT api/<ConfigurationsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public void Put([FromBody] UpdateConfigDTO value)
         {
         }
 
