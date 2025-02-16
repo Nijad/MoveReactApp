@@ -5,6 +5,7 @@ import Extensions from "./pages/Extensions/Extensions";
 import Configurations from "./pages/Configurations/configurations";
 import NoPage from "./pages/NoPage/NoPage";
 import Index from "./pages/Index/Index";
+import Move from "./pages/Move/Move";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="Departments" element={<Departments />} />
         <Route path="Extensions" element={<Extensions />} />
         <Route path="Configurations" element={<Configurations />} />
+        <Route path="Move" element={<Move />} />
         <Route path="*" element={<NoPage />} />
       </Route>
     </Routes>

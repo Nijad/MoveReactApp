@@ -40,7 +40,11 @@ const Layout = () => {
               link="/configurations"
               icon={<SettingsIcon />}
             />
-            <AppBarLink title="MOVE" link="#" icon={<DriveFileMoveIcon />} />
+            <AppBarLink
+              title="MOVE"
+              link="/Move"
+              icon={<DriveFileMoveIcon />}
+            />
           </Stack>
         </Toolbar>
       </AppBar>
