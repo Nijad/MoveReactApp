@@ -26,6 +26,7 @@
     "react-axios": "^2.0.6",
     "react-dom": "^18.3.1",
     "react-draggable": "^4.4.6",
+    "react-folder-tree": "^5.1.1",
     "react-hook-form": "^7.54.2",
     "styled-components": "^6.1.14"
   },
