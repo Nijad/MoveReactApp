@@ -50,21 +50,21 @@ function Configurations() {
   ];
 
   useEffect(() => {
-    setConfigs(data);
-    // axios
-    //   .get("https://localhost:7203/api/Configurations")
-    //   .then((res) => {
-    //     setConfigs(res.data);
-    //     console.log(res.data);
-    //   })
-    //   .catch((err) => {
-    //     enqueueSnackbar("Fetching configurations failed.", {
-    //       variant: "error",
-    //       anchorOrigin: { horizontal: "center", vertical: "top" },
-    //       autoHideDuration: 5000,
-    //     });
-    //     console.log(err);
-    //   });
+    //setConfigs(data);
+    axios
+      .get("https://localhost:7203/api/Configurations")
+      .then((res) => {
+        setConfigs(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        enqueueSnackbar("Fetching configurations failed.", {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        console.log(err);
+      });
   }, []);
 
   return (

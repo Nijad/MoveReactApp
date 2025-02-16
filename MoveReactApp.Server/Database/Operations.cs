@@ -298,5 +298,12 @@ namespace MoveReactApp.Server.Database
             string query = $"update dept_ext set direction = {DirectionConvertInverse(direction)} where ext = '{ext}' and dept = '{dept}'";
             dB.ExecuteNonQuery(query);
         }
+
+        internal void UpdateConfig(UpdateConfigDTO value)
+        {
+            string escapedValue = MySqlHelper.EscapeString(value.Value);
+            string query = $"update config set value = '{escapedValue}' where `key` = '{value.Key}' ";
+            dB.ExecuteNonQuery(query);
+        }
     }
 }

@@ -35,6 +35,7 @@ namespace MoveReactApp.Server.Controllers
         [HttpPut]
         public void Put([FromBody] UpdateConfigDTO value)
         {
+            operations.UpdateConfig(value);
         }
 
         // DELETE api/<ConfigurationsController>/5

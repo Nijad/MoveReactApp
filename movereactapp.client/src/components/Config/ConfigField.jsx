@@ -90,16 +90,19 @@ function ConfigField({ fieldInfo }) {
             />
           )}
         </Grid2>
-        <Grid2 justifyContent="flex-end" display="flex">
-          <ButtonGroup direction="row">
-            <IconButton
-              color="primary"
-              loading={false}
-              onClick={() => handleSave()}
-            >
-              <SaveIcon />
-            </IconButton>
-          </ButtonGroup>
+        <Grid2
+          paddingTop={2}
+          size={0.75}
+          justifyContent="flex-end"
+          display="flex"
+        >
+          <IconButton
+            color="primary"
+            loading={false}
+            onClick={() => handleSave()}
+          >
+            <SaveIcon />
+          </IconButton>
         </Grid2>
       </Grid2>
       <Grid2 container>
