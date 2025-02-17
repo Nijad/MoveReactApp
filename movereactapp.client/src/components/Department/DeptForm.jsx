@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   FormControlLabel,
+  FormLabel,
   Grid2,
   Switch,
   TextField,
@@ -215,90 +216,156 @@ function DeptForm({
           display="flex"
           container
           direction="column"
+          spacing={0}
         >
+          <FormLabel
+            sx={
+              !isNewRec && !editable
+                ? { color: "darkgray" }
+                : { color: "#1976d2" }
+            }
+          >
+            Department
+          </FormLabel>
           <TextField
             {...register("dept", { required: "Department is required." })}
             size="small"
             fullWidth
-            label="Department"
             disabled={!isNewRec && !editable}
           />
         </Grid2>
 
-        <Grid2 size={{ sm: 12, md: 6 }} display="flex">
+        <Grid2
+          size={{ sm: 12, md: 6 }}
+          display="flex"
+          direction="column"
+          spacing={0}
+          container
+        >
+          <FormLabel
+            sx={
+              !isNewRec && !editable
+                ? { color: "darkgray" }
+                : { color: "#1976d2" }
+            }
+          >
+            Local Path
+          </FormLabel>
           <TextField
             {...register("localPath", { required: "Local path is required." })}
             size="small"
             fullWidth
-            label="Local Path"
             disabled={!isNewRec && !editable}
           />
         </Grid2>
 
-        <Grid2 size={{ sm: 12, md: 6 }} display="flex">
+        <Grid2
+          size={{ sm: 12, md: 6 }}
+          display="flex"
+          container
+          direction="column"
+          spacing={0}
+        >
+          <FormLabel
+            sx={
+              !isNewRec && !editable
+                ? { color: "darkgray" }
+                : { color: "#1976d2" }
+            }
+          >
+            Net Path
+          </FormLabel>
           <TextField
             {...register("netPath", { required: "Net Path is required." })}
             size="small"
             fullWidth
-            label="Net Path"
             disabled={!isNewRec && !editable}
           />
         </Grid2>
 
-        <Grid2 size={{ sm: 12, md: 6 }} display="flex">
+        <Grid2
+          size={{ sm: 12, md: 6 }}
+          display="flex"
+          container
+          direction="column"
+          spacing={0}
+        >
+          <FormLabel
+            sx={
+              !isNewRec && !editable
+                ? { color: "darkgray" }
+                : { color: "#1976d2" }
+            }
+          >
+            Note
+          </FormLabel>
           <TextField
             {...register("note")}
             size="small"
             fullWidth
-            label="Note"
             disabled={!isNewRec && !editable}
           />
         </Grid2>
+        <Grid2
+          size={{ sm: 12, md: 6 }}
+          display="flex"
+          container
+          direction="column"
+          spacing={0}
+        >
+          <FormLabel
+            sx={
+              !isNewRec && !editable
+                ? { color: "darkgray" }
+                : { color: "#1976d2" }
+            }
+          >
+            Enabled
+          </FormLabel>
+          <Grid2>
+            <Controller
+              name="enabled"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Switch
+                      {...field}
+                      checked={field.value}
+                      inputProps={{ "aria-label": "controlled" }}
+                      disabled={!isNewRec && !editable}
+                    />
+                  }
+                  label="Enabled"
+                />
+              )}
+            />
 
-        <Grid2 size={{ sm: 12, md: 6 }} display="flex">
-          <Controller
-            name="enabled"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Switch
-                    {...field}
-                    checked={field.value}
-                    inputProps={{ "aria-label": "controlled" }}
-                    disabled={!isNewRec && !editable}
-                  />
-                }
-                label="Enabled"
-              />
+            {isNewRec || editable ? (
+              <>
+                <Button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleSubmit(onSubmit)}
+                >
+                  {isSubmitting ? "Loading..." : isNewRec ? "Add" : "Update"}
+                </Button>
+                <Button type="button" onClick={() => handleCancel()}>
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button type="button" onClick={() => handleEdit()}>
+                  Edit
+                </Button>
+                <Button type="button" onClick={() => handleOpenDeleteDialog()}>
+                  Delete
+                </Button>
+              </>
             )}
-          />
-
-          {isNewRec || editable ? (
-            <>
-              <Button
-                type="button"
-                disabled={isSubmitting}
-                onClick={handleSubmit(onSubmit)}
-              >
-                {isSubmitting ? "Loading..." : isNewRec ? "Add" : "Update"}
-              </Button>
-              <Button type="button" onClick={() => handleCancel()}>
-                Cancel
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button type="button" onClick={() => handleEdit()}>
-                Edit
-              </Button>
-              <Button type="button" onClick={() => handleOpenDeleteDialog()}>
-                Delete
-              </Button>
-            </>
-          )}
+          </Grid2>
         </Grid2>
-
         {errors.root && (
           <Box color="red" display="">
             {errors.root.message}

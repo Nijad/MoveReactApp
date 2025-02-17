@@ -194,18 +194,7 @@ function Departemnts() {
           ))}
         </Grid2>
       </Grid2>
-      <Grid2
-        size="grow"
-        //size={{ md: 75, lg: 82, xl: 85 }}
-        // sx={{
-        //   width: { md: "100%", lg: "70%" },
-        //   marginX: "auto",
-        // }}
-        container
-        direction="column"
-        margin={2}
-        spacing={2}
-      >
+      <Grid2 size="grow" container direction="column" margin={2} spacing={2}>
         <Grid2 id="head">
           <Box borderRadius={1}>
             {dept === undefined ? (

@@ -13,17 +13,78 @@ namespace MoveReactApp.Server.Controllers
         Operations operations = new();
         // GET: api/<MoveController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public DirectoriesDTO Get()
         {
+            DirectoriesDTO directoriesDTO = new DirectoriesDTO() { Name = "Departments", IsOpen = true, Children = new() };
             List<Department> depts = operations.GetDepartments();
-            return ["sd","df"];
+            foreach (Department dept in depts)
+            {
+                directoriesDTO.Children.Add(new()
+                {
+                    Name = dept.Dept,
+                    IsOpen = false,
+                    Children = new()
+                    {
+                        new()
+                        {
+                            Name = "Local",
+                            IsOpen = false,
+                            Directory = dept.LocalPath,
+                            Children = GetSubDirectories(dept.LocalPath)
+                        },
+                        new()
+                        {
+                            Name = "Net",
+                            IsOpen = false,
+                            Directory = dept.NetPath,
+                            Children = GetSubDirectories(dept.NetPath)
+                        }
+                    }
+                });
+            }
+            return directoriesDTO;
+        }
+
+        private List<DirectoriesDTO>? GetSubDirectories(string directory)
+        {
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+
+            string[] directories = Directory.GetDirectories(directory);
+
+            List<DirectoriesDTO> directoriesDTOs = new();
+
+            foreach (string d in directories)
+            {
+                directoriesDTOs.Add(new()
+                {
+                    Directory = d,
+                    IsOpen = false,
+                    Name = d.Split('\\')[d.Split('\\').Length - 1],
+                    Children = GetSubDirectories(d)
+                });
+            }
+            return directoriesDTOs;
         }
 
         // GET api/<MoveController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpPost("GetFiles")]
+        public List<FileInfoDTO> GetFiles([FromBody] DirectoryDTO directory)
         {
-            return "value";
+            DirectoryInfo directoryInfo = new DirectoryInfo(directory.Directory);
+            FileInfo[] files = directoryInfo.GetFiles();
+            List<FileInfoDTO> filesInfo = new();
+            foreach (FileInfo file in files)
+            {
+                filesInfo.Add(new()
+                {
+                    FullName = file.FullName,
+                    Name = file.Name,
+                    Extension = file.Extension,
+                    Length = file.Length
+                });
+            }
+            return filesInfo;
         }
 
         // POST api/<MoveController>
