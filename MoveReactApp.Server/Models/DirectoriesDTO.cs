@@ -5,6 +5,7 @@
         public string Name { get; set; }
         public bool IsOpen { get; set; }
         public string Directory { get; set; }
+        public string DisplayDirectory { get; set; }
         public List<DirectoriesDTO> Children { get; set; }
     }
 }

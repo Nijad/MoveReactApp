@@ -15,7 +15,7 @@ namespace MoveReactApp.Server.Controllers
         [HttpGet]
         public DirectoriesDTO Get()
         {
-            DirectoriesDTO directoriesDTO = new DirectoriesDTO() { Name = "Departments", IsOpen = true, Children = new() };
+            DirectoriesDTO directoriesDTO = new DirectoriesDTO() { Name = "Departments", IsOpen = true, Children = new(), DisplayDirectory="\\\\" };
             List<Department> depts = operations.GetDepartments();
             foreach (Department dept in depts)
             {
@@ -23,6 +23,7 @@ namespace MoveReactApp.Server.Controllers
                 {
                     Name = dept.Dept,
                     IsOpen = false,
+                    DisplayDirectory = $"\\\\{dept.Dept.ToUpper()}",
                     Children = new()
                     {
                         new()
@@ -30,14 +31,16 @@ namespace MoveReactApp.Server.Controllers
                             Name = "Local",
                             IsOpen = false,
                             Directory = dept.LocalPath,
-                            Children = GetSubDirectories(dept.LocalPath)
+                            DisplayDirectory = $"\\\\{dept.Dept.ToUpper()}\\LOCAL",
+                            Children = GetSubDirectories(dept.LocalPath, $"{dept.Dept.ToUpper()}\\LOCAL")
                         },
                         new()
                         {
                             Name = "Net",
                             IsOpen = false,
                             Directory = dept.NetPath,
-                            Children = GetSubDirectories(dept.NetPath)
+                            DisplayDirectory = $"\\\\{dept.Dept.ToUpper()}\\NET",
+                            Children = GetSubDirectories(dept.NetPath, $"{dept.Dept.ToUpper()}\\NET")
                         }
                     }
                 });
@@ -45,7 +48,7 @@ namespace MoveReactApp.Server.Controllers
             return directoriesDTO;
         }
 
-        private List<DirectoriesDTO>? GetSubDirectories(string directory)
+        private List<DirectoriesDTO>? GetSubDirectories(string directory, string displayOfParent)
         {
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
@@ -56,12 +59,15 @@ namespace MoveReactApp.Server.Controllers
 
             foreach (string d in directories)
             {
+                string name = d.Split('\\')[d.Split('\\').Length - 1];
+                string displayDirectory = $"{displayOfParent}\\{name.ToUpper()}";
                 directoriesDTOs.Add(new()
                 {
                     Directory = d,
                     IsOpen = false,
-                    Name = d.Split('\\')[d.Split('\\').Length - 1],
-                    Children = GetSubDirectories(d)
+                    Name = name,
+                    DisplayDirectory = displayDirectory,
+                    Children = GetSubDirectories(d, displayDirectory)
                 });
             }
             return directoriesDTOs;

@@ -2,14 +2,26 @@
 /* eslint-disable no-unused-vars */
 
 import { useEffect, useState } from "react";
-import { Grid2 } from "@mui/material";
+import {
+  Card,
+  CardHeader,
+  Grid2,
+  IconButton,
+  Stack,
+  Tooltip,
+} from "@mui/material";
 import axios from "axios";
 import FolderTree from "react-folder-tree";
 import { enqueueSnackbar } from "notistack";
+import FileGridView from "../../components/Move/FileGridView";
+import { Delete, List, Apps } from "@mui/icons-material";
+import FileListView from "../../components/Move/FileListView";
 
 function Move() {
   const [tree, setTree] = useState({});
   const [files, setFiles] = useState([]);
+  const [displayDirectory, setDisplayDirectory] = useState("\\\\");
+  const [viewStyle, setViewStyle] = useState("grid");
   const treeState = {
     name: "root",
     isOpen: false,
@@ -78,15 +90,14 @@ function Move() {
   }, []);
 
   const handleClick = (data) => {
-    console.log("directory: ", data.nodeData.directory);
-
+    setDisplayDirectory(data.nodeData.displayDirectory);
     if (data.nodeData.directory != null)
       axios
         .post(`https://localhost:7203/api/Move/GetFiles`, {
           directory: `${data.nodeData.directory}`,
         })
         .then((res) => {
-          console.log(res.data);
+          console.log("files", res.data);
 
           setFiles(res.data);
         })
@@ -98,6 +109,7 @@ function Move() {
           });
           console.log(err);
         });
+    else setFiles({});
   };
 
   return (
@@ -127,7 +139,55 @@ function Move() {
         />
       </Grid2>
       <Grid2 size="grow" container direction="column" margin={2} spacing={2}>
-        Files will display here
+        {displayDirectory?.length > 0 ? (
+          <Grid2>
+            <Card>
+              <CardHeader
+                sx={{ color: "#1976d2" }}
+                title={displayDirectory}
+                subheader="Current Location"
+                action={
+                  files.length > 0 ? (
+                    <Stack>
+                      {viewStyle == "grid" ? (
+                        <Tooltip title="List View" placement="top">
+                          <IconButton
+                            color="primary"
+                            onClick={() => setViewStyle("list")}
+                          >
+                            <List />
+                          </IconButton>
+                        </Tooltip>
+                      ) : (
+                        <Tooltip title="Grid View" placement="top">
+                          <IconButton
+                            color="primary"
+                            onClick={() => setViewStyle("grid")}
+                          >
+                            <Apps />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+
+                      <Tooltip title="Delete All" placement="bottom">
+                        <IconButton color="error">
+                          <Delete />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  ) : null
+                }
+              />
+            </Card>
+          </Grid2>
+        ) : (
+          <></>
+        )}
+        {viewStyle == "grid" ? (
+          <FileGridView files={files} />
+        ) : (
+          <FileListView files={files} />
+        )}
       </Grid2>
     </Grid2>
   );
