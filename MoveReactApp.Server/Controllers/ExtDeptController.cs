@@ -12,28 +12,28 @@ namespace MoveReactApp.Server.Controllers
     {
         Operations operations = new();
 
-        List<ExtensionDepts> extensionDepts = new()
-        {
-            new ExtensionDepts()
-            {
-                Ext="doc",
-                Department="IT",
-                Direction="IN/OUT",
-            },
-            new ExtensionDepts()
-            {
-                Ext="docx",
-                Department="RISK",
-                Direction="IN/OUT",
-            }
-        };
+        //List<ExtensionDepts> extensionDepts = new()
+        //{
+        //    new ExtensionDepts()
+        //    {
+        //        Ext="doc",
+        //        Department="IT",
+        //        Direction="IN/OUT",
+        //    },
+        //    new ExtensionDepts()
+        //    {
+        //        Ext="docx",
+        //        Department="RISK",
+        //        Direction="IN/OUT",
+        //    }
+        //};
 
         // GET: api/<ExtDeptController>
-        [HttpGet("ExtDepts/{ext}")]
-        public IEnumerable<ExtensionDepts> Get(string ext)
-        {
-            return extensionDepts;
-        }
+        //[HttpGet("ExtDepts/{ext}")]
+        //public IEnumerable<ExtensionDepts> Get(string ext)
+        //{
+        //    //return extensionDepts;
+        //}
 
         // GET api/<ExtDeptController>/5
         //[HttpGet("{id}")]

@@ -1,18 +1,18 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 
-import { DeleteOutlined, MoveUpOutlined } from "@mui/icons-material";
 import {
   Card,
   CardActions,
   CardContent,
   Grid2,
-  IconButton,
   Tooltip,
   Typography,
 } from "@mui/material";
+import MoveIcon from "./MoveIcon";
+import DeleteIcon from "./DeleteIcon";
 
-function FileGridView({ files }) {
+function FileGridView({ files, destination, canMove }) {
   return (
     <Grid2
       container
@@ -22,7 +22,7 @@ function FileGridView({ files }) {
       flexWrap="wrap"
       justifyContent="flex-start"
     >
-      {files.length > 0 ? (
+      {files?.length > 0 ? (
         files.map((file, index) => (
           <Grid2
             display="flex"
@@ -54,13 +54,12 @@ function FileGridView({ files }) {
               <CardActions
                 sx={{ paddingTop: "0", justifyContent: "space-between" }}
               >
-                <IconButton color="primary">
-                  <MoveUpOutlined />
-                </IconButton>
-
-                <IconButton color="error">
-                  <DeleteOutlined />
-                </IconButton>
+                <MoveIcon
+                  path={file.path}
+                  destination={destination}
+                  canMove={canMove}
+                />
+                <DeleteIcon path={file.path} destination={destination} />
               </CardActions>
             </Card>
           </Grid2>

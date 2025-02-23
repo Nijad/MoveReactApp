@@ -15,7 +15,14 @@ namespace MoveReactApp.Server.Controllers
         [HttpGet]
         public DirectoriesDTO Get()
         {
-            DirectoriesDTO directoriesDTO = new DirectoriesDTO() { Name = "Departments", IsOpen = true, Children = new(), DisplayDirectory="\\\\" };
+            DirectoriesDTO directoriesDTO = new()
+            {
+                Name = "Departments",
+                IsOpen = true,
+                Children = new(),
+                DisplayDirectory = "\\\\"
+            };
+
             List<Department> depts = operations.GetDepartments();
             foreach (Department dept in depts)
             {
@@ -30,17 +37,27 @@ namespace MoveReactApp.Server.Controllers
                         {
                             Name = "Local",
                             IsOpen = false,
+                            CanMove = CanMove(dept.LocalPath),
                             Directory = dept.LocalPath,
                             DisplayDirectory = $"\\\\{dept.Dept.ToUpper()}\\LOCAL",
-                            Children = GetSubDirectories(dept.LocalPath, $"{dept.Dept.ToUpper()}\\LOCAL")
+                            Children = GetSubDirectories(
+                                dept.LocalPath,
+                                $"{dept.Dept.ToUpper()}\\LOCAL",
+                                dept.NetPath + "\\IN"
+                            )
                         },
                         new()
                         {
                             Name = "Net",
                             IsOpen = false,
                             Directory = dept.NetPath,
+                            CanMove = CanMove(dept.NetPath),
                             DisplayDirectory = $"\\\\{dept.Dept.ToUpper()}\\NET",
-                            Children = GetSubDirectories(dept.NetPath, $"{dept.Dept.ToUpper()}\\NET")
+                            Children = GetSubDirectories(
+                                dept.NetPath,
+                                $"{dept.Dept.ToUpper()}\\NET",
+                                dept.LocalPath + "\\IN"
+                            )
                         }
                     }
                 });
@@ -48,7 +65,14 @@ namespace MoveReactApp.Server.Controllers
             return directoriesDTO;
         }
 
-        private List<DirectoriesDTO>? GetSubDirectories(string directory, string displayOfParent)
+        private bool CanMove(string path)
+        {
+            if (path.ToLower().EndsWith("\\out") || path.ToLower().Contains("\\out\\"))
+                return true;
+            return false;
+        }
+
+        private List<DirectoriesDTO>? GetSubDirectories(string directory, string displayOfParent, string destination)
         {
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
@@ -57,17 +81,20 @@ namespace MoveReactApp.Server.Controllers
 
             List<DirectoriesDTO> directoriesDTOs = new();
 
-            foreach (string d in directories)
+            foreach (string dir in directories)
             {
-                string name = d.Split('\\')[d.Split('\\').Length - 1];
+                string name = dir.Split('\\')[dir.Split('\\').Length - 1];
                 string displayDirectory = $"{displayOfParent}\\{name.ToUpper()}";
+                bool canMove = CanMove(dir);
                 directoriesDTOs.Add(new()
                 {
-                    Directory = d,
-                    IsOpen = false,
                     Name = name,
+                    IsOpen = false,
+                    CanMove = canMove,
+                    Directory = dir,
                     DisplayDirectory = displayDirectory,
-                    Children = GetSubDirectories(d, displayDirectory)
+                    Destination = destination,
+                    Children = GetSubDirectories(dir, displayDirectory, destination)
                 });
             }
             return directoriesDTOs;
@@ -80,11 +107,13 @@ namespace MoveReactApp.Server.Controllers
             DirectoryInfo directoryInfo = new DirectoryInfo(directory.Directory);
             FileInfo[] files = directoryInfo.GetFiles();
             List<FileInfoDTO> filesInfo = new();
+            int i = 0;
             foreach (FileInfo file in files)
             {
                 filesInfo.Add(new()
                 {
-                    FullName = file.FullName,
+                    Id = i++,
+                    Path = file.FullName,
                     Name = file.Name,
                     Extension = file.Extension,
                     Length = file.Length
@@ -94,21 +123,18 @@ namespace MoveReactApp.Server.Controllers
         }
 
         // POST api/<MoveController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("MoveFile")]
+        public void MoveFile([FromBody] MoveFileDTO moveData)
         {
+            
+        }
+        
+        // POST api/<MoveController>
+        [HttpPost("DeleteFile")]
+        public void DeleteFile([FromBody] MoveFileDTO moveData)
+        {
+            
         }
 
-        // PUT api/<MoveController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<MoveController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }

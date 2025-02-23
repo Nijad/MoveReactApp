@@ -14,69 +14,20 @@ import axios from "axios";
 import FolderTree from "react-folder-tree";
 import { enqueueSnackbar } from "notistack";
 import FileGridView from "../../components/Move/FileGridView";
-import { Delete, List, Apps } from "@mui/icons-material";
+import { Delete, List, Apps, Refresh } from "@mui/icons-material";
 import FileListView from "../../components/Move/FileListView";
 
 function Move() {
   const [tree, setTree] = useState({});
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState({});
   const [displayDirectory, setDisplayDirectory] = useState("\\\\");
+  const [nodeData, setNodeData] = useState({});
   const [viewStyle, setViewStyle] = useState("grid");
-  const treeState = {
-    name: "root",
-    isOpen: false,
-    directory: "directory goes here",
-    children: [
-      { name: "children 1", checked: 0 },
-      {
-        name: "children 2",
-        isOpen: false,
-        children: [
-          { name: "children 2-1", checked: 0 },
-          { name: "children 2-2", checked: 1 },
-        ],
-      },
-      {
-        name: "folder 3",
-        children: [
-          {
-            name: "folder 3",
-            children: [
-              {
-                name: "folder 3",
-                children: [
-                  {
-                    name: "folder 3",
-                    children: [],
-                    isOpen: false,
-                  },
-                  {
-                    name: "folder 3",
-                    children: [],
-                    isOpen: false,
-                  },
-                ],
-                isOpen: false,
-              },
-            ],
-            isOpen: false,
-          },
-        ],
-        isOpen: false,
-      },
-    ],
-  };
-
-  console.log(treeState);
-
-  const onTreeStateChange = (state, event) => console.log(state, event);
 
   useEffect(() => {
     axios
       .get("https://localhost:7203/api/Move")
       .then((res) => {
-        console.log(res.data);
-
         setTree(res.data);
       })
       .catch((err) => {
@@ -89,17 +40,42 @@ function Move() {
       });
   }, []);
 
+  const onTreeStateChange = (state, event) => {
+    if (event?.path !== null) {
+      const nodeData = getNodeData(event.path);
+      if (nodeData !== undefined) {
+        setData(nodeData);
+        if (nodeData?.directory !== null) getFiles(nodeData?.directory);
+      }
+    }
+  };
+
+  const getNodeData = (treeNodePath) => {
+    var treeCopy = { ...tree };
+    treeNodePath.forEach((element) => {
+      treeCopy = { ...treeCopy.children[element] };
+    });
+    return treeCopy;
+  };
+
   const handleClick = (data) => {
-    setDisplayDirectory(data.nodeData.displayDirectory);
-    if (data.nodeData.directory != null)
+    setData(data.nodeData);
+    getFiles(data.nodeData.directory);
+  };
+
+  const setData = (nodeData) => {
+    setNodeData(nodeData);
+    setDisplayDirectory(nodeData.displayDirectory);
+  };
+
+  const getFiles = (directory) => {
+    if (directory != null)
       axios
         .post(`https://localhost:7203/api/Move/GetFiles`, {
-          directory: `${data.nodeData.directory}`,
+          directory: `${directory}`,
         })
         .then((res) => {
-          console.log("files", res.data);
-
-          setFiles(res.data);
+          setFiles(res);
         })
         .catch((err) => {
           enqueueSnackbar("Fetching files failed.", {
@@ -109,7 +85,7 @@ function Move() {
           });
           console.log(err);
         });
-    else setFiles({});
+    else setFiles([]);
   };
 
   return (
@@ -147,10 +123,23 @@ function Move() {
                 title={displayDirectory}
                 subheader="Current Location"
                 action={
-                  files.length > 0 ? (
-                    <Stack>
+                  files?.data?.length > 0 ? (
+                    <Stack direction="row">
+                      <Tooltip title="Refresh" placement="bottom">
+                        <IconButton
+                          color="info"
+                          onClick={() => getFiles(nodeData?.directory)}
+                        >
+                          <Refresh />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete All" placement="bottom">
+                        <IconButton color="error">
+                          <Delete />
+                        </IconButton>
+                      </Tooltip>
                       {viewStyle == "grid" ? (
-                        <Tooltip title="List View" placement="top">
+                        <Tooltip title="List View" placement="bottom">
                           <IconButton
                             color="primary"
                             onClick={() => setViewStyle("list")}
@@ -168,12 +157,6 @@ function Move() {
                           </IconButton>
                         </Tooltip>
                       )}
-
-                      <Tooltip title="Delete All" placement="bottom">
-                        <IconButton color="error">
-                          <Delete />
-                        </IconButton>
-                      </Tooltip>
                     </Stack>
                   ) : null
                 }
@@ -183,10 +166,19 @@ function Move() {
         ) : (
           <></>
         )}
+
         {viewStyle == "grid" ? (
-          <FileGridView files={files} />
+          <FileGridView
+            files={files?.data}
+            destination={nodeData?.destination}
+            canMove={nodeData?.canMove}
+          />
         ) : (
-          <FileListView files={files} />
+          <FileListView
+            files={files?.data}
+            destination={nodeData?.destination}
+            canMove={nodeData?.canMove}
+          />
         )}
       </Grid2>
     </Grid2>

@@ -1,55 +1,71 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 
-import {
-  Card,
-  CardContent,
-  Grid2,
-  Table,
-  TableHead,
-  Typography,
-} from "@mui/material";
+import { Box, Paper } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import { useEffect, useState } from "react";
+import MoveIcon from "./MoveIcon";
+import DeleteIcon from "./DeleteIcon";
 
-function FileListView({ files }) {
+function FileListView({ files, destination, canMove }) {
+  const [contentHeigh, setContentHeigh] = useState();
+  const columns = [
+    { field: "name", headerName: "File Name", flex: 7 },
+    { field: "extension", headerName: "File Extension", flex: 2 },
+    {
+      field: "length",
+      headerName: "File Size (MB)",
+      flex: 2,
+      valueGetter: (value) => {
+        return Math.round((value / 1024 / 1024) * 100) / 100;
+      },
+    },
+    {
+      field: "actions",
+      type: "actions",
+      cellClassName: "actions",
+      headerName: "Actions",
+      flex: 1,
+      getActions: ({ id }) => {
+        return [
+          <Box key={id}>
+            <MoveIcon
+              path={files.find((f) => f.id === id).path}
+              destination={destination}
+              canMove={canMove}
+            />
+            <DeleteIcon
+              path={files.find((f) => f.id === id).path}
+              destination={destination}
+            />
+          </Box>,
+        ];
+      },
+    },
+  ];
+
+  const handleClick = (params, event) => {
+    console.log(params);
+  };
+
+  useEffect(() => {
+    const content = document.getElementById("content");
+    const y = content?.getBoundingClientRect().y;
+    setContentHeigh(y);
+  }, []);
+
   return (
-    <Grid2>
-      <Card sx={{ marginBottom: "1px", backgroundColor: "lightgray" }}>
-        <CardContent sx={{ padding: "8px !important" }}>
-          <Grid2 container direction="row">
-            <Grid2 size={6}>
-              <Typography fontWeight={800}>File Name</Typography>
-            </Grid2>
-            <Grid2 size={2} textAlign="center">
-              <Typography fontWeight={800}>Extension</Typography>
-            </Grid2>
-            <Grid2 size={2} textAlign="center">
-              <Typography fontWeight={800}>File Size (MB)</Typography>
-            </Grid2>
-            <Grid2 size={2} textAlign="end">
-              <Typography fontWeight={800}>Action</Typography>
-            </Grid2>
-          </Grid2>
-        </CardContent>
-      </Card>
-      {files.map((file, index) => (
-        <Card key={index} sx={{ marginBottom: "1px" }}>
-          <CardContent sx={{ padding: "8px !important" }}>
-            <Grid2 container direction="row">
-              <Grid2 size={6}>{file.name}</Grid2>
-              <Grid2 size={2} textAlign="center">
-                {file.extension}
-              </Grid2>
-              <Grid2 size={2} textAlign="center">
-                {Math.round((file.length / 1024 / 1024) * 100) / 100}
-              </Grid2>
-              <Grid2 size={2} textAlign="end">
-                Action
-              </Grid2>
-            </Grid2>
-          </CardContent>
-        </Card>
-      ))}
-    </Grid2>
+    <Paper
+      id="content"
+      sx={{ height: `calc(100vh - ${contentHeigh + 16}px)`, width: "100%" }}
+    >
+      <DataGrid
+        rows={files}
+        columns={columns}
+        hideFooterPagination
+        onRowClick={handleClick}
+      />
+    </Paper>
   );
 }
 

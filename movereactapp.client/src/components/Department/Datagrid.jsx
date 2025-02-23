@@ -285,7 +285,7 @@ function Datagrid({ department, extensionsList }) {
       axios
         .post(`https://localhost:7203/api/ExtDept/dept`, {
           id: newRow.id,
-          ext: newRow.extension,
+          ext: newRow.ext,
           department: department,
           direction: newRow.direction,
         })
