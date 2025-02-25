@@ -84,10 +84,29 @@ function FileGridView({
                     <Typography noWrap>
                       <b>Extension:</b> {file?.extension}
                     </Typography>
-                    <Typography>
-                      <b>Size:</b>{" "}
-                      {Math.round((file?.length / 1024 / 1024) * 100) / 100} MB
-                    </Typography>
+                    {file?.length <= 1000 ? (
+                      <Typography>
+                        <b>Size:</b> {Math.round(file?.length * 100) / 100} B
+                      </Typography>
+                    ) : file?.length / 1024 <= 1000 ? (
+                      <Typography>
+                        <b>Size:</b>{" "}
+                        {Math.round((file?.length / 1024) * 100) / 100} KB
+                      </Typography>
+                    ) : file.length / 1024 / 1024 <= 1000 ? (
+                      <Typography>
+                        <b>Size:</b>{" "}
+                        {Math.round((file?.length / 1024 / 1024) * 100) / 100}{" "}
+                        MB
+                      </Typography>
+                    ) : (
+                      <Typography>
+                        <b>Size:</b>{" "}
+                        {Math.round((file?.length / 1024 / 1024 / 1024) * 100) /
+                          100}{" "}
+                        GB
+                      </Typography>
+                    )}
                   </CardContent>
                 </Tooltip>
                 <CardActions

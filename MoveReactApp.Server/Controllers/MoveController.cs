@@ -115,7 +115,7 @@ namespace MoveReactApp.Server.Controllers
                     Id = i++,
                     Path = file.FullName,
                     Name = file.Name,
-                    Extension = file.Extension,
+                    Extension = file.Extension.Split('.')[1],
                     Length = file.Length
                 });
             }

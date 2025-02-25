@@ -19,7 +19,7 @@ function FileListView({
 }) {
   const [contentHeigh, setContentHeigh] = useState();
   const [files, setFiles] = useState([]);
-  //const [viewStyle, setViewStyle] = useState("grid");
+
   useEffect(() => {
     if (directory !== undefined && directory !== null)
       axios
@@ -39,15 +39,22 @@ function FileListView({
         });
     else setFiles([]);
   }, [directory]);
+
   const columns = [
     { field: "name", headerName: "File Name", flex: 7 },
     { field: "extension", headerName: "File Extension", flex: 2 },
     {
       field: "length",
-      headerName: "File Size (MB)",
+      headerName: "File Size",
       flex: 2,
-      valueGetter: (value) => {
-        return Math.round((value / 1024 / 1024) * 100) / 100;
+      valueFormatter: (value) => {
+        if (value <= 1000) return value + " B";
+        else if (value / 1024 <= 1024)
+          return Math.round((value / 1024) * 100) / 100 + " KB";
+        else if (value / 1024 / 1024 <= 1000)
+          return Math.round((value / 1024 / 1024) * 100) / 100 + " MB";
+        else
+          return Math.round((value / 1024 / 1024 / 1024) * 100) / 100 + " GB";
       },
     },
     {
