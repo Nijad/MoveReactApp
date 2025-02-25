@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import axios from "axios";
+import DraggableDialog from "../common/DraggableDialog";
+import { useState } from "react";
 
 function Header({
   displayDirectory,
@@ -21,6 +23,7 @@ function Header({
   viewStyle,
   setViewStyle,
 }) {
+  const [open, setOpen] = useState(false);
   const getFiles = (directory) => {
     if (directory != null)
       axios
@@ -39,6 +42,29 @@ function Header({
           console.log(err);
         });
     else setFiles([]);
+  };
+
+  const deleteConfirmation = () => {
+    setOpen(true);
+  };
+
+  const deleteAll = () => {
+    if (directory != null)
+      axios
+        .post(`https://localhost:7203/api/Move/DeleteAll`, {
+          directory: `${directory}`,
+        })
+        .then((res) => {
+          setFiles(res.data);
+        })
+        .catch((err) => {
+          enqueueSnackbar("Fetching files failed.", {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
+          console.log(err);
+        });
   };
 
   return (
@@ -62,7 +88,10 @@ function Header({
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Delete All" placement="bottom">
-                      <IconButton color="error">
+                      <IconButton
+                        color="error"
+                        onClick={() => deleteConfirmation()}
+                      >
                         <Delete />
                       </IconButton>
                     </Tooltip>
@@ -90,6 +119,16 @@ function Header({
               }
             />
           </Card>
+          <DraggableDialog
+            cancelTitle="Cancel"
+            fullWidth={true}
+            msg="Are you sure to delete all files from this folder?"
+            title="Delete All Files"
+            yesTitle="Delete All"
+            yesFunction={deleteAll}
+            open={open}
+            setOpen={setOpen}
+          />
         </Grid2>
       ) : (
         <></>

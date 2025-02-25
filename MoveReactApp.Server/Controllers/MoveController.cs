@@ -144,5 +144,14 @@ namespace MoveReactApp.Server.Controllers
             return GetFiles(dto);
         }
 
+        [HttpPost("DeleteAll")]
+        public List<FileInfoDTO> DeleteAll([FromBody] DirectoryDTO directory)
+        {
+            string[] files = Directory.GetFiles(directory.Directory);
+            foreach (string file in files)
+                new FileInfo(file).Delete();
+
+            return GetFiles(directory);
+        }
     }
 }
