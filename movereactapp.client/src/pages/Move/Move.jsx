@@ -2,25 +2,15 @@
 /* eslint-disable no-unused-vars */
 
 import { useEffect, useState } from "react";
-import {
-  Card,
-  CardHeader,
-  Grid2,
-  IconButton,
-  Stack,
-  Tooltip,
-} from "@mui/material";
+import { Grid2 } from "@mui/material";
 import axios from "axios";
 import FolderTree from "react-folder-tree";
 import { enqueueSnackbar } from "notistack";
 import FileGridView from "../../components/Move/FileGridView";
-import { Delete, List, Apps, Refresh } from "@mui/icons-material";
 import FileListView from "../../components/Move/FileListView";
 
 function Move() {
   const [tree, setTree] = useState({});
-  const [files, setFiles] = useState({});
-  const [displayDirectory, setDisplayDirectory] = useState("\\\\");
   const [nodeData, setNodeData] = useState({});
   const [viewStyle, setViewStyle] = useState("grid");
 
@@ -44,8 +34,7 @@ function Move() {
     if (event?.path !== null) {
       const nodeData = getNodeData(event.path);
       if (nodeData !== undefined) {
-        setData(nodeData);
-        //if (nodeData?.directory !== null) getFiles(nodeData?.directory);
+        setNodeData(nodeData);
       }
     }
   };
@@ -59,33 +48,7 @@ function Move() {
   };
 
   const handleClick = (data) => {
-    setData(data.nodeData);
-    //getFiles(data.nodeData.directory);
-  };
-
-  const setData = (nodeData) => {
-    setNodeData(nodeData);
-    setDisplayDirectory(nodeData.displayDirectory);
-  };
-
-  const getFiles = (directory) => {
-    if (directory != null)
-      axios
-        .post(`https://localhost:7203/api/Move/GetFiles`, {
-          directory: `${directory}`,
-        })
-        .then((res) => {
-          setFiles(res);
-        })
-        .catch((err) => {
-          enqueueSnackbar("Fetching files failed.", {
-            variant: "error",
-            anchorOrigin: { horizontal: "center", vertical: "top" },
-            autoHideDuration: 5000,
-          });
-          console.log(err);
-        });
-    else setFiles([]);
+    setNodeData(data.nodeData);
   };
 
   return (
