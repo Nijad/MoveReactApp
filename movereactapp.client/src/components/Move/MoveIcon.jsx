@@ -8,7 +8,7 @@ import { useState } from "react";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 
-function MoveIcon({ path, destination, canMove }) {
+function MoveIcon({ path, destination, canMove, setFiles }) {
   const [open, setOpen] = useState(false);
   const [yesTitle, setYesTitle] = useState("");
   const [msg, setMsg] = useState("");
@@ -35,6 +35,7 @@ function MoveIcon({ path, destination, canMove }) {
           Destination: destination,
         })
         .then((res) => {
+          setFiles(res.data);
           enqueueSnackbar(`File moved successfuly.`, {
             variant: "success",
             anchorOrigin: { horizontal: "center", vertical: "top" },

@@ -124,16 +124,24 @@ namespace MoveReactApp.Server.Controllers
 
         // POST api/<MoveController>
         [HttpPost("MoveFile")]
-        public void MoveFile([FromBody] MoveFileDTO moveData)
+        public List<FileInfoDTO> MoveFile([FromBody] MoveFileDTO moveData)
         {
-            
+            FileInfo fileInfo = new FileInfo(moveData.File);
+            string[] fileNameSegmants = moveData.File.Split('\\');
+            string destination = Path.Combine(moveData.Destination, fileNameSegmants[fileNameSegmants.Length-1]);
+            fileInfo.MoveTo(destination);
+            DirectoryDTO dto = new() { Directory = moveData.File[..moveData.File.LastIndexOf('\\')] };
+            return GetFiles(dto);
         }
         
         // POST api/<MoveController>
         [HttpPost("DeleteFile")]
-        public void DeleteFile([FromBody] MoveFileDTO moveData)
+        public List<FileInfoDTO> DeleteFile([FromBody] MoveFileDTO moveData)
         {
-            
+            FileInfo fileInfo = new FileInfo(moveData.File);
+            fileInfo.Delete();
+            DirectoryDTO dto = new() { Directory = moveData.File[..moveData.File.LastIndexOf('\\')] };
+            return GetFiles(dto);
         }
 
     }

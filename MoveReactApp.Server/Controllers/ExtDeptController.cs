@@ -12,47 +12,10 @@ namespace MoveReactApp.Server.Controllers
     {
         Operations operations = new();
 
-        //List<ExtensionDepts> extensionDepts = new()
-        //{
-        //    new ExtensionDepts()
-        //    {
-        //        Ext="doc",
-        //        Department="IT",
-        //        Direction="IN/OUT",
-        //    },
-        //    new ExtensionDepts()
-        //    {
-        //        Ext="docx",
-        //        Department="RISK",
-        //        Direction="IN/OUT",
-        //    }
-        //};
-
-        // GET: api/<ExtDeptController>
-        //[HttpGet("ExtDepts/{ext}")]
-        //public IEnumerable<ExtensionDepts> Get(string ext)
-        //{
-        //    //return extensionDepts;
-        //}
-
-        // GET api/<ExtDeptController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
-
         // POST api/<ExtDeptController>
         [HttpPost("{from}")]
         public IEnumerable<ExtensionDepts> Post(string from, [FromBody] ExtensionDepts extensionDepts)
         {
-            //extensionDepts.Add(new ExtensionDepts()
-            //{
-            //    Ext = extensionDepts.Ext,
-            //    Department = extensionDepts.Department,
-            //    Direction = extensionDepts.Direction,
-            //});
-            //return extensionDepts;
             operations.AddExtDept(extensionDepts);
             if (from == "ext")
                 return operations.GetExtDepartments(extensionDepts.Ext);

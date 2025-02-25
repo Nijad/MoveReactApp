@@ -8,7 +8,7 @@ import { DeleteOutline } from "@mui/icons-material";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 
-function DeleteIcon({ path, destination }) {
+function DeleteIcon({ path, destination, setFiles }) {
   const [open, setOpen] = useState(false);
   const [yesTitle, setYesTitle] = useState("");
   const [msg, setMsg] = useState("");
@@ -20,13 +20,13 @@ function DeleteIcon({ path, destination }) {
   };
 
   const DeleteFile = () => {
-    console.log("delete from :", path);
     axios
       .post(`https://localhost:7203/api/Move/DeleteFile`, {
         file: path,
         destination: destination,
       })
       .then((res) => {
+        setFiles(res.data);
         enqueueSnackbar(`File deleted successfuly.`, {
           variant: "success",
           anchorOrigin: { horizontal: "center", vertical: "top" },

@@ -6,9 +6,39 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import MoveIcon from "./MoveIcon";
 import DeleteIcon from "./DeleteIcon";
+import Header from "./Header";
+import { enqueueSnackbar } from "notistack";
+import axios from "axios";
 
-function FileListView({ files, destination, canMove }) {
+function FileListView({
+  destination,
+  canMove,
+  displayDirectory,
+  directory,
+  setViewStyle,
+}) {
   const [contentHeigh, setContentHeigh] = useState();
+  const [files, setFiles] = useState([]);
+  //const [viewStyle, setViewStyle] = useState("grid");
+  useEffect(() => {
+    if (directory !== undefined && directory !== null)
+      axios
+        .post(`https://localhost:7203/api/Move/GetFiles`, {
+          directory: `${directory}`,
+        })
+        .then((res) => {
+          setFiles(res.data);
+        })
+        .catch((err) => {
+          enqueueSnackbar("Fetching files failed.", {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
+          console.log(err);
+        });
+    else setFiles([]);
+  }, [directory]);
   const columns = [
     { field: "name", headerName: "File Name", flex: 7 },
     { field: "extension", headerName: "File Extension", flex: 2 },
@@ -33,10 +63,12 @@ function FileListView({ files, destination, canMove }) {
               path={files.find((f) => f.id === id).path}
               destination={destination}
               canMove={canMove}
+              setFiles={setFiles}
             />
             <DeleteIcon
               path={files.find((f) => f.id === id).path}
               destination={destination}
+              setFiles={setFiles}
             />
           </Box>,
         ];
@@ -45,7 +77,7 @@ function FileListView({ files, destination, canMove }) {
   ];
 
   const handleClick = (params, event) => {
-    console.log(params);
+    //console.log(params);
   };
 
   useEffect(() => {
@@ -55,17 +87,27 @@ function FileListView({ files, destination, canMove }) {
   }, []);
 
   return (
-    <Paper
-      id="content"
-      sx={{ height: `calc(100vh - ${contentHeigh + 16}px)`, width: "100%" }}
-    >
-      <DataGrid
-        rows={files}
-        columns={columns}
-        hideFooterPagination
-        onRowClick={handleClick}
+    <>
+      <Header
+        directory={directory}
+        displayDirectory={displayDirectory}
+        files={files}
+        setFiles={setFiles}
+        setViewStyle={setViewStyle}
+        viewStyle="list"
       />
-    </Paper>
+      <Paper
+        id="content"
+        sx={{ height: `calc(100vh - ${contentHeigh + 16}px)`, width: "100%" }}
+      >
+        <DataGrid
+          rows={files}
+          columns={columns}
+          hideFooterPagination
+          onRowClick={handleClick}
+        />
+      </Paper>
+    </>
   );
 }
 

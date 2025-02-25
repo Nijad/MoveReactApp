@@ -45,7 +45,7 @@ function Move() {
       const nodeData = getNodeData(event.path);
       if (nodeData !== undefined) {
         setData(nodeData);
-        if (nodeData?.directory !== null) getFiles(nodeData?.directory);
+        //if (nodeData?.directory !== null) getFiles(nodeData?.directory);
       }
     }
   };
@@ -60,7 +60,7 @@ function Move() {
 
   const handleClick = (data) => {
     setData(data.nodeData);
-    getFiles(data.nodeData.directory);
+    //getFiles(data.nodeData.directory);
   };
 
   const setData = (nodeData) => {
@@ -115,69 +115,21 @@ function Move() {
         />
       </Grid2>
       <Grid2 size="grow" container direction="column" margin={2} spacing={2}>
-        {displayDirectory?.length > 0 ? (
-          <Grid2>
-            <Card>
-              <CardHeader
-                sx={{ color: "#1976d2" }}
-                title={displayDirectory}
-                subheader="Current Location"
-                action={
-                  files?.data?.length > 0 ? (
-                    <Stack direction="row">
-                      <Tooltip title="Refresh" placement="bottom">
-                        <IconButton
-                          color="info"
-                          onClick={() => getFiles(nodeData?.directory)}
-                        >
-                          <Refresh />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete All" placement="bottom">
-                        <IconButton color="error">
-                          <Delete />
-                        </IconButton>
-                      </Tooltip>
-                      {viewStyle == "grid" ? (
-                        <Tooltip title="List View" placement="bottom">
-                          <IconButton
-                            color="primary"
-                            onClick={() => setViewStyle("list")}
-                          >
-                            <List />
-                          </IconButton>
-                        </Tooltip>
-                      ) : (
-                        <Tooltip title="Grid View" placement="top">
-                          <IconButton
-                            color="primary"
-                            onClick={() => setViewStyle("grid")}
-                          >
-                            <Apps />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Stack>
-                  ) : null
-                }
-              />
-            </Card>
-          </Grid2>
-        ) : (
-          <></>
-        )}
-
         {viewStyle == "grid" ? (
           <FileGridView
-            files={files?.data}
+            displayDirectory={nodeData?.displayDirectory}
+            directory={nodeData?.directory}
             destination={nodeData?.destination}
             canMove={nodeData?.canMove}
+            setViewStyle={setViewStyle}
           />
         ) : (
           <FileListView
-            files={files?.data}
+            displayDirectory={nodeData?.displayDirectory}
+            directory={nodeData?.directory}
             destination={nodeData?.destination}
             canMove={nodeData?.canMove}
+            setViewStyle={setViewStyle}
           />
         )}
       </Grid2>
