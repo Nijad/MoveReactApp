@@ -118,11 +118,7 @@ function FileGridView({
                     canMove={canMove}
                     setFiles={setFiles}
                   />
-                  <DeleteIcon
-                    path={file?.path}
-                    destination={destination}
-                    setFiles={setFiles}
-                  />
+                  <DeleteIcon path={file?.path} setFiles={setFiles} />
                 </CardActions>
               </Card>
             </Grid2>

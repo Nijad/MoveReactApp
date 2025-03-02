@@ -56,6 +56,11 @@ function Header({
         })
         .then((res) => {
           setFiles(res.data);
+          enqueueSnackbar("All files deleted successfuly.", {
+            variant: "success",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
         })
         .catch((err) => {
           enqueueSnackbar("Fetching files failed.", {

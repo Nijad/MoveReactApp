@@ -74,7 +74,6 @@ function FileListView({
             />
             <DeleteIcon
               path={files.find((f) => f.id === id).path}
-              destination={destination}
               setFiles={setFiles}
             />
           </Box>,

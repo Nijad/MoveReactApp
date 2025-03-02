@@ -136,11 +136,11 @@ namespace MoveReactApp.Server.Controllers
         
         // POST api/<MoveController>
         [HttpPost("DeleteFile")]
-        public List<FileInfoDTO> DeleteFile([FromBody] MoveFileDTO moveData)
+        public List<FileInfoDTO> DeleteFile([FromBody] DirectoryDTO moveData)
         {
-            FileInfo fileInfo = new FileInfo(moveData.File);
+            FileInfo fileInfo = new FileInfo(moveData.Directory);
             fileInfo.Delete();
-            DirectoryDTO dto = new() { Directory = moveData.File[..moveData.File.LastIndexOf('\\')] };
+            DirectoryDTO dto = new() { Directory = moveData.Directory[..moveData.Directory.LastIndexOf('\\')] };
             return GetFiles(dto);
         }
 

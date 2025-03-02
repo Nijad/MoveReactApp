@@ -7,11 +7,13 @@ import DraggableDialog from "../common/DraggableDialog";
 import { useState } from "react";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
+import DraggableInputDialog from "../common/DraggableInputDialog";
 
 function MoveIcon({ path, destination, canMove, setFiles }) {
   const [open, setOpen] = useState(false);
   const [yesTitle, setYesTitle] = useState("");
   const [msg, setMsg] = useState("");
+  const [reason, setReason] = useState("");
 
   const handleClick = () => {
     if (!canMove) {
@@ -28,11 +30,11 @@ function MoveIcon({ path, destination, canMove, setFiles }) {
 
   const MoveFile = () => {
     if (!path.toLowerCase().includes("\\in\\")) {
-      console.log("moved to :", destination);
       axios
         .post(`https://localhost:7203/api/Move/MoveFile`, {
           File: path,
           Destination: destination,
+          Reason: reason,
         })
         .then((res) => {
           setFiles(res.data);
@@ -61,14 +63,16 @@ function MoveIcon({ path, destination, canMove, setFiles }) {
           <MoveUpOutlined />
         </IconButton>
       </Tooltip>
-      <DraggableDialog
+      <DraggableInputDialog
         cancelTitle="Cancel"
         msg={msg}
         yesTitle={yesTitle}
         yesFunction={MoveFile}
         open={open}
         setOpen={setOpen}
-        fullWidth
+        fullWidth={true}
+        fieldName="Reason"
+        setReason={setReason}
       />
     </>
   );
