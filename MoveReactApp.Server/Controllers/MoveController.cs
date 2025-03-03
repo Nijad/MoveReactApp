@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
+using MoveReactApp.Server.Helper;
 using MoveReactApp.Server.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -126,14 +127,22 @@ namespace MoveReactApp.Server.Controllers
         [HttpPost("MoveFile")]
         public List<FileInfoDTO> MoveFile([FromBody] MoveFileDTO moveData)
         {
-            FileInfo fileInfo = new FileInfo(moveData.File);
-            string[] fileNameSegmants = moveData.File.Split('\\');
-            string destination = Path.Combine(moveData.Destination, fileNameSegmants[fileNameSegmants.Length-1]);
-            fileInfo.MoveTo(destination);
+            try
+            {
+                MoveHelper.Move(moveData);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
             DirectoryDTO dto = new() { Directory = moveData.File[..moveData.File.LastIndexOf('\\')] };
             return GetFiles(dto);
         }
         
+
+
         // POST api/<MoveController>
         [HttpPost("DeleteFile")]
         public List<FileInfoDTO> DeleteFile([FromBody] DirectoryDTO moveData)

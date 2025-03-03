@@ -1,8 +1,6 @@
 ﻿using MoveReactApp.Server.Models;
 using MySqlConnector;
 using System.Data;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MoveReactApp.Server.Database
 {
@@ -275,7 +273,7 @@ namespace MoveReactApp.Server.Database
             dB.ExecuteNonQuery(query);
         }
 
-        internal void UpdateDepartment(string dept, Department department)
+        public void UpdateDepartment(string dept, Department department)
         {
             string escapedDept = MySqlHelper.EscapeString(department.Dept);
             string escapedLocalPath = MySqlHelper.EscapeString(department.LocalPath);
@@ -287,23 +285,63 @@ namespace MoveReactApp.Server.Database
             dB.ExecuteNonQuery(query);
         }
 
-        internal void DeleteDepartment(string dept)
+        public void DeleteDepartment(string dept)
         {
             string query = $"delete from department where dept = '{dept}'";
             dB.ExecuteNonQuery(query);
         }
 
-        internal void UpdateDeptExt(string ext, string dept, string direction)
+        public void UpdateDeptExt(string ext, string dept, string direction)
         {
             string query = $"update dept_ext set direction = {DirectionConvertInverse(direction)} where ext = '{ext}' and dept = '{dept}'";
             dB.ExecuteNonQuery(query);
         }
 
-        internal void UpdateConfig(UpdateConfigDTO value)
+        public void UpdateConfig(UpdateConfigDTO value)
         {
             string escapedValue = MySqlHelper.EscapeString(value.Value);
             string query = $"update config set value = '{escapedValue}' where `key` = '{value.Key}' ";
             dB.ExecuteNonQuery(query);
+        }
+
+        public MySqlCommand InsertIntoMovedFile(string name, string extension, string realExtension,
+            long size, string dept, string destination, string movedBy, string reason)
+        {
+            string escapedName = MySqlHelper.EscapeString(name);
+            string escapedReason = MySqlHelper.EscapeString(reason);
+            try
+            {
+                string query = "INSERT INTO `movedfiles`(`name`, `Ext`, `RealExt`, `size`, `Dept`, `Destination`, `moved_by`, `reason`) " +
+                    $"VALUES ('{escapedName}', '{extension}', '{realExtension}', '{size}', '{dept}', '{destination}', '{movedBy}', '{escapedReason}')";
+                MySqlCommand cmd = dB.ExecuteTransaction(query);
+                return cmd;
+            }
+            catch (Exception ex)
+            {
+                string msg = "Can not write in database";
+                //Logging.SendEmail(ex, msg);
+                //Logging.LogException(ex);
+            }
+            return null;
+        }
+
+        public void Commit(MySqlCommand cmd)
+        {
+            cmd.Transaction.Commit();
+            dB.CloseDB();
+        }
+
+        public void Rollback(MySqlCommand cmd)
+        {
+            cmd.Transaction.Rollback();
+            dB.CloseDB();
+        }
+
+        public string GetBackupPath()
+        {
+            string query = "SELECT `value` FROM config where `key` = 'Backup_Path'";
+            DataTable dt = dB.ExecuteReader(query);
+            return dt.Rows[0][0].ToString();
         }
     }
 }

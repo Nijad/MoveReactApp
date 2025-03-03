@@ -24,7 +24,7 @@ namespace MoveReactApp.Server.Database
             con.Open();
         }
 
-        private void CloseDB()
+        public void CloseDB()
         {
             con.Close();
         }
@@ -37,7 +37,7 @@ namespace MoveReactApp.Server.Database
             CloseDB();
         }
 
-        private MySqlCommand ExecuteTransaction(string query)
+        public MySqlCommand ExecuteTransaction(string query)
         {
             OpenDB();
             MySqlCommand cmd = new MySqlCommand(query, con);
@@ -88,25 +88,5 @@ namespace MoveReactApp.Server.Database
                 throw ex;
             }
         }
-
-        //public MySqlCommand InsertIntoMovedFile(string name, string extension, string realExtension,
-        //    long size, string dept, string destination)
-        //{
-        //    try
-        //    {
-        //        string query = "INSERT INTO `movedfiles`(`name`, `Ext`, `RealExt`, `size`, `Dept`, `Destination`) " +
-        //            $"VALUES ('{name}', '{extension}', '{realExtension}', '{size}', '{dept}', '{destination}')";
-        //        MySqlCommand cmd = ExecuteTransaction(query);
-        //        return cmd;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        string msg = "Can not write in database";
-        //        //Logging.SendEmail(ex, msg);
-        //        //Logging.LogException(ex);
-        //    }
-        //    return null;
-        //}
-
     }
 }
