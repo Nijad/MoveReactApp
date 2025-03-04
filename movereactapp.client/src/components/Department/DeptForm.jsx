@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 import DraggableDialog from "../common/DraggableDialog";
+import { appUrl } from "../../../URL";
 
 function DeptForm({
   isNew,
@@ -64,10 +65,17 @@ function DeptForm({
 
   const handleAddNewExtension = (data) => {
     axios
-      .post("https://localhost:7203/api/Departments", {
-        ...data,
-        Extensions: [],
-      })
+      .post(
+        appUrl + "Departments",
+        {
+          ...data,
+          note: data.note === null ? "" : data.note,
+          extensions: [],
+        },
+        {
+          withCredentials: true,
+        }
+      )
       .then((res) => {
         setDept(data.dept);
         setIsNewRec(false);
@@ -102,10 +110,16 @@ function DeptForm({
     console.log({ ...data, Extensions: [] });
 
     axios
-      .put(`https://localhost:7203/api/Departments/${dept}`, {
-        ...data,
-        Extensions: [],
-      })
+      .put(
+        appUrl + `Departments/${dept}`,
+        {
+          ...data,
+          Extensions: [],
+        },
+        {
+          withCredentials: true,
+        }
+      )
       .then((res) => {
         setEditable(false);
 
@@ -152,7 +166,9 @@ function DeptForm({
   const handleDelete = () => {
     try {
       axios
-        .delete(`https://localhost:7203/api/Departments/${dept}`)
+        .delete(appUrl + `Departments/${dept}`, {
+          withCredentials: true,
+        })
         .then((res) => {
           //setFilterList(res.data);
           setDepartmentsList(departmentsList.filter((x) => x != dept));

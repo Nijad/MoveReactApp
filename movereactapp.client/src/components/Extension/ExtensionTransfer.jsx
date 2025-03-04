@@ -14,7 +14,6 @@ import {
   Button,
   Divider,
   Stack,
-  Typography,
 } from "@mui/material";
 import DirectionMenu from "./DirectionMenu";
 

@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 import DraggableDialog from "../common/DraggableDialog";
+import { appUrl } from "../../../URL";
 
 function ExtForm({
   isNew,
@@ -63,10 +64,16 @@ function ExtForm({
 
   const handleAddNewExtension = (data) => {
     axios
-      .post("https://localhost:7203/api/Extensions", {
-        ...data,
-        Departments: [],
-      })
+      .post(
+        appUrl + "Extensions",
+        {
+          ...data,
+          Departments: [],
+        },
+        {
+          withCredentials: true,
+        }
+      )
       .then((res) => {
         setExt(data.ext);
         setIsNewRec(false);
@@ -98,10 +105,16 @@ function ExtForm({
 
   const handleUpdateExtension = (data) => {
     axios
-      .put(`https://localhost:7203/api/Extensions/${ext}`, {
-        ...data,
-        Departments: [],
-      })
+      .put(
+        appUrl + `Extensions/${ext}`,
+        {
+          ...data,
+          Departments: [],
+        },
+        {
+          withCredentials: true,
+        }
+      )
       .then((res) => {
         setEditable(false);
 
@@ -148,7 +161,9 @@ function ExtForm({
   const handleDelete = () => {
     try {
       axios
-        .delete(`https://localhost:7203/api/Extensions/${ext}`)
+        .delete(appUrl + `Extensions/${ext}`, {
+          withCredentials: true,
+        })
         .then((res) => {
           //setFilterList(res.data);
           setExtensionsList(extensionsList.filter((x) => x != ext));

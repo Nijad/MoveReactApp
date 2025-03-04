@@ -6,53 +6,17 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 import ConfigField from "../../components/Config/ConfigField";
+import { appUrl } from "../../../URL";
 
 function Configurations() {
   const [configs, setConfigs] = useState([]);
 
-  const data = [
-    {
-      order: 1,
-      key: "Backup_Path",
-      value:
-        "\\\\192.168.10.197\\C$Users\\khourynj\\Desktop\\test_move\\audit\\",
-      fieldProps:
-        '{"desc": "path to backup directory", "props": {}, "dataType": "text"}',
-    },
-    {
-      order: 2,
-      key: "Duration",
-      value: "5,s",
-      fieldProps:
-        '{"desc": "time duration to pause program after each loop", "child": {"desc": "time unit (second, minute, hour)", "props": {"data": [{"label": "Second", "value": "s"}, {"label": "Minute", "value": "m"}, {"label": "Hour", "value": "h"}]}, "parent": "Duration", "dataType": "select"}, "props": {"max": 59, "min": 0}, "dataType": "number"}',
-    },
-    {
-      order: 3,
-      key: "Max_File_Size",
-      value: "30,M",
-      fieldProps:
-        '{"desc": "maximum size allowed to move", "child": {"desc": "size unit (KB, MB, GB)", "props": {"data": [{"label": "KB", "value": "K"}, {"label": "MB", "value": "M"}, {"label": "GB", "value": "G"}]}, "parent": "Max_File_Size", "dataType": "select"}, "props": {"min": 0}, "dataType": "number"}',
-    },
-    {
-      order: 4,
-      key: "Admins",
-      value: "mourado,daouda",
-      fieldProps:
-        '{"desc": "windows users separated by comma \\",\\"", "props": {}, "dataType": "text"}',
-    },
-    {
-      order: 5,
-      key: "Developers",
-      value: "khourynj,saabn",
-      fieldProps:
-        '{"desc": "windows users separated by comma \\",\\"", "props": {}, "dataType": "text"}',
-    },
-  ];
-
   useEffect(() => {
     //setConfigs(data);
     axios
-      .get("https://localhost:7203/api/Configurations")
+      .get(appUrl + "Configurations", {
+        withCredentials: true,
+      })
       .then((res) => {
         setConfigs(res.data);
         console.log(res.data);

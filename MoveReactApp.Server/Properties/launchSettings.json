@@ -1,7 +1,7 @@
 {
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
-    "windowsAuthentication": false,
+    "windowsAuthentication": true,
     "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:22021",
@@ -38,7 +38,9 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
-      }
+      },
+      "windowsAuthentication": true,
+      "anonymousAuthentication": false
     }
   }
 }

@@ -15,6 +15,7 @@ import { useSnackbar } from "notistack";
 import axios from "axios";
 import DeptForm from "../../components/Department/DeptForm";
 import Datagrid from "../../components/Department/Datagrid";
+import { appUrl } from "../../../URL";
 
 function Departemnts() {
   const [dept, setDept] = useState();
@@ -36,7 +37,9 @@ function Departemnts() {
     setDept(department);
     if (department != null)
       axios
-        .get(`https://localhost:7203/api/Departments/${department}`)
+        .get(appUrl + `Departments/${department}`, {
+          withCredentials: true,
+        })
         .then((res) => {
           setDepartmentDetails(res.data);
         })
@@ -76,7 +79,9 @@ function Departemnts() {
 
   const GetExtensionNames = () => {
     axios
-      .get("https://localhost:7203/api/Extensions/names")
+      .get(appUrl + "Extensions/names", {
+        withCredentials: true,
+      })
       .then((res) => {
         setExtensionsList(res.data);
       })
@@ -92,7 +97,9 @@ function Departemnts() {
 
   const GetDepartmentNames = () => {
     axios
-      .get("https://localhost:7203/api/Departments/names")
+      .get(appUrl + "Departments/names", {
+        withCredentials: true,
+      })
       .then((res) => {
         setDepartmentsList(res.data);
         setFilterList(res.data);

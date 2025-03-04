@@ -1,4 +1,6 @@
 
+using Microsoft.AspNetCore.Authentication.Negotiate;
+
 namespace MoveReactApp.Server
 {
     public class Program
@@ -7,33 +9,32 @@ namespace MoveReactApp.Server
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
+                            .AddNegotiate();
+            builder.Services.AddAuthorization();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                    builder =>
-                    {
-                        builder.WithOrigins("http://localhost",
+                options.AddPolicy("AllowReactApp", policy =>
+                {
+                    policy.WithOrigins("http://localhost",
                             "http://localhost:4200",
                             "https://localhost:7230",
                             "http://localhost:90",
                             "https://localhost:54785",
-                            "https://localhost:54786")
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                            .SetIsOriginAllowedToAllowWildcardSubdomains();
-                    });
+                            "https://localhost:54786") // React app URL
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials()
+                          .SetIsOriginAllowedToAllowWildcardSubdomains();
+                });
             });
 
             var app = builder.Build();
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors("AllowReactApp");
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
@@ -42,18 +43,13 @@ namespace MoveReactApp.Server
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                app.UseDeveloperExceptionPage();
             }
-
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.MapControllers();
-
             app.MapFallbackToFile("/index.html");
-
-
 
             app.Run();
         }

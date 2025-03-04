@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { enqueueSnackbar } from "notistack";
 import axios from "axios";
 import Header from "./Header";
+import { appUrl } from "../../../URL";
 
 function FileGridView({
   directory,
@@ -27,9 +28,15 @@ function FileGridView({
   useEffect(() => {
     if (directory !== undefined && directory !== null)
       axios
-        .post(`https://localhost:7203/api/Move/GetFiles`, {
-          directory: `${directory}`,
-        })
+        .post(
+          appUrl + `Move/GetFiles`,
+          {
+            directory: `${directory}`,
+          },
+          {
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           setFiles(res.data);
         })

@@ -15,6 +15,7 @@ import queryString from "query-string";
 import { useSnackbar } from "notistack";
 import axios from "axios";
 import Datagrid from "../../components/Extension/Datagrid";
+import { appUrl } from "../../../URL";
 
 function Extensions() {
   const [ext, setExt] = useState();
@@ -37,7 +38,9 @@ function Extensions() {
     setExt(extension);
     if (extension != null)
       axios
-        .get(`https://localhost:7203/api/Extensions/${extension}`)
+        .get(appUrl + `Extensions/${extension}`, {
+          withCredentials: true,
+        })
         .then((res) => {
           setExtensionDetails(res.data);
         })
@@ -77,7 +80,9 @@ function Extensions() {
 
   const GetExtensionNames = () => {
     axios
-      .get("https://localhost:7203/api/Extensions/names")
+      .get(appUrl + "Extensions/names", {
+        withCredentials: true,
+      })
       .then((res) => {
         setExtensionsList(res.data);
         setFilterList(res.data);
@@ -95,7 +100,9 @@ function Extensions() {
 
   const GetDepartmentNames = () => {
     axios
-      .get("https://localhost:7203/api/Departments/names")
+      .get(appUrl + "Departments/names", {
+        withCredentials: true,
+      })
       .then((res) => {
         setDepartmentList(res.data);
       })

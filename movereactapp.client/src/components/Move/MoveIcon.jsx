@@ -3,11 +3,11 @@
 
 import { MoveUpOutlined } from "@mui/icons-material";
 import { IconButton, Tooltip } from "@mui/material";
-import DraggableDialog from "../common/DraggableDialog";
 import { useState } from "react";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 import DraggableInputDialog from "../common/DraggableInputDialog";
+import { appUrl } from "../../../URL";
 
 function MoveIcon({ path, destination, canMove, setFiles }) {
   const [open, setOpen] = useState(false);
@@ -31,11 +31,17 @@ function MoveIcon({ path, destination, canMove, setFiles }) {
   const MoveFile = () => {
     if (!path.toLowerCase().includes("\\in\\")) {
       axios
-        .post(`https://localhost:7203/api/Move/MoveFile`, {
-          File: path,
-          Destination: destination,
-          Reason: reason,
-        })
+        .post(
+          appUrl + `Move/MoveFile`,
+          {
+            File: path,
+            Destination: destination,
+            Reason: reason,
+          },
+          {
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           setFiles(res.data);
           enqueueSnackbar(`File moved successfuly.`, {

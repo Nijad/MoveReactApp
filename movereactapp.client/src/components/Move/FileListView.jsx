@@ -9,6 +9,7 @@ import DeleteIcon from "./DeleteIcon";
 import Header from "./Header";
 import { enqueueSnackbar } from "notistack";
 import axios from "axios";
+import { appUrl } from "../../../URL";
 
 function FileListView({
   destination,
@@ -23,9 +24,15 @@ function FileListView({
   useEffect(() => {
     if (directory !== undefined && directory !== null)
       axios
-        .post(`https://localhost:7203/api/Move/GetFiles`, {
-          directory: `${directory}`,
-        })
+        .post(
+          appUrl + `Move/GetFiles`,
+          {
+            directory: `${directory}`,
+          },
+          {
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           setFiles(res.data);
         })

@@ -18,6 +18,7 @@ import CancelIcon from "@mui/icons-material/Close";
 import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import DraggableDialog from "../../components/common/DraggableDialog";
+import { appUrl } from "../../../URL";
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel, page, pageSize, rows } = props;
@@ -178,7 +179,9 @@ function Datagrid({ extension, departmentsList }) {
   useEffect(() => {
     if (pageSize == 0) setPageSize(100);
     axios
-      .get(`https://localhost:7203/api/Extensions/${extension}`)
+      .get(appUrl + `Extensions/${extension}`, {
+        withCredentials: true,
+      })
       .then((res) => {
         setRows(res.data.departments);
       })
@@ -234,9 +237,9 @@ function Datagrid({ extension, departmentsList }) {
   const handleDeleteClick = (id) => {
     const deletedRow = rows.find((row) => row.id === id);
     axios
-      .delete(
-        `https://localhost:7203/api/ExtDept/${extension}/${deletedRow.department}`
-      )
+      .delete(appUrl + `ExtDept/${extension}/${deletedRow.department}`, {
+        withCredentials: true,
+      })
       .then((/*res*/) => {
         setRows(rows.filter((row) => row.id !== id));
         enqueueSnackbar(
@@ -286,12 +289,18 @@ function Datagrid({ extension, departmentsList }) {
       });
 
       axios
-        .post(`https://localhost:7203/api/ExtDept/ext`, {
-          id: newRow.id,
-          ext: extension,
-          department: newRow.department,
-          direction: newRow.direction,
-        })
+        .post(
+          appUrl + `ExtDept/ext`,
+          {
+            id: newRow.id,
+            ext: extension,
+            department: newRow.department,
+            direction: newRow.direction,
+          },
+          {
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           enqueueSnackbar(
             `Extension ${extension} and department ${newRow.department} mapped successfuly.`,
@@ -320,7 +329,11 @@ function Datagrid({ extension, departmentsList }) {
     } else if (newRow.department == originalRow.department)
       axios
         .put(
-          `https://localhost:7203/api/ExtDept/${extension}/${originalRow.department}/${newRow.direction}/ext`
+          appUrl +
+            `ExtDept/${extension}/${originalRow.department}/${newRow.direction}/ext`,
+          {
+            withCredentials: true,
+          }
         )
         .then((res) => {
           enqueueSnackbar(

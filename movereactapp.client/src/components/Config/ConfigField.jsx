@@ -13,6 +13,7 @@ import UnitMenu from "./UnitMenu";
 import SaveIcon from "@mui/icons-material/Save";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
+import { appUrl } from "../../../URL";
 
 function ConfigField({ fieldInfo }) {
   const props = JSON.parse(fieldInfo.fieldProps);
@@ -31,10 +32,16 @@ function ConfigField({ fieldInfo }) {
 
   const handleSave = () => {
     axios
-      .put(`https://localhost:7203/api/Configurations`, {
-        key: fieldInfo.key,
-        value: fieldInfo.value,
-      })
+      .put(
+        appUrl + `Configurations`,
+        {
+          key: fieldInfo.key,
+          value: fieldInfo.value,
+        },
+        {
+          withCredentials: true,
+        }
+      )
       .then((res) => {
         enqueueSnackbar(`Updating ${fieldInfo.key} successfuly.`, {
           variant: "success",

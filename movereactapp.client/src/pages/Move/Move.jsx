@@ -8,6 +8,7 @@ import FolderTree from "react-folder-tree";
 import { enqueueSnackbar } from "notistack";
 import FileGridView from "../../components/Move/FileGridView";
 import FileListView from "../../components/Move/FileListView";
+import { appUrl } from "../../../URL";
 
 function Move() {
   const [tree, setTree] = useState({});
@@ -16,7 +17,9 @@ function Move() {
 
   useEffect(() => {
     axios
-      .get("https://localhost:7203/api/Move")
+      .get(appUrl + "Move", {
+        withCredentials: true,
+      })
       .then((res) => {
         setTree(res.data);
       })

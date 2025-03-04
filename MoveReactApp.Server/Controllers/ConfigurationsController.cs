@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Models;
 
@@ -8,6 +9,7 @@ namespace MoveReactApp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ConfigurationsController : ControllerBase
     {
         Operations operations = new();

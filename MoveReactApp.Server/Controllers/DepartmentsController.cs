@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Models;
 
@@ -8,21 +9,35 @@ namespace MoveReactApp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class DepartmentsController : ControllerBase
     {
         Operations operations = new();
+        //private readonly ILogger<DepartmentsController> _logger;
+
+        //public DepartmentsController(ILogger<DepartmentsController> logger)
+        //{
+        //    _logger = logger;
+        //}
+
         // GET: api/<Departments>
         [HttpGet]
         public IEnumerable<Department> Get()
         {
+            //_logger.LogInformation("User authenticated: {User}", HttpContext.User.Identity?.Name);
+            if (HttpContext.User.Identity?.IsAuthenticated != true)
+            {
+                return operations.GetDepartments();
+            }
             return operations.GetDepartments();
         }
 
         [HttpGet("names")]
         public string[] DepartmenstName()
         {
+            //_logger.LogInformation("User authenticated: {User}", HttpContext.User.Identity?.Name);
             return operations.GetDepartmentNames();
-            
+
         }
 
         // GET api/<Departments>/5

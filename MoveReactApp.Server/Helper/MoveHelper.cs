@@ -19,7 +19,7 @@ namespace MoveReactApp.Server.Helper
             g = $"\\\\{g}\\e.{d[d.Length - 1]}";
             //rename file before chech file type
             //because it does not work with arabic name files
-            
+
             fileInfo.MoveTo(g);
             FileType fileType = MimeGuesser.GuessFileType(g);
             fileInfo.MoveTo(file);
@@ -28,7 +28,6 @@ namespace MoveReactApp.Server.Helper
 
         private static void MoveToDestination(MoveFileDTO movedData)
         {
-            throw new Exception();
             FileInfo file = new(movedData.File);
             try
             {
@@ -37,7 +36,10 @@ namespace MoveReactApp.Server.Helper
                 {
                     string datetime = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
                     string[] fileParts = file.Name.Split('.');
-                    file.MoveTo(movedData.Destination + $"\\{fileParts[0]}-{datetime}.{fileParts[1]}");
+                    if (fileParts.Length > 1)
+                        file.MoveTo(movedData.Destination + $"\\{fileParts[0]}-{datetime}.{fileParts[1]}");
+                    else
+                        file.MoveTo(movedData.Destination + $"\\{fileParts[0]}-{datetime}");
                 }
                 else
                     file.MoveTo(movedData.Destination + $"\\{file.Name}");
@@ -58,7 +60,7 @@ namespace MoveReactApp.Server.Helper
             FileInfo fileInfo = new(movedData.File);
             try
             {
-                
+
                 string backupFile = "";
                 string BackupPath = operations.GetBackupPath();
                 if (!Directory.Exists(BackupPath))
@@ -82,7 +84,10 @@ namespace MoveReactApp.Server.Helper
                 {
                     string datetime = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
                     string[] fileParts = fileInfo.Name.Split('.');
-                    backupFile = BackupPath + $"\\{fileParts[0]}-{datetime}.{fileParts[1]}";
+                    if (fileParts.Length > 1)
+                        backupFile = BackupPath + $"\\{fileParts[0]}-{datetime}.{fileParts[1]}";
+                    else
+                        backupFile = BackupPath + $"\\{fileParts[0]}-{datetime}";
                 }
                 else
                     backupFile = BackupPath + $"\\{fileInfo.Name}";
@@ -115,7 +120,7 @@ namespace MoveReactApp.Server.Helper
             }
         }
 
-        public static void Move(MoveFileDTO moveData)
+        public static void Move(MoveFileDTO moveData, string username)
         {
             FileInfo fileInfo = new FileInfo(moveData.File);
             string[] fileNameSegmants = moveData.File.Split('\\');
@@ -127,12 +132,12 @@ namespace MoveReactApp.Server.Helper
             {
                 cmd = operations.InsertIntoMovedFile(
                     fileInfo.Name,
-                    fileInfo.Extension.Split('.')[1],
-                    GetFileType(fileInfo), 
+                    fileInfo.Extension.Split('.').Length > 1 ? fileInfo.Extension.Split('.')[1] : "",
+                    GetFileType(fileInfo),
                     fileInfo.Length,
-                    moveData.Dept, 
+                    moveData.Dept,
                     moveData.Destination,
-                    "nijad test",
+                    username,
                     moveData.Reason);
             }
             catch (Exception ex)
@@ -167,7 +172,7 @@ namespace MoveReactApp.Server.Helper
                 if (!string.IsNullOrEmpty(backupFile))
                     DeleteFile(backupFile);
                 operations.Rollback(cmd);
-            }  
+            }
         }
     }
 }

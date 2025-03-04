@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Helper;
 using MoveReactApp.Server.Models;
@@ -9,6 +10,7 @@ namespace MoveReactApp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MoveController : ControllerBase
     {
         Operations operations = new();
@@ -116,7 +118,8 @@ namespace MoveReactApp.Server.Controllers
                     Id = i++,
                     Path = file.FullName,
                     Name = file.Name,
-                    Extension = file.Extension.Split('.')[1],
+                    Extension = file.Extension.Split('.').Length > 1 ?
+                        file.Extension.Split('.')[file.Extension.Split('.').Length-1] : "",
                     Length = file.Length
                 });
             }
@@ -125,22 +128,27 @@ namespace MoveReactApp.Server.Controllers
 
         // POST api/<MoveController>
         [HttpPost("MoveFile")]
-        public List<FileInfoDTO> MoveFile([FromBody] MoveFileDTO moveData)
+        public /*List<FileInfoDTO>*/IActionResult MoveFile([FromBody] MoveFileDTO moveData)
         {
+            string username = HttpContext.User.Identity?.Name;
+            username = username.Substring(username.LastIndexOf('\\') + 1);
+
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("User is not authenticated.");
+
             try
             {
-                MoveHelper.Move(moveData);
+                MoveHelper.Move(moveData, username);
             }
             catch (Exception)
             {
-
                 throw;
             }
-            
+
             DirectoryDTO dto = new() { Directory = moveData.File[..moveData.File.LastIndexOf('\\')] };
-            return GetFiles(dto);
+            return Ok(GetFiles(dto));
         }
-        
+
 
 
         // POST api/<MoveController>

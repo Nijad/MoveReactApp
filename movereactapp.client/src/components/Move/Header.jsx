@@ -14,6 +14,7 @@ import { enqueueSnackbar } from "notistack";
 import axios from "axios";
 import DraggableDialog from "../common/DraggableDialog";
 import { useState } from "react";
+import { appUrl } from "../../../URL";
 
 function Header({
   displayDirectory,
@@ -27,9 +28,15 @@ function Header({
   const getFiles = (directory) => {
     if (directory != null)
       axios
-        .post(`https://localhost:7203/api/Move/GetFiles`, {
-          directory: `${directory}`,
-        })
+        .post(
+          appUrl + `Move/GetFiles`,
+          {
+            directory: `${directory}`,
+          },
+          {
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           setFiles(res.data);
         })
@@ -51,9 +58,15 @@ function Header({
   const deleteAll = () => {
     if (directory != null)
       axios
-        .post(`https://localhost:7203/api/Move/DeleteAll`, {
-          directory: `${directory}`,
-        })
+        .post(
+          appUrl + `Move/DeleteAll`,
+          {
+            directory: `${directory}`,
+          },
+          {
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           setFiles(res.data);
           enqueueSnackbar("All files deleted successfuly.", {

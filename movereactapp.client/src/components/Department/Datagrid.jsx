@@ -18,6 +18,7 @@ import CancelIcon from "@mui/icons-material/Close";
 import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import DraggableDialog from "../../components/common/DraggableDialog";
+import { appUrl } from "../../../URL";
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel, page, pageSize, rows } = props;
@@ -178,7 +179,9 @@ function Datagrid({ department, extensionsList }) {
   useEffect(() => {
     if (pageSize == 0) setPageSize(100);
     axios
-      .get(`https://localhost:7203/api/Departments/${department}`)
+      .get(appUrl + `Departments/${department}`, {
+        withCredentials: true,
+      })
       .then((res) => {
         setRows(res.data.extensions);
       })
@@ -231,9 +234,9 @@ function Datagrid({ department, extensionsList }) {
   const handleDeleteClick = (id) => {
     const deletedRow = rows.find((row) => row.id === id);
     axios
-      .delete(
-        `https://localhost:7203/api/ExtDept/${deletedRow.ext}/${department}`
-      )
+      .delete(appUrl + `ExtDept/${deletedRow.ext}/${department}`, {
+        withCredentials: true,
+      })
       .then((/*res*/) => {
         setRows(rows.filter((row) => row.id !== id));
         enqueueSnackbar(
@@ -283,12 +286,18 @@ function Datagrid({ department, extensionsList }) {
       });
 
       axios
-        .post(`https://localhost:7203/api/ExtDept/dept`, {
-          id: newRow.id,
-          ext: newRow.ext,
-          department: department,
-          direction: newRow.direction,
-        })
+        .post(
+          appUrl + `ExtDept/dept`,
+          {
+            id: newRow.id,
+            ext: newRow.ext,
+            department: department,
+            direction: newRow.direction,
+          },
+          {
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           enqueueSnackbar(
             `Department ${department} and extension ${newRow.extension} mapped successfuly.`,
@@ -317,7 +326,11 @@ function Datagrid({ department, extensionsList }) {
     } else if (newRow.ext == originalRow.ext)
       axios
         .put(
-          `https://localhost:7203/api/ExtDept/${originalRow.ext}/${department}/${newRow.direction}/dept`
+          appUrl +
+            `ExtDept/${originalRow.ext}/${department}/${newRow.direction}/dept`,
+          {
+            withCredentials: true,
+          }
         )
         .then((res) => {
           enqueueSnackbar(
