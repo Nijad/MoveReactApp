@@ -30,18 +30,15 @@ function MoveIcon({ path, destination, canMove, setFiles }) {
 
   const MoveFile = () => {
     if (!path.toLowerCase().includes("\\in\\")) {
+      let formData = new FormData();
+      formData.append("File", path);
+      formData.append("Destination", destination);
+      formData.append("Reason", reason);
+
       axios
-        .post(
-          appUrl + `Move/MoveFile`,
-          {
-            File: path,
-            Destination: destination,
-            Reason: reason,
-          },
-          {
-            withCredentials: true,
-          }
-        )
+        .post(appUrl + `Move/MoveFile`, formData, {
+          withCredentials: true,
+        })
         .then((res) => {
           setFiles(res.data);
           enqueueSnackbar(`File moved successfuly.`, {

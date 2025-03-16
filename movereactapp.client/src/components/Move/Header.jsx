@@ -26,17 +26,13 @@ function Header({
 }) {
   const [open, setOpen] = useState(false);
   const getFiles = (directory) => {
-    if (directory != null)
+    if (directory != null) {
+      let formData = new FormData();
+      formData.append("directory", directory);
       axios
-        .post(
-          appUrl + `Move/GetFiles`,
-          {
-            directory: `${directory}`,
-          },
-          {
-            withCredentials: true,
-          }
-        )
+        .post(appUrl + `Move/GetFiles`, formData, {
+          withCredentials: true,
+        })
         .then((res) => {
           setFiles(res.data);
         })
@@ -48,7 +44,7 @@ function Header({
           });
           console.log(err);
         });
-    else setFiles([]);
+    } else setFiles([]);
   };
 
   const deleteConfirmation = () => {
@@ -56,17 +52,14 @@ function Header({
   };
 
   const deleteAll = () => {
-    if (directory != null)
+    if (directory != null) {
+      let formData = new FormData();
+      formData.append("directory", directory);
+
       axios
-        .post(
-          appUrl + `Move/DeleteAll`,
-          {
-            directory: `${directory}`,
-          },
-          {
-            withCredentials: true,
-          }
-        )
+        .post(appUrl + `Move/DeleteAll`, formData, {
+          withCredentials: true,
+        })
         .then((res) => {
           setFiles(res.data);
           enqueueSnackbar("All files deleted successfuly.", {
@@ -83,6 +76,7 @@ function Header({
           });
           console.log(err);
         });
+    }
   };
 
   return (

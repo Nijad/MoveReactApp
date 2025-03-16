@@ -20,30 +20,16 @@ namespace MoveReactApp.Server.Controllers
             return operations.GetConfig();
         }
 
-        // GET api/<ConfigurationsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<ConfigurationsController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
         // PUT api/<ConfigurationsController>/5
-        [HttpPut]
-        public void Put([FromBody] UpdateConfigDTO value)
+        [HttpPost]
+        public void Put([FromForm] IFormCollection form)
         {
+            UpdateConfigDTO value = new()
+            {
+                Key = form["key"].ToString(),
+                Value = form["value"].ToString(),
+            };
             operations.UpdateConfig(value);
-        }
-
-        // DELETE api/<ConfigurationsController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

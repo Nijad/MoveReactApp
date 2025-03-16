@@ -236,8 +236,11 @@ function Datagrid({ extension, departmentsList }) {
 
   const handleDeleteClick = (id) => {
     const deletedRow = rows.find((row) => row.id === id);
+    const deleteFormData = new FormData();
+    deleteFormData.append("ext", extension);
+    deleteFormData.append("dept", deletedRow.department);
     axios
-      .delete(appUrl + `ExtDept/${extension}/${deletedRow.department}`, {
+      .post(appUrl + `ExtDept/Delete`, deleteFormData, {
         withCredentials: true,
       })
       .then((/*res*/) => {
@@ -288,19 +291,16 @@ function Datagrid({ extension, departmentsList }) {
         Direction: newRow.direction,
       });
 
+      let formData = new FormData();
+      formData.append("id", newRow.id);
+      formData.append("ext", extension);
+      formData.append("department", newRow.department);
+      formData.append("direction", newRow.direction);
+
       axios
-        .post(
-          appUrl + `ExtDept/ext`,
-          {
-            id: newRow.id,
-            ext: extension,
-            department: newRow.department,
-            direction: newRow.direction,
-          },
-          {
-            withCredentials: true,
-          }
-        )
+        .post(appUrl + `ExtDept/ext`, formData, {
+          withCredentials: true,
+        })
         .then((res) => {
           enqueueSnackbar(
             `Extension ${extension} and department ${newRow.department} mapped successfuly.`,
@@ -326,15 +326,16 @@ function Datagrid({ extension, departmentsList }) {
             setRows(rows.filter((row) => row.id !== newRow.id));
           console.log(err);
         });
-    } else if (newRow.department == originalRow.department)
+    } else if (newRow.department == originalRow.department) {
+      let putFormData = new FormData();
+      putFormData.append("ext", extension);
+      putFormData.append("dept", originalRow.department);
+      putFormData.append("direction", newRow.direction);
+      putFormData.append("from", "ext");
       axios
-        .put(
-          appUrl +
-            `ExtDept/${extension}/${originalRow.department}/${newRow.direction}/ext`,
-          {
-            withCredentials: true,
-          }
-        )
+        .post(appUrl + `ExtDept/Update`, putFormData, {
+          withCredentials: true,
+        })
         .then((res) => {
           enqueueSnackbar(
             `Extension ${extension} mapped department ${originalRow.department} updated successfuly.`,
@@ -357,7 +358,7 @@ function Datagrid({ extension, departmentsList }) {
           setRows(rows);
           console.log(err);
         });
-    else {
+    } else {
       enqueueSnackbar(
         `It is not allowed to edit department name. You can only add and delete departmens.`,
         {

@@ -4,17 +4,20 @@ using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Helper;
 using MoveReactApp.Server.Models;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace MoveReactApp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "INTERNET\\Domain Users")]
     public class MoveController : ControllerBase
     {
+        //private readonly IHttpContextAccessor context;
         Operations operations = new();
-        // GET: api/<MoveController>
+        //public MoveController(IHttpContextAccessor _context)
+        //{
+        //    context = _context;
+        //}
+        
         [HttpGet]
         public DirectoriesDTO Get()
         {
@@ -103,11 +106,16 @@ namespace MoveReactApp.Server.Controllers
             return directoriesDTOs;
         }
 
-        // GET api/<MoveController>/5
         [HttpPost("GetFiles")]
-        public List<FileInfoDTO> GetFiles([FromBody] DirectoryDTO directory)
+        public List<FileInfoDTO> GetFiles([FromForm] IFormCollection form)
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo(directory.Directory);
+            string directory = form["directory"];
+            return GetFiles(directory);
+        }
+
+        private static List<FileInfoDTO> GetFiles(string directory)
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(directory);
             FileInfo[] files = directoryInfo.GetFiles();
             List<FileInfoDTO> filesInfo = new();
             int i = 0;
@@ -119,17 +127,20 @@ namespace MoveReactApp.Server.Controllers
                     Path = file.FullName,
                     Name = file.Name,
                     Extension = file.Extension.Split('.').Length > 1 ?
-                        file.Extension.Split('.')[file.Extension.Split('.').Length-1] : "",
+                        file.Extension.Split('.')[file.Extension.Split('.').Length - 1] : "",
                     Length = file.Length
                 });
             }
             return filesInfo;
         }
 
-        // POST api/<MoveController>
         [HttpPost("MoveFile")]
-        public /*List<FileInfoDTO>*/IActionResult MoveFile([FromBody] MoveFileDTO moveData)
+        public IActionResult MoveFile([FromForm] IFormCollection form)
         {
+            string file = form["File"];
+            string destination = form["Destination"];
+            string reason = form["Reason"];
+
             string username = HttpContext.User.Identity?.Name;
             username = username.Substring(username.LastIndexOf('\\') + 1);
 
@@ -138,33 +149,38 @@ namespace MoveReactApp.Server.Controllers
 
             try
             {
-                MoveHelper.Move(moveData, username);
+                MoveHelper.Move(
+                    new MoveFileDTO { 
+                        Destination = destination, 
+                        File = file, 
+                        Reason = reason 
+                    },
+                    username
+                );
             }
             catch (Exception)
             {
                 throw;
             }
 
-            DirectoryDTO dto = new() { Directory = moveData.File[..moveData.File.LastIndexOf('\\')] };
-            return Ok(GetFiles(dto));
+            string directory = file[..file.LastIndexOf('\\')] ;
+            return Ok(GetFiles(directory));
         }
 
-
-
-        // POST api/<MoveController>
         [HttpPost("DeleteFile")]
-        public List<FileInfoDTO> DeleteFile([FromBody] DirectoryDTO moveData)
+        public List<FileInfoDTO> DeleteFile([FromForm] IFormCollection form)
         {
-            FileInfo fileInfo = new FileInfo(moveData.Directory);
+            string directory = form["directory"];
+            FileInfo fileInfo = new FileInfo(directory);
             fileInfo.Delete();
-            DirectoryDTO dto = new() { Directory = moveData.Directory[..moveData.Directory.LastIndexOf('\\')] };
-            return GetFiles(dto);
+            return GetFiles(directory[..directory.LastIndexOf('\\')]);
         }
 
         [HttpPost("DeleteAll")]
-        public List<FileInfoDTO> DeleteAll([FromBody] DirectoryDTO directory)
+        public List<FileInfoDTO> DeleteAll([FromForm] IFormCollection form)
         {
-            string[] files = Directory.GetFiles(directory.Directory);
+            string directory = form["directory"];
+            string[] files = Directory.GetFiles(directory);
             foreach (string file in files)
                 new FileInfo(file).Delete();
 

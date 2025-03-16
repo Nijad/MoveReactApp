@@ -31,17 +31,13 @@ function ConfigField({ fieldInfo }) {
   };
 
   const handleSave = () => {
+    let formData = new FormData();
+    formData.append("key", fieldInfo.key);
+    formData.append("value", fieldInfo.value);
     axios
-      .put(
-        appUrl + `Configurations`,
-        {
-          key: fieldInfo.key,
-          value: fieldInfo.value,
-        },
-        {
-          withCredentials: true,
-        }
-      )
+      .post(appUrl + `Configurations`, formData, {
+        withCredentials: true,
+      })
       .then((res) => {
         enqueueSnackbar(`Updating ${fieldInfo.key} successfuly.`, {
           variant: "success",

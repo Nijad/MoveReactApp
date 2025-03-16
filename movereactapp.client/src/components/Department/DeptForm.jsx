@@ -64,18 +64,15 @@ function DeptForm({
   };
 
   const handleAddNewExtension = (data) => {
+    let formData = new FormData();
+    for (var key in data) {
+      if (key == "note" && data[key] === null) formData.append("note", "");
+      else formData.append(key, data[key]);
+    }
     axios
-      .post(
-        appUrl + "Departments",
-        {
-          ...data,
-          note: data.note === null ? "" : data.note,
-          extensions: [],
-        },
-        {
-          withCredentials: true,
-        }
-      )
+      .post(appUrl + "Departments", formData, {
+        withCredentials: true,
+      })
       .then((res) => {
         setDept(data.dept);
         setIsNewRec(false);
@@ -106,20 +103,15 @@ function DeptForm({
   };
 
   const handleUpdateExtension = (data) => {
-    console.log(data);
-    console.log({ ...data, Extensions: [] });
-
+    let formData = new FormData();
+    for (var key in data) {
+      if (key == "note" && data[key] === null) formData.append("note", "");
+      else formData.append(key, data[key]);
+    }
     axios
-      .put(
-        appUrl + `Departments/${dept}`,
-        {
-          ...data,
-          Extensions: [],
-        },
-        {
-          withCredentials: true,
-        }
-      )
+      .post(appUrl + `departments/Update/${dept}`, formData, {
+        withCredentials: true,
+      })
       .then((res) => {
         setEditable(false);
 
@@ -165,8 +157,9 @@ function DeptForm({
 
   const handleDelete = () => {
     try {
+      let formData = new FormData();
       axios
-        .delete(appUrl + `Departments/${dept}`, {
+        .post(appUrl + `Departments/delete/${dept}`, formData, {
           withCredentials: true,
         })
         .then((res) => {

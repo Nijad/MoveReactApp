@@ -40,6 +40,7 @@ function DraggableInputDialog({
   maxWidth,
   modalData,
   setReason,
+  displayInputField,
 }) {
   const handleClose = () => {
     setOpen(false);
@@ -68,10 +69,20 @@ function DraggableInputDialog({
       </DialogTitle>
       <DialogContent>
         <DialogContentText>{msg}</DialogContentText>
-        <TextField size="small" fullWidth onChange={(e) => handleChange(e)} />
-        <FormLabel color="error" size="small">
-          {fieldName} field required
-        </FormLabel>
+        {displayInputField ? (
+          <>
+            <TextField
+              size="small"
+              fullWidth
+              onChange={(e) => handleChange(e)}
+            />
+            <FormLabel color="error" size="small">
+              {fieldName} field required
+            </FormLabel>
+          </>
+        ) : (
+          <></>
+        )}
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={handleClose}>

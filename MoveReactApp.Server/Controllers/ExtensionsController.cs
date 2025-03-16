@@ -36,8 +36,17 @@ namespace MoveReactApp.Server.Controllers
 
         // POST api/<ExtensionController>
         [HttpPost]
-        public string[] Post([FromBody] Extension extension)
+        public string[] Post([FromForm] IFormCollection form)
         {
+            Extension extension = new()
+            {
+                Ext = form["ext"].ToString(),
+                Enabled = bool.Parse(form["enabled"].ToString()),
+                Note = form["note"].ToString(),
+                Program = form["program"].ToString(),
+                Departments = new()
+            };
+
             //List<Extension> s = FakeData.Extensions();
             //s.Add(extension);
             //return s.Select(x => x.Ext).ToArray();
@@ -47,15 +56,23 @@ namespace MoveReactApp.Server.Controllers
         }
 
         // PUT api/<ExtensionController>/5
-        [HttpPut("{ext}")]
-        public void Put(string ext, [FromBody] Extension extension)
+        [HttpPost("update/{ext}")]
+        public void Put(string ext, [FromForm] IFormCollection form)
         {
+            Extension extension = new()
+            {
+                Ext = form["ext"].ToString(),
+                Enabled = bool.Parse(form["enabled"].ToString()),
+                Note = form["note"].ToString(),
+                Program = form["program"].ToString(),
+                Departments = new()
+            };
             operations.UpdateExtension(ext, extension);
             //return operations.GetExtensions();
         }
 
         // DELETE api/<ExtensionController>/5
-        [HttpDelete("{ext}")]
+        [HttpPost("delete/{ext}")]
         public void Delete(string ext)
         {
             //return;

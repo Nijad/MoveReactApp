@@ -49,21 +49,39 @@ namespace MoveReactApp.Server.Controllers
 
         // POST api/<Departments>
         [HttpPost]
-        public string[] Post([FromBody] Department department)
+        public string[] Post([FromForm] IFormCollection form)
         {
+            Department department = new()
+            {
+                Dept = form["dept"].ToString(),
+                Enabled = bool.Parse(form["enabled"].ToString()),
+                Extensions = new(),
+                LocalPath = form["localPath"].ToString(),
+                NetPath = form["netPath"].ToString(),
+                Note = form["note"]
+            };
             operations.AddDepartment(department);
             return operations.GetDepartmentNames().ToArray();
         }
 
         // PUT api/<Departments>/5
-        [HttpPut("{dept}")]
-        public void Put(string dept, [FromBody] Department department)
+        [HttpPost("update/{dept}")]
+        public void Put(string dept, [FromForm] IFormCollection form)
         {
+            Department department = new()
+            {
+                Dept = form["dept"].ToString(),
+                Enabled = bool.Parse(form["enabled"].ToString()),
+                Extensions = new(),
+                LocalPath = form["localPath"].ToString(),
+                NetPath = form["netPath"].ToString(),
+                Note = form["note"]
+            };
             operations.UpdateDepartment(dept, department);
         }
 
         // DELETE api/<Departments>/5
-        [HttpDelete("{dept}")]
+        [HttpPost("delete/{dept}")]
         public void Delete(string dept)
         {
             operations.DeleteDepartment(dept);

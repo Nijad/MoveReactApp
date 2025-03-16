@@ -63,17 +63,13 @@ function ExtForm({
   };
 
   const handleAddNewExtension = (data) => {
+    let formData = new FormData();
+    for (var key in data) formData.append(key, data[key]);
+
     axios
-      .post(
-        appUrl + "Extensions",
-        {
-          ...data,
-          Departments: [],
-        },
-        {
-          withCredentials: true,
-        }
-      )
+      .post(appUrl + "Extensions", formData, {
+        withCredentials: true,
+      })
       .then((res) => {
         setExt(data.ext);
         setIsNewRec(false);
@@ -104,20 +100,20 @@ function ExtForm({
   };
 
   const handleUpdateExtension = (data) => {
+    let formData = new FormData();
+    for (var key in data) formData.append(key, data[key]);
+
     axios
-      .put(
-        appUrl + `Extensions/${ext}`,
-        {
-          ...data,
-          Departments: [],
-        },
-        {
-          withCredentials: true,
-        }
-      )
+      .post(appUrl + `Extensions/update/${ext}`, formData, {
+        withCredentials: true,
+      })
       .then((res) => {
         setEditable(false);
-
+        history.pushState(
+          null,
+          null,
+          `https://localhost:54785/Extensions/?ext=${data.ext}`
+        );
         enqueueSnackbar(`Extension ${ext} updated successfuly.`, {
           variant: "success",
           anchorOrigin: { horizontal: "center", vertical: "top" },
@@ -160,8 +156,11 @@ function ExtForm({
 
   const handleDelete = () => {
     try {
+      let formData = new FormData();
+      // formData.append("ext", ext);
+
       axios
-        .delete(appUrl + `Extensions/${ext}`, {
+        .post(appUrl + `Extensions/delete/${ext}`, formData, {
           withCredentials: true,
         })
         .then((res) => {

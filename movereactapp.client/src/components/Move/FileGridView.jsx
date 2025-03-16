@@ -26,17 +26,14 @@ function FileGridView({
 }) {
   const [files, setFiles] = useState([]);
   useEffect(() => {
-    if (directory !== undefined && directory !== null)
+    if (directory !== undefined && directory !== null) {
+      let formData = new FormData();
+      formData.append("directory", directory);
+
       axios
-        .post(
-          appUrl + `Move/GetFiles`,
-          {
-            directory: `${directory}`,
-          },
-          {
-            withCredentials: true,
-          }
-        )
+        .post(appUrl + `Move/GetFiles`, formData, {
+          withCredentials: true,
+        })
         .then((res) => {
           setFiles(res.data);
         })
@@ -48,7 +45,7 @@ function FileGridView({
           });
           console.log(err);
         });
-    else setFiles([]);
+    } else setFiles([]);
   }, [directory]);
   return (
     <>

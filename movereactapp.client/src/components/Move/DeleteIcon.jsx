@@ -21,16 +21,13 @@ function DeleteIcon({ path, setFiles }) {
   };
 
   const DeleteFile = () => {
+    let formData = new FormData();
+    formData.append("directory", path);
+
     axios
-      .post(
-        appUrl + `Move/DeleteFile`,
-        {
-          directory: path,
-        },
-        {
-          withCredentials: true,
-        }
-      )
+      .post(appUrl + `Move/DeleteFile`, formData, {
+        withCredentials: true,
+      })
       .then((res) => {
         setFiles(res.data);
         enqueueSnackbar(`File deleted successfuly.`, {
