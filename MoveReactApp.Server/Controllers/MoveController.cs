@@ -137,9 +137,9 @@ namespace MoveReactApp.Server.Controllers
         [HttpPost("MoveFile")]
         public IActionResult MoveFile([FromForm] IFormCollection form)
         {
-            string file = form["File"];
-            string destination = form["Destination"];
-            string reason = form["Reason"];
+            string file = form["File"].ToString();
+            string destination = form["Destination"].ToString();
+            string reason = form["Reason"].ToString();
 
             string username = HttpContext.User.Identity?.Name;
             username = username.Substring(username.LastIndexOf('\\') + 1);

@@ -76,6 +76,7 @@ function MoveIcon({ path, destination, canMove, setFiles }) {
         fullWidth={true}
         fieldName="Reason"
         setReason={setReason}
+        displayInputField={canMove}
       />
     </>
   );
