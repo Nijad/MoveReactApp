@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Models;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,24 +13,46 @@ namespace MoveReactApp.Server.Controllers
     [Authorize]
     public class ConfigurationsController : ControllerBase
     {
+        private readonly ILogger<MoveController> _logger;
+
+        public ConfigurationsController(ILogger<MoveController> logger)
+        {
+            _logger = logger;
+        }
+
         Operations operations = new();
         // GET: api/<ConfigurationsController>
         [HttpGet]
-        public IEnumerable<Configuration> Get()
+        public IActionResult Get()
         {
-            return operations.GetConfig();
+            try
+            {
+                return Ok(operations.GetConfig());
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get configurations");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         // PUT api/<ConfigurationsController>/5
         [HttpPost]
-        public void Put([FromForm] IFormCollection form)
+        public IActionResult Put([FromForm] IFormCollection form)
         {
-            UpdateConfigDTO value = new()
+            UpdateConfigDTO keyValuePair = new()
             {
                 Key = form["key"].ToString(),
                 Value = form["value"].ToString(),
             };
-            operations.UpdateConfig(value);
+            try
+            {
+                operations.UpdateConfig(keyValuePair);
+                return Ok();
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to update {keyValuePair.Key}");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
     }
 }
