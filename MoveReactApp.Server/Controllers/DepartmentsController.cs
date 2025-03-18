@@ -2,89 +2,116 @@
 using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System.Net;
 
 namespace MoveReactApp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize(Roles = "INTERNET\\Domain Users")]
     public class DepartmentsController : ControllerBase
     {
         Operations operations = new();
-        //private readonly ILogger<DepartmentsController> _logger;
+        private readonly ILogger<DepartmentsController> _logger;
 
-        //public DepartmentsController(ILogger<DepartmentsController> logger)
-        //{
-        //    _logger = logger;
-        //}
+        public DepartmentsController(ILogger<DepartmentsController> logger)
+        {
+            _logger = logger;
+        }
 
-        // GET: api/<Departments>
         [HttpGet]
         public IEnumerable<Department> Get()
         {
-            //_logger.LogInformation("User authenticated: {User}", HttpContext.User.Identity?.Name);
-            if (HttpContext.User.Identity?.IsAuthenticated != true)
-            {
-                return operations.GetDepartments();
-            }
             return operations.GetDepartments();
         }
 
         [HttpGet("names")]
-        public string[] DepartmenstName()
+        public IActionResult DepartmenstName()
         {
-            //_logger.LogInformation("User authenticated: {User}", HttpContext.User.Identity?.Name);
-            return operations.GetDepartmentNames();
-
+            try
+            {
+                return Ok(operations.GetDepartmentNames());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get departments");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
-        // GET api/<Departments>/5
         [HttpGet("{dept}")]
-        public Department Get(string dept)
+        public IActionResult Get(string dept)
         {
-            return operations.GetDepartment(dept);
+            try
+            {
+                return Ok(operations.GetDepartment(dept));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to get department: {dept}");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
-        // POST api/<Departments>
         [HttpPost]
-        public string[] Post([FromForm] IFormCollection form)
+        public IActionResult Post([FromForm] IFormCollection form)
         {
-            Department department = new()
+            try
             {
-                Dept = form["dept"].ToString(),
-                Enabled = bool.Parse(form["enabled"].ToString()),
-                Extensions = new(),
-                LocalPath = form["localPath"].ToString(),
-                NetPath = form["netPath"].ToString(),
-                Note = form["note"]
-            };
-            operations.AddDepartment(department);
-            return operations.GetDepartmentNames().ToArray();
+                Department department = new()
+                {
+                    Dept = form["dept"].ToString(),
+                    Enabled = bool.Parse(form["enabled"].ToString()),
+                    Extensions = new(),
+                    LocalPath = form["localPath"].ToString(),
+                    NetPath = form["netPath"].ToString(),
+                    Note = form["note"]
+                };
+                operations.AddDepartment(department);
+                return Ok(operations.GetDepartmentNames().ToArray());
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to add department: {form["dept"].ToString()}");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
-        // PUT api/<Departments>/5
         [HttpPost("update/{dept}")]
-        public void Put(string dept, [FromForm] IFormCollection form)
+        public ActionResult Put(string dept, [FromForm] IFormCollection form)
         {
-            Department department = new()
+            try
             {
-                Dept = form["dept"].ToString(),
-                Enabled = bool.Parse(form["enabled"].ToString()),
-                Extensions = new(),
-                LocalPath = form["localPath"].ToString(),
-                NetPath = form["netPath"].ToString(),
-                Note = form["note"]
-            };
-            operations.UpdateDepartment(dept, department);
+                Department department = new()
+                {
+                    Dept = form["dept"].ToString(),
+                    Enabled = bool.Parse(form["enabled"].ToString()),
+                    Extensions = new(),
+                    LocalPath = form["localPath"].ToString(),
+                    NetPath = form["netPath"].ToString(),
+                    Note = form["note"]
+                };
+                operations.UpdateDepartment(dept, department);
+
+                return Ok();
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to update department: {dept}");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
-        // DELETE api/<Departments>/5
         [HttpPost("delete/{dept}")]
-        public void Delete(string dept)
+        public IActionResult Delete(string dept)
         {
-            operations.DeleteDepartment(dept);
+            try
+            {
+                operations.DeleteDepartment(dept);
+                return Ok();
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to delete department: {dept}");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

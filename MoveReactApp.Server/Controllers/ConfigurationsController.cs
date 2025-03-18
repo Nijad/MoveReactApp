@@ -10,7 +10,7 @@ namespace MoveReactApp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "INTERNET\\Domain Users")]
     public class ConfigurationsController : ControllerBase
     {
         private readonly ILogger<MoveController> _logger;
