@@ -2,8 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System.Net;
 
 namespace MoveReactApp.Server.Controllers
 {
@@ -13,70 +12,117 @@ namespace MoveReactApp.Server.Controllers
     public class ExtensionsController : ControllerBase
     {
         Operations operations = new();
-        // GET: api/<ExtensionController>
-        [HttpGet]
-        public List<Extension> Get()
+        private readonly ILogger<DepartmentsController> _logger;
+
+        public ExtensionsController(ILogger<DepartmentsController> logger)
         {
-            return operations.GetExtensions();
+            _logger = logger;
         }
 
-        [HttpGet("names")]
-        public string[] ExtensiontNames()
+        ///////////////////////////////////////////
+        [HttpGet]
+        public IActionResult Get()
         {
-            return operations.GetExtensionNames();
+            try
+            {
+                return Ok(operations.GetExtensions());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get extensions");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+        ///////////////////////////////////////////
+
+        [HttpGet("names")]
+        public IActionResult ExtensiontNames()
+        {
+            try
+            {
+                return Ok(operations.GetExtensionNames());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get extensions");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpGet("{ext}")]
-        public Extension Get(string ext)
+        public IActionResult Get(string ext)
         {
-            Extension? s = operations.GetExtension(ext);
-            //Extension? s = extensions.Where(X => X.Ext == ext).FirstOrDefault();
-            return s;
+            try
+            {
+                return Ok(operations.GetExtension(ext));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get extensions");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
-        // POST api/<ExtensionController>
         [HttpPost]
-        public string[] Post([FromForm] IFormCollection form)
+        public IActionResult Post([FromForm] IFormCollection form)
         {
-            Extension extension = new()
+            try
             {
-                Ext = form["ext"].ToString(),
-                Enabled = bool.Parse(form["enabled"].ToString()),
-                Note = form["note"].ToString(),
-                Program = form["program"].ToString(),
-                Departments = new()
-            };
+                Extension extension = new()
+                {
+                    Ext = form["ext"].ToString(),
+                    Enabled = bool.Parse(form["enabled"].ToString()),
+                    Note = form["note"].ToString(),
+                    Program = form["program"].ToString(),
+                    Departments = new()
+                };
 
-            //List<Extension> s = FakeData.Extensions();
-            //s.Add(extension);
-            //return s.Select(x => x.Ext).ToArray();
-
-            operations.AddExtension(extension);
-            return ExtensiontNames();
+                operations.AddExtension(extension);
+                return Ok(ExtensiontNames());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to add extension {form["ext"].ToString()}");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
-        // PUT api/<ExtensionController>/5
         [HttpPost("update/{ext}")]
-        public void Put(string ext, [FromForm] IFormCollection form)
+        public IActionResult Put(string ext, [FromForm] IFormCollection form)
         {
-            Extension extension = new()
+            try
             {
-                Ext = form["ext"].ToString(),
-                Enabled = bool.Parse(form["enabled"].ToString()),
-                Note = form["note"].ToString(),
-                Program = form["program"].ToString(),
-                Departments = new()
-            };
-            operations.UpdateExtension(ext, extension);
-            //return operations.GetExtensions();
+                Extension extension = new()
+                {
+                    Ext = form["ext"].ToString(),
+                    Enabled = bool.Parse(form["enabled"].ToString()),
+                    Note = form["note"].ToString(),
+                    Program = form["program"].ToString(),
+                    Departments = new()
+                };
+                operations.UpdateExtension(ext, extension);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to add extension {ext}");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
-        // DELETE api/<ExtensionController>/5
         [HttpPost("delete/{ext}")]
-        public void Delete(string ext)
+        public IActionResult Delete(string ext)
         {
-            //return;
-            operations.DeleteExtension(ext);
+            try
+            {
+                operations.DeleteExtension(ext);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to add extension {ext}");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

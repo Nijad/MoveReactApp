@@ -18,13 +18,22 @@ namespace MoveReactApp.Server.Controllers
         {
             _logger = logger;
         }
-
+        
+        ///////////////////////////////////////////
         [HttpGet]
-        public IEnumerable<Department> Get()
+        public IActionResult Get()
         {
-            return operations.GetDepartments();
+            try
+            {
+                return Ok(operations.GetDepartments());
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get departments");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
-
+        ///////////////////////////////////////////
+        
         [HttpGet("names")]
         public IActionResult DepartmenstName()
         {
