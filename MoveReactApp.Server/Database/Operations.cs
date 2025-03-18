@@ -319,8 +319,7 @@ namespace MoveReactApp.Server.Database
             catch (Exception ex)
             {
                 string msg = "Can not write in database";
-                //Logging.SendEmail(ex, msg);
-                //Logging.LogException(ex);
+                throw new Exception(msg, ex);
             }
             return null;
         }

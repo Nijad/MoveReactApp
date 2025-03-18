@@ -17,8 +17,6 @@ namespace MoveReactApp.Server.Helper
             string g = string.Join('\\', s.Take(s.Count - 1));
             //get extension if there are many dots in file name
             g = $"\\\\{g}\\e.{d[d.Length - 1]}";
-            //rename file before chech file type
-            //because it does not work with arabic name files
 
             fileInfo.MoveTo(g);
             FileType fileType = MimeGuesser.GuessFileType(g);
@@ -48,10 +46,7 @@ namespace MoveReactApp.Server.Helper
             {
                 string msg = "Can not move file to destination folder";
                 msg += $"\nfile name : {file.Name} - dept : {movedData.Dept} - destination : {movedData.Destination}";
-                //Logging.WriteNotes(msg);
-                //Logging.LogException(ex);
-                //Logging.SendEmail(ex, msg);
-                throw new Exception(msg);
+                throw new Exception(msg, ex);
             }
         }
 
@@ -60,7 +55,6 @@ namespace MoveReactApp.Server.Helper
             FileInfo fileInfo = new(movedData.File);
             try
             {
-
                 string backupFile = "";
                 string BackupPath = operations.GetBackupPath();
                 if (!Directory.Exists(BackupPath))
@@ -96,12 +90,9 @@ namespace MoveReactApp.Server.Helper
             }
             catch (Exception ex)
             {
-                string msg = "Can not move file to audit folder";
+                string msg = "Can not move file to backup folder";
                 msg += $"\nfile name : {fileInfo.Name} - dept : {movedData.Dept} - destination : {movedData.Destination}";
-                //Logging.WriteNotes(msg);
-                //Logging.LogException(ex);
-                //Logging.SendEmail(ex, msg);
-                throw new Exception(msg);
+                throw new Exception(msg, ex);
             }
         }
 
@@ -115,8 +106,7 @@ namespace MoveReactApp.Server.Helper
             catch (Exception ex)
             {
                 string msg = "Can not delete file from backup folder";
-                //Logging.WriteNotes(msg);
-                //Logging.LogException(ex);
+                throw new Exception(msg, ex);
             }
         }
 
@@ -130,13 +120,14 @@ namespace MoveReactApp.Server.Helper
             MySqlCommand cmd = null;
             try
             {
+                
                 cmd = operations.InsertIntoMovedFile(
                     fileInfo.Name,
                     fileInfo.Extension.Split('.').Length > 1 ? fileInfo.Extension.Split('.')[1] : "",
                     GetFileType(fileInfo),
                     fileInfo.Length,
                     moveData.Dept,
-                    moveData.Destination,
+                    moveData.Dest,
                     username,
                     moveData.Reason);
             }
@@ -144,8 +135,7 @@ namespace MoveReactApp.Server.Helper
             {
                 string msg = ex.Message;
                 msg += $"\nfile name : {fileInfo.Name} - dept : {moveData.Dept} - destination : {moveData.Destination}";
-                //Logging.WriteNotes(msg);
-                throw new Exception(msg);
+                throw new Exception(msg, ex);
             }
 
 
@@ -158,7 +148,7 @@ namespace MoveReactApp.Server.Helper
             catch (Exception ex)
             {
                 operations.Rollback(cmd);
-                throw new Exception(ex.Message);
+                throw;
             }
 
             //move file to destination folder
@@ -167,11 +157,12 @@ namespace MoveReactApp.Server.Helper
                 MoveToDestination(moveData);
                 operations.Commit(cmd);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 if (!string.IsNullOrEmpty(backupFile))
                     DeleteFile(backupFile);
                 operations.Rollback(cmd);
+                throw;
             }
         }
     }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Helper;
 using MoveReactApp.Server.Models;
+using System.Net;
 
 namespace MoveReactApp.Server.Controllers
 {
@@ -11,13 +12,14 @@ namespace MoveReactApp.Server.Controllers
     [Authorize(Roles = "INTERNET\\Domain Users")]
     public class MoveController : ControllerBase
     {
-        //private readonly IHttpContextAccessor context;
-        Operations operations = new();
-        //public MoveController(IHttpContextAccessor _context)
-        //{
-        //    context = _context;
-        //}
-        
+        private readonly Operations operations = new();
+        private readonly ILogger<MoveController> _logger;
+
+        public MoveController(ILogger<MoveController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpGet]
         public DirectoriesDTO Get()
         {
@@ -28,16 +30,17 @@ namespace MoveReactApp.Server.Controllers
                 Children = new(),
                 DisplayDirectory = "\\\\"
             };
-
-            List<Department> depts = operations.GetDepartments();
-            foreach (Department dept in depts)
+            try
             {
-                directoriesDTO.Children.Add(new()
+                List<Department> depts = operations.GetDepartments();
+                foreach (Department dept in depts)
                 {
-                    Name = dept.Dept,
-                    IsOpen = false,
-                    DisplayDirectory = $"\\\\{dept.Dept.ToUpper()}",
-                    Children = new()
+                    directoriesDTO.Children.Add(new()
+                    {
+                        Name = dept.Dept,
+                        IsOpen = false,
+                        DisplayDirectory = $"\\\\{dept.Dept.ToUpper()}",
+                        Children = new()
                     {
                         new()
                         {
@@ -66,7 +69,12 @@ namespace MoveReactApp.Server.Controllers
                             )
                         }
                     }
-                });
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
             }
             return directoriesDTO;
         }
@@ -107,10 +115,18 @@ namespace MoveReactApp.Server.Controllers
         }
 
         [HttpPost("GetFiles")]
-        public List<FileInfoDTO> GetFiles([FromForm] IFormCollection form)
+        public IActionResult GetFiles([FromForm] IFormCollection form)
         {
             string directory = form["directory"];
-            return GetFiles(directory);
+            try
+            {
+                return Ok(GetFiles(directory));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         private static List<FileInfoDTO> GetFiles(string directory)
@@ -150,41 +166,80 @@ namespace MoveReactApp.Server.Controllers
             try
             {
                 MoveHelper.Move(
-                    new MoveFileDTO { 
-                        Destination = destination, 
-                        File = file, 
-                        Reason = reason 
+                    new MoveFileDTO
+                    {
+                        Destination = destination,
+                        File = file,
+                        Reason = reason
                     },
                     username
                 );
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex, ex.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Failed to move file");
             }
 
-            string directory = file[..file.LastIndexOf('\\')] ;
-            return Ok(GetFiles(directory));
+            string directory = file[..file.LastIndexOf('\\')];
+            try
+            {
+                return Ok(GetFiles(directory));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpPost("DeleteFile")]
-        public List<FileInfoDTO> DeleteFile([FromForm] IFormCollection form)
+        public IActionResult DeleteFile([FromForm] IFormCollection form)
         {
             string directory = form["directory"];
             FileInfo fileInfo = new FileInfo(directory);
-            fileInfo.Delete();
-            return GetFiles(directory[..directory.LastIndexOf('\\')]);
+            try
+            {
+                fileInfo.Delete();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Failed to delete file");
+            }
+            try
+            {
+                return Ok(GetFiles(directory[..directory.LastIndexOf('\\')]));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpPost("DeleteAll")]
-        public List<FileInfoDTO> DeleteAll([FromForm] IFormCollection form)
+        public ActionResult DeleteAll([FromForm] IFormCollection form)
         {
             string directory = form["directory"];
             string[] files = Directory.GetFiles(directory);
+            bool anyError = false;
+            string msg = "";
             foreach (string file in files)
-                new FileInfo(file).Delete();
-
-            return GetFiles(directory);
+                try
+                {
+                    new FileInfo(file).Delete();
+                }
+                catch (Exception ex)
+                {
+                    msg = $"Can not delete file: {file}";
+                    _logger.LogError(ex, msg);
+                    anyError = true;
+                }
+            if (anyError)
+                return StatusCode((int)HttpStatusCode.InternalServerError, msg);
+            else
+                return Ok();
         }
     }
 }

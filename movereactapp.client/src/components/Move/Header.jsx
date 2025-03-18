@@ -69,13 +69,15 @@ function Header({
           });
         })
         .catch((err) => {
-          enqueueSnackbar("Fetching files failed.", {
+          enqueueSnackbar("Some files were not deleted.", {
             variant: "error",
             anchorOrigin: { horizontal: "center", vertical: "top" },
             autoHideDuration: 5000,
           });
           console.log(err);
         });
+
+      getFiles(directory);
     }
   };
 
