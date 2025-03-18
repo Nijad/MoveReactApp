@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System.Net;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MoveReactApp.Server.Controllers
 {
@@ -13,59 +13,108 @@ namespace MoveReactApp.Server.Controllers
     public class ExtDeptController : ControllerBase
     {
         Operations operations = new();
+        private readonly ILogger<DepartmentsController> _logger;
 
-        // POST api/<ExtDeptController>
+        public ExtDeptController(ILogger<DepartmentsController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpPost("{from}")]
-        public IEnumerable<ExtensionDepts> Post(string from, [FromForm] IFormCollection form)
+        public IActionResult Post(string from, [FromForm] IFormCollection form)
         {
-            double id = double.Parse(form["id"]);
-            string ext = form["ext"];
-            string department = form["department"];
-            string direction = form["direction"];
-
-            operations.AddExtDept(new ExtensionDepts
+            if (from != "ext" && from != "dept")
             {
-                Department = department,
-                Direction = direction,
-                Ext = ext,
-                Id = id
-            });
-            if (from == "ext")
-                return operations.GetExtDepartments(ext);
+                _logger.LogError("from parameter is neither 'ext' nor 'dept'.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+            string ext = "";
+            string department = "";
+            try
+            {
+                double id = double.Parse(form["id"].ToString());
+                ext = form["ext"].ToString();
+                ext = form["department"].ToString();
+                string direction = form["direction"].ToString();
 
-            if (from == "dept")
-                return operations.GetDeptExtensions(department);
+                operations.AddExtDept(new ExtensionDepts
+                {
+                    Department = department,
+                    Direction = direction,
+                    Ext = ext,
+                    Id = id
+                });
+                if (from == "ext")
+                    return Ok(operations.GetExtDepartments(ext));
+                else
+                    return Ok(operations.GetDeptExtensions(department));
 
-            return new List<ExtensionDepts>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed mapping extension '{ext}' and department '{department}'");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
-        //PUT api/<ExtDeptController>/5
         [HttpPost("Update")]
-        public List<ExtensionDepts> Put(IFormCollection form)
+        public IActionResult Put(IFormCollection form)
         {
-            string ext = form["ext"];
-            string dept = form["dept"];
-            string direction = form["direction"];
-            string from = form["from"];
-            operations.UpdateDeptExt(ext, dept, direction);
+            string ext = "";
+            string dept = "";
+            string direction = "";
+            string from = "";
+            try
+            {
+                from = form["from"].ToString();
+                if (from != "ext" && from != "dept")
+                {
+                    _logger.LogError("from parameter is neither 'ext' nor 'dept'.");
+                    return StatusCode((int)HttpStatusCode.InternalServerError);
+                }
+            }
+            catch
+            {
+                _logger.LogError("from parameter is neither 'ext' nor 'dept'.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
 
-            if (from == "ext")
-                return operations.GetExtDepartments(ext);
+            try
+            {
+                ext = form["ext"].ToString();
+                dept = form["dept"].ToString();
+                direction = form["direction"].ToString();
+                operations.UpdateDeptExt(ext, dept, direction);
 
-            if (from == "dept")
-                return operations.GetDeptExtensions(dept);
-
-            return new List<ExtensionDepts>();
+                if (from == "ext")
+                    return Ok(operations.GetExtDepartments(ext));
+                else
+                    return Ok(operations.GetDeptExtensions(dept));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed updating extension '{ext}' and department '{dept}'");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
-        // DELETE api/<ExtDeptController>/5
         [HttpPost("Delete")]
-        public IEnumerable<ExtensionDepts> Delete([FromForm] IFormCollection form)
+        public IActionResult Delete([FromForm] IFormCollection form)
         {
-            string ext = form["ext"];
-            string dept = form["dept"];
-            operations.DeleteExtDept(ext, dept);
-            return operations.GetExtDepartments(ext);
+            string ext = "";
+            string dept = "";
+            try
+            {
+                ext = form["ext"].ToString();
+                dept = form["dept"].ToString();
+                operations.DeleteExtDept(ext, dept);
+                return Ok(operations.GetExtDepartments(ext));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed unmapping extension '{ext}' and department '{dept}'");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
     }
 }
