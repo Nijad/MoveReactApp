@@ -319,9 +319,9 @@ function Datagrid({ department, extensionsList }) {
     } else if (newRow.ext == originalRow.ext) {
       let formData = new FormData();
       formData.append("ext", newRow.ext);
-      formData.append("department", department);
+      formData.append("dept", department);
       formData.append("direction", newRow.direction);
-      formData.append("from", "dept");
+      //formData.append("from", "dept");
 
       axios
         .post(appUrl + `ExtDept/Update`, formData, {
