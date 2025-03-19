@@ -321,7 +321,6 @@ function Datagrid({ department, extensionsList }) {
       formData.append("ext", newRow.ext);
       formData.append("dept", department);
       formData.append("direction", newRow.direction);
-      //formData.append("from", "dept");
 
       axios
         .post(appUrl + `ExtDept/Update`, formData, {

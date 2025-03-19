@@ -93,21 +93,6 @@ namespace MoveReactApp.Server.Controllers
             string ext = "";
             string dept = "";
             string direction = "";
-            //string from = "";
-            //try
-            //{
-            //    from = form["from"].ToString();
-            //    if (from != "ext" && from != "dept")
-            //    {
-            //        _logger.LogError("from parameter is neither 'ext' nor 'dept'.");
-            //        return StatusCode((int)HttpStatusCode.InternalServerError);
-            //    }
-            //}
-            //catch
-            //{
-            //    _logger.LogError("from parameter is neither 'ext' nor 'dept'.");
-            //    return StatusCode((int)HttpStatusCode.InternalServerError);
-            //}
 
             ExtensionDepts newExtDept = new();
             ExtensionDepts oldExtDept = new();
@@ -149,10 +134,6 @@ namespace MoveReactApp.Server.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
             return Ok();
-            //if (from == "ext")
-            //    return Ok(operations.GetExtDepartments(ext));
-            //else
-            //    return Ok(operations.GetDeptExtensions(dept));
         }
 
         [HttpPost("Delete")]
