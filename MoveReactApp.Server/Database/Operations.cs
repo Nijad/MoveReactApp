@@ -51,7 +51,8 @@ namespace MoveReactApp.Server.Database
                     Value = dr["value"].ToString(),
                     FieldProps = dr["field_props"].ToString()
                 });
-            };
+            }
+            ;
             return configs;
         }
 
@@ -236,10 +237,10 @@ namespace MoveReactApp.Server.Database
             dB.ExecuteNonQuery(query);
         }
 
-        public void DeleteExtDept(string ext, string dept)
+        public void DeleteExtDept(ExtensionDepts extDepts)
         {
-            string query = $"DELETE FROM dept_ext WHERE ext = '{ext}' AND dept = '{dept}'";
-            dB.ExecuteNonQuery (query);
+            string query = $"DELETE FROM dept_ext WHERE ext = '{extDepts.Ext}' AND dept = '{extDepts.Department}'";
+            dB.ExecuteNonQuery(query);
         }
 
         public Department GetDepartment(string dept)
@@ -251,7 +252,7 @@ namespace MoveReactApp.Server.Database
             {
                 department.Dept = dt.Rows[0]["dept"].ToString();
                 department.Note = dt.Rows[0]["note"].ToString();
-                department.Enabled= dt.Rows[0]["enabled"].ToString() == "1" ? true : false;
+                department.Enabled = dt.Rows[0]["enabled"].ToString() == "1" ? true : false;
                 department.NetPath = dt.Rows[0]["net_path"].ToString();
                 department.LocalPath = dt.Rows[0]["local_path"].ToString();
                 department.Extensions = GetDeptExtensions(dept);
@@ -262,10 +263,10 @@ namespace MoveReactApp.Server.Database
 
         internal void AddDepartment(Department department)
         {
-            string escapedDept= MySqlHelper.EscapeString(department.Dept);
-            string escapedLocalPath= MySqlHelper.EscapeString(department.LocalPath);
-            string escapedNetPath= MySqlHelper.EscapeString(department.NetPath);
-            string escapedNote= MySqlHelper.EscapeString(department.Note);
+            string escapedDept = MySqlHelper.EscapeString(department.Dept);
+            string escapedLocalPath = MySqlHelper.EscapeString(department.LocalPath);
+            string escapedNetPath = MySqlHelper.EscapeString(department.NetPath);
+            string escapedNote = MySqlHelper.EscapeString(department.Note);
 
             string query = $"insert into department (dept, local_path, net_path, enabled, note) " +
                 $"values ('{escapedDept}', '{escapedLocalPath}', '{escapedNetPath}', {department.Enabled}, '{escapedNote}')";
@@ -291,9 +292,11 @@ namespace MoveReactApp.Server.Database
             dB.ExecuteNonQuery(query);
         }
 
-        public void UpdateDeptExt(string ext, string dept, string direction)
+        public void UpdateDeptExt(ExtensionDepts extDept)
         {
-            string query = $"update dept_ext set direction = {DirectionConvertInverse(direction)} where ext = '{ext}' and dept = '{dept}'";
+            string query = $"update dept_ext set direction = " +
+                $"{DirectionConvertInverse(extDept.Direction)} " +
+                $"where ext = '{extDept.Ext}' and dept = '{extDept.Department}'";
             dB.ExecuteNonQuery(query);
         }
 
@@ -341,6 +344,40 @@ namespace MoveReactApp.Server.Database
             string query = "SELECT `value` FROM config where `key` = 'Backup_Path'";
             DataTable dt = dB.ExecuteReader(query);
             return dt.Rows[0][0].ToString();
+        }
+
+        public void WriteLog(string username, string table, string action, string old_value, string new_value)
+        {
+            string escapedOldValue = MySqlHelper.EscapeString(old_value);
+            string escapedNewValue = MySqlHelper.EscapeString(new_value);
+            string query = "INSERT INTO `movedb`.`log` (`username`, `table_name`, `action`, `old_value`, `new_value`) " +
+                $"VALUES ('{username}', '{table}', '{action}', '{escapedOldValue}', '{escapedNewValue}')";
+            dB.ExecuteNonQuery(query);
+        }
+
+        public string GetConfig(string key)
+        {
+            string escapedNote = MySqlHelper.EscapeString(key);
+            List<Configuration> configs = new();
+            string query = $"select * from config where `key` = '{escapedNote}'  order by `order`";
+            DataTable dt = dB.ExecuteReader(query);
+            return dt.Rows[0]["value"].ToString();
+        }
+
+        public ExtensionDepts GetExtDept(string ext, string dept)
+        {
+            ExtensionDepts extensionDept = new();
+            string query = $"SELECT * FROM movedb.dept_ext where dept = '{dept}' and ext = '{ext}'";
+            DataTable dt = dB.ExecuteReader(query);
+            if (dt.Rows.Count > 0)
+                extensionDept = new()
+                {
+                    Department = dt.Rows[0]["dept"].ToString(),
+                    Direction = DirectionConvert(int.Parse(dt.Rows[0]["direction"].ToString())),
+                    Ext = dt.Rows[0]["ext"].ToString(),
+                };
+
+            return extensionDept;
         }
     }
 }

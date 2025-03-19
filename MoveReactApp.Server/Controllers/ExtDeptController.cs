@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
+using MoveReactApp.Server.Helper;
 using MoveReactApp.Server.Models;
+using Newtonsoft.Json;
 using System.Net;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MoveReactApp.Server.Controllers
 {
@@ -12,17 +13,24 @@ namespace MoveReactApp.Server.Controllers
     [Authorize(Roles = "INTERNET\\Domain Users")]
     public class ExtDeptController : ControllerBase
     {
-        Operations operations = new();
-        private readonly ILogger<DepartmentsController> _logger;
+        private readonly ILogger<ExtDeptController> _logger;
+        private readonly IUserHelper userHelper;
+        private readonly Operations operations = new();
+        private readonly string username = "";
 
-        public ExtDeptController(ILogger<DepartmentsController> logger)
+        public ExtDeptController(ILogger<ExtDeptController> logger, IUserHelper user)
         {
             _logger = logger;
+            userHelper = user;
+            username = userHelper.GetUserName();
         }
 
         [HttpPost("{from}")]
         public IActionResult Post(string from, [FromForm] IFormCollection form)
         {
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("User is not authenticated.");
+
             if (from != "ext" && from != "dept")
             {
                 _logger.LogError("from parameter is neither 'ext' nor 'dept'.");
@@ -30,36 +38,58 @@ namespace MoveReactApp.Server.Controllers
             }
             string ext = "";
             string department = "";
+
+            ExtensionDepts extensionDepts = new();
             try
             {
                 double id = double.Parse(form["id"].ToString());
                 ext = form["ext"].ToString();
-                ext = form["department"].ToString();
+                department = form["department"].ToString();
                 string direction = form["direction"].ToString();
-
-                operations.AddExtDept(new ExtensionDepts
+                extensionDepts = new()
                 {
                     Department = department,
                     Direction = direction,
                     Ext = ext,
                     Id = id
-                });
-                if (from == "ext")
-                    return Ok(operations.GetExtDepartments(ext));
-                else
-                    return Ok(operations.GetDeptExtensions(department));
+                };
 
+                operations.AddExtDept(extensionDepts);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failed mapping extension '{ext}' and department '{department}'");
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
+
+            try
+            {
+                operations.WriteLog(
+                    username,
+                    EnumHelper.GetTableName(TableEnum.DepartmentExtensions),
+                    EnumHelper.GetActionName(ActionEnum.Add),
+                    JsonConvert.SerializeObject(new { }),
+                    JsonConvert.SerializeObject(extensionDepts)
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to write log");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            if (from == "ext")
+                return Ok(operations.GetExtDepartments(ext));
+            else
+                return Ok(operations.GetDeptExtensions(department));
         }
 
         [HttpPost("Update")]
         public IActionResult Put(IFormCollection form)
         {
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("User is not authenticated.");
+
             string ext = "";
             string dept = "";
             string direction = "";
@@ -79,42 +109,93 @@ namespace MoveReactApp.Server.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
 
+            ExtensionDepts newExtDept = new();
+            ExtensionDepts oldExtDept = new();
+
             try
             {
                 ext = form["ext"].ToString();
                 dept = form["dept"].ToString();
                 direction = form["direction"].ToString();
-                operations.UpdateDeptExt(ext, dept, direction);
+                oldExtDept = operations.GetExtDept(ext, dept);
+                newExtDept = new()
+                {
+                    Ext = ext,
+                    Department = dept,
+                    Direction = direction
+                };
 
-                if (from == "ext")
-                    return Ok(operations.GetExtDepartments(ext));
-                else
-                    return Ok(operations.GetDeptExtensions(dept));
+                operations.UpdateDeptExt(newExtDept);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failed updating extension '{ext}' and department '{dept}'");
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
+
+            try
+            {
+                operations.WriteLog(
+                    username,
+                    EnumHelper.GetTableName(TableEnum.DepartmentExtensions),
+                    EnumHelper.GetActionName(ActionEnum.Update),
+                    JsonConvert.SerializeObject(oldExtDept),
+                    JsonConvert.SerializeObject(newExtDept)
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to write log");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            if (from == "ext")
+                return Ok(operations.GetExtDepartments(ext));
+            else
+                return Ok(operations.GetDeptExtensions(dept));
         }
 
         [HttpPost("Delete")]
         public IActionResult Delete([FromForm] IFormCollection form)
         {
-            string ext = "";
-            string dept = "";
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("User is not authenticated.");
+
+            ExtensionDepts extDepts = new();
             try
             {
-                ext = form["ext"].ToString();
-                dept = form["dept"].ToString();
-                operations.DeleteExtDept(ext, dept);
-                return Ok(operations.GetExtDepartments(ext));
+                string ext = form["ext"].ToString();
+                string dept = form["dept"].ToString();
+                extDepts = new()
+                {
+                    Ext = ext,
+                    Department = dept
+                };
+                operations.DeleteExtDept(extDepts);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed unmapping extension '{ext}' and department '{dept}'");
+                _logger.LogError(ex, $"Failed unmapping extension '{extDepts.Ext}' and department '{extDepts.Department}'");
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
+
+            try
+            {
+                operations.WriteLog(
+                    username,
+                    EnumHelper.GetTableName(TableEnum.DepartmentExtensions),
+                    EnumHelper.GetActionName(ActionEnum.Delete),
+                    JsonConvert.SerializeObject(extDepts),
+                    JsonConvert.SerializeObject(new {})
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to write log");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            return Ok(operations.GetExtDepartments(extDepts.Ext));
         }
     }
 }

@@ -18,6 +18,7 @@ namespace MoveReactApp.Server
             try
             {
                 builder.Services.AddHttpContextAccessor();
+                builder.Services.AddTransient<IUserHelper, UserHelper>();
                 builder.Services.AddControllers();
                 builder.Services.AddTransient<IClaimsTransformation, RoleAuthorization>();
                 //builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
