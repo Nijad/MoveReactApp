@@ -1,4 +1,4 @@
-﻿namespace MoveReactApp.Server.Models
+﻿namespace MoveReactApp.Server.Models.DTOs
 {
     public class FileInfoDTO
     {

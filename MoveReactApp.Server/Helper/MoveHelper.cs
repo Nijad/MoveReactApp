@@ -1,6 +1,6 @@
 ﻿using HeyRed.Mime;
 using MoveReactApp.Server.Database;
-using MoveReactApp.Server.Models;
+using MoveReactApp.Server.Models.DTOs;
 using MySqlConnector;
 
 namespace MoveReactApp.Server.Helper

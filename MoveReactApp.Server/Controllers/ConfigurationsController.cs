@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Helper;
-using MoveReactApp.Server.Models;
+using MoveReactApp.Server.Models.DTOs;
 using Newtonsoft.Json;
 using System.Net;
 
@@ -48,18 +48,18 @@ namespace MoveReactApp.Server.Controllers
             if (string.IsNullOrEmpty(username))
                 return Unauthorized("User is not authenticated.");
 
-            string oldValue = "";
-            UpdateConfigDTO keyValuePair = new();
+            UpdateConfigDTO oldConfig = new();
+            UpdateConfigDTO newConfig = new();
             try
             {
-                keyValuePair.Key = form["key"].ToString();
-                keyValuePair.Value = form["value"].ToString();
-                oldValue = operations.GetConfig(keyValuePair.Key);
-                operations.UpdateConfig(keyValuePair);
+                newConfig.Key = form["key"].ToString();
+                newConfig.Value = form["value"].ToString();
+                oldConfig = operations.GetConfig(newConfig.Key);
+                operations.UpdateConfig(newConfig);
             }
             catch (Exception ex)
             {
-                string msg = $"Failed to update {keyValuePair.Key}";
+                string msg = $"Failed to update {newConfig.Key}";
                 _logger.LogError(ex, msg);
                 return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
@@ -70,8 +70,8 @@ namespace MoveReactApp.Server.Controllers
                     username, 
                     EnumHelper.GetTableName(TableEnum.Configurations), 
                     EnumHelper.GetActionName(ActionEnum.Update),
-                    JsonConvert.SerializeObject(new { keyValuePair.Key, oldValue }),
-                    JsonConvert.SerializeObject(new { keyValuePair.Key, keyValuePair.Value }));
+                    JsonConvert.SerializeObject(new { oldConfig.Key, oldConfig.Value }),
+                    JsonConvert.SerializeObject(newConfig));
                 return Ok();
             }
             catch (Exception ex)

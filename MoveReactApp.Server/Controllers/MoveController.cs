@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Helper;
 using MoveReactApp.Server.Models;
+using MoveReactApp.Server.Models.DTOs;
 using System.Net;
 
 namespace MoveReactApp.Server.Controllers

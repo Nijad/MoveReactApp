@@ -1,4 +1,5 @@
 ﻿using MoveReactApp.Server.Models;
+using MoveReactApp.Server.Models.DTOs;
 using MySqlConnector;
 using System.Data;
 
@@ -237,7 +238,7 @@ namespace MoveReactApp.Server.Database
             dB.ExecuteNonQuery(query);
         }
 
-        public void DeleteExtDept(ExtensionDepts extDepts)
+        public void DeleteExtDept(ExtDeptDTO extDepts)
         {
             string query = $"DELETE FROM dept_ext WHERE ext = '{extDepts.Ext}' AND dept = '{extDepts.Department}'";
             dB.ExecuteNonQuery(query);
@@ -292,7 +293,7 @@ namespace MoveReactApp.Server.Database
             dB.ExecuteNonQuery(query);
         }
 
-        public void UpdateDeptExt(ExtensionDepts extDept)
+        public void UpdateDeptExt(ExtDeptDTO extDept)
         {
             string query = $"update dept_ext set direction = " +
                 $"{DirectionConvertInverse(extDept.Direction)} " +
@@ -355,18 +356,21 @@ namespace MoveReactApp.Server.Database
             dB.ExecuteNonQuery(query);
         }
 
-        public string GetConfig(string key)
+        public UpdateConfigDTO GetConfig(string key)
         {
+            UpdateConfigDTO config = new();
             string escapedNote = MySqlHelper.EscapeString(key);
             List<Configuration> configs = new();
             string query = $"select * from config where `key` = '{escapedNote}'  order by `order`";
             DataTable dt = dB.ExecuteReader(query);
-            return dt.Rows[0]["value"].ToString();
+            config.Key = key;
+            config.Value = dt.Rows[0]["value"].ToString();
+            return config;
         }
 
-        public ExtensionDepts GetExtDept(string ext, string dept)
+        public ExtDeptDTO GetExtDept(string ext, string dept)
         {
-            ExtensionDepts extensionDept = new();
+            ExtDeptDTO extensionDept = new();
             string query = $"SELECT * FROM movedb.dept_ext where dept = '{dept}' and ext = '{ext}'";
             DataTable dt = dB.ExecuteReader(query);
             if (dt.Rows.Count > 0)

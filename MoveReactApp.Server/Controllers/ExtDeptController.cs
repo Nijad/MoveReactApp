@@ -4,6 +4,7 @@ using Microsoft.VisualBasic;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Helper;
 using MoveReactApp.Server.Models;
+using MoveReactApp.Server.Models.DTOs;
 using Newtonsoft.Json;
 using System.Net;
 
@@ -66,12 +67,18 @@ namespace MoveReactApp.Server.Controllers
 
             try
             {
+                ExtDeptDTO extDeptDTO = new()
+                {
+                    Department = extensionDepts.Department,
+                    Direction = extensionDepts.Direction,
+                    Ext = extensionDepts.Ext
+                };
                 operations.WriteLog(
                     username,
                     EnumHelper.GetTableName(TableEnum.DepartmentExtensions),
                     EnumHelper.GetActionName(ActionEnum.Add),
                     JsonConvert.SerializeObject(new { }),
-                    JsonConvert.SerializeObject(extensionDepts)
+                    JsonConvert.SerializeObject(extDeptDTO)
                 );
             }
             catch (Exception ex)
@@ -97,8 +104,8 @@ namespace MoveReactApp.Server.Controllers
             string dept = "";
             string direction = "";
 
-            ExtensionDepts newExtDept = new();
-            ExtensionDepts oldExtDept = new();
+            ExtDeptDTO newExtDept = new();
+            ExtDeptDTO oldExtDept = new();
 
             try
             {
@@ -136,7 +143,7 @@ namespace MoveReactApp.Server.Controllers
             {
                 string msg = "Failed to write log";
                 _logger.LogError(ex, msg);
-                return StatusCode((int)HttpStatusCode.InternalServerError, new {  msg });
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
             return Ok();
         }
@@ -147,7 +154,7 @@ namespace MoveReactApp.Server.Controllers
             if (string.IsNullOrEmpty(username))
                 return Unauthorized("User is not authenticated.");
 
-            ExtensionDepts extDepts = new();
+            ExtDeptDTO extDepts = new();
             try
             {
                 string ext = form["ext"].ToString();
