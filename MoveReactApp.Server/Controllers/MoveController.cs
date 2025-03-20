@@ -12,17 +12,24 @@ namespace MoveReactApp.Server.Controllers
     [Authorize(Roles = "INTERNET\\Domain Users")]
     public class MoveController : ControllerBase
     {
-        private readonly Operations operations = new();
         private readonly ILogger<MoveController> _logger;
+        private readonly IUserHelper userHelper;
+        private readonly Operations operations = new();
+        private readonly string username = "";
 
-        public MoveController(ILogger<MoveController> logger)
+        public MoveController(ILogger<MoveController> logger, IUserHelper user)
         {
             _logger = logger;
+            userHelper = user;
+            username = userHelper.GetUserName();
         }
 
         [HttpGet]
-        public DirectoriesDTO Get()
+        public IActionResult Get()
         {
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("User is not authenticated.");
+
             DirectoriesDTO directoriesDTO = new()
             {
                 Name = "Departments",
@@ -74,9 +81,11 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
+                string msg = ex.Message;
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
-            return directoriesDTO;
+            return Ok(directoriesDTO);
         }
 
         private bool CanMove(string path)
@@ -117,6 +126,9 @@ namespace MoveReactApp.Server.Controllers
         [HttpPost("GetFiles")]
         public IActionResult GetFiles([FromForm] IFormCollection form)
         {
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("User is not authenticated.");
+
             string directory = form["directory"];
             try
             {
@@ -154,15 +166,12 @@ namespace MoveReactApp.Server.Controllers
         [HttpPost("MoveFile")]
         public IActionResult MoveFile([FromForm] IFormCollection form)
         {
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("User is not authenticated.");
+
             string file = form["File"].ToString();
             string destination = form["Destination"].ToString();
             string reason = form["Reason"].ToString();
-
-            string username = HttpContext.User.Identity?.Name;
-            username = username.Substring(username.LastIndexOf('\\') + 1);
-
-            if (string.IsNullOrEmpty(username))
-                return Unauthorized("User is not authenticated.");
 
             try
             {
@@ -199,6 +208,9 @@ namespace MoveReactApp.Server.Controllers
         [HttpPost("DeleteFile")]
         public IActionResult DeleteFile([FromForm] IFormCollection form)
         {
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("User is not authenticated.");
+
             string directory = form["directory"];
             FileInfo fileInfo = new FileInfo(directory);
             try
@@ -226,6 +238,9 @@ namespace MoveReactApp.Server.Controllers
         [HttpPost("DeleteAll")]
         public ActionResult DeleteAll([FromForm] IFormCollection form)
         {
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("User is not authenticated.");
+
             string directory = form["directory"].ToString();
             string[] files = Directory.GetFiles(directory);
             bool anyError = false;
