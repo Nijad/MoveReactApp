@@ -22,7 +22,7 @@ function Configurations() {
         console.log(res.data);
       })
       .catch((err) => {
-        enqueueSnackbar("Fetching configurations failed.", {
+        enqueueSnackbar(err.response.data.msg, {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,

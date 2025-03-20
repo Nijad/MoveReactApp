@@ -80,11 +80,7 @@ namespace MoveReactApp.Server.Database
             }
             catch (Exception ex)
             {
-                //write in log here
                 string msg = "Can not connect database.";
-                //Logging.WriteNotes(msg);
-                //Logging.SendEmail(ex, msg);
-                //Logging.LogException(ex);
                 throw ex;
             }
         }

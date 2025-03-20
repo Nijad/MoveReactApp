@@ -38,7 +38,7 @@ function FileGridView({
           setFiles(res.data);
         })
         .catch((err) => {
-          enqueueSnackbar("Fetching files failed.", {
+          enqueueSnackbar(err.response.data.msg, {
             variant: "error",
             anchorOrigin: { horizontal: "center", vertical: "top" },
             autoHideDuration: 5000,

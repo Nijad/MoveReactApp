@@ -186,7 +186,7 @@ function Datagrid({ extension, departmentsList }) {
         setRows(res.data.departments);
       })
       .catch((err) => {
-        enqueueSnackbar("Fetching extensions failed.", {
+        enqueueSnackbar(err.response.data.msg, {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
@@ -255,14 +255,11 @@ function Datagrid({ extension, departmentsList }) {
         );
       })
       .catch((err) => {
-        enqueueSnackbar(
-          `Unmapping ${extension} and ${deletedRow.department} failed.`,
-          {
-            variant: "error",
-            anchorOrigin: { horizontal: "center", vertical: "top" },
-            autoHideDuration: 5000,
-          }
-        );
+        enqueueSnackbar(err.response.data.msg, {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
         console.log(err);
       });
   };
@@ -313,18 +310,15 @@ function Datagrid({ extension, departmentsList }) {
           setRows(res.data);
         })
         .catch((err) => {
-          enqueueSnackbar(
-            `Mapping ${extension} and ${newRow.department} failed.`,
-            {
-              variant: "error",
-              anchorOrigin: { horizontal: "center", vertical: "top" },
-              autoHideDuration: 5000,
-            }
-          );
+          enqueueSnackbar(err.response.data.msg, {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
           const editedRow = rows.find((row) => row.id === newRow.id);
           if (editedRow.isNew)
             setRows(rows.filter((row) => row.id !== newRow.id));
-          console.log(err);
+          console.log(err.response.data.msg);
         });
     } else if (newRow.department == originalRow.department) {
       let putFormData = new FormData();
@@ -346,14 +340,11 @@ function Datagrid({ extension, departmentsList }) {
           );
         })
         .catch((err) => {
-          enqueueSnackbar(
-            `updating mapped ${extension} and ${originalRow.department} failed.`,
-            {
-              variant: "error",
-              anchorOrigin: { horizontal: "center", vertical: "top" },
-              autoHideDuration: 5000,
-            }
-          );
+          enqueueSnackbar(err.response.data.msg, {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
           setRows(rows);
           console.log(err);
         });

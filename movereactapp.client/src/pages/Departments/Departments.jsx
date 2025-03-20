@@ -44,7 +44,7 @@ function Departemnts() {
           setDepartmentDetails(res.data);
         })
         .catch((err) => {
-          enqueueSnackbar("Fetching extension details failed.", {
+          enqueueSnackbar(err.response.data.msg, {
             variant: "error",
             anchorOrigin: { horizontal: "center", vertical: "top" },
             autoHideDuration: 5000,
@@ -86,7 +86,7 @@ function Departemnts() {
         setExtensionsList(res.data);
       })
       .catch((err) => {
-        enqueueSnackbar("Fetching extensions failed.", {
+        enqueueSnackbar(err.response.data.msg, {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
@@ -106,7 +106,7 @@ function Departemnts() {
         handleQueryString();
       })
       .catch((err) => {
-        enqueueSnackbar("Fetching departments failed.", {
+        enqueueSnackbar(err.response.data.msg, {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,

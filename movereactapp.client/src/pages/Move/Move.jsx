@@ -24,7 +24,7 @@ function Move() {
         setTree(res.data);
       })
       .catch((err) => {
-        enqueueSnackbar("Fetching department directories failed.", {
+        enqueueSnackbar(err.response.data.msg, {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,

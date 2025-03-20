@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Helper;
 using MoveReactApp.Server.Models;
@@ -58,8 +59,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed mapping extension '{ext}' and department '{department}'");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed mapping extension '{ext}' and department '{department}'";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
 
             try
@@ -74,8 +76,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to write log");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to write log";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
 
             if (from == "ext")
@@ -114,8 +117,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed updating extension '{ext}' and department '{dept}'");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed updating extension '{ext}' and department '{dept}'";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
 
             try
@@ -130,8 +134,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to write log");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = "Failed to write log";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new {  msg });
             }
             return Ok();
         }
@@ -156,8 +161,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed unmapping extension '{extDepts.Ext}' and department '{extDepts.Department}'");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed unmapping extension '{extDepts.Ext}' and department '{extDepts.Department}'";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
 
             try
@@ -167,13 +173,14 @@ namespace MoveReactApp.Server.Controllers
                     EnumHelper.GetTableName(TableEnum.DepartmentExtensions),
                     EnumHelper.GetActionName(ActionEnum.Delete),
                     JsonConvert.SerializeObject(extDepts),
-                    JsonConvert.SerializeObject(new {})
+                    JsonConvert.SerializeObject(new { })
                 );
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to write log");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to write log";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
 
             return Ok();

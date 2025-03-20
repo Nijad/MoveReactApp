@@ -90,7 +90,7 @@ function ExtForm({
         //handleExtClick(data.ext);
       })
       .catch((err) => {
-        enqueueSnackbar(`Adding new extension ${data.ext} failed.`, {
+        enqueueSnackbar(err.response.data.msg, {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
@@ -122,7 +122,7 @@ function ExtForm({
         //handleExtClick(data.ext);
       })
       .catch((err) => {
-        enqueueSnackbar(`Updating extension ${ext} failed.`, {
+        enqueueSnackbar(err.response.data.msg, {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
@@ -164,7 +164,6 @@ function ExtForm({
           withCredentials: true,
         })
         .then((res) => {
-          //setFilterList(res.data);
           setExtensionsList(extensionsList.filter((x) => x != ext));
           setFilterList(extensionsList.filter((x) => x != ext));
           setExt(undefined);
@@ -177,7 +176,7 @@ function ExtForm({
           });
         })
         .catch((err) => {
-          enqueueSnackbar("Deleteing extensions failed.", {
+          enqueueSnackbar(err.response.data.msg, {
             variant: "error",
             anchorOrigin: { horizontal: "center", vertical: "top" },
             autoHideDuration: 5000,

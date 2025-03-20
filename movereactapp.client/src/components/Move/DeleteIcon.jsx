@@ -37,7 +37,7 @@ function DeleteIcon({ path, setFiles }) {
         });
       })
       .catch((err) => {
-        enqueueSnackbar(`Deleting file failed.`, {
+        enqueueSnackbar(err.response.data.msg, {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,

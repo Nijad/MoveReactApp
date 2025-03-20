@@ -93,7 +93,7 @@ function DeptForm({
         //handleExtClick(data.ext);
       })
       .catch((err) => {
-        enqueueSnackbar(`Adding new department ${data.dept} failed.`, {
+        enqueueSnackbar(err.response.data.msg, {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
@@ -123,7 +123,7 @@ function DeptForm({
         //handleExtClick(data.ext);
       })
       .catch((err) => {
-        enqueueSnackbar(`Updating department ${dept} failed.`, {
+        enqueueSnackbar(err.response.data.msg, {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
@@ -176,7 +176,7 @@ function DeptForm({
           });
         })
         .catch((err) => {
-          enqueueSnackbar("Deleteing departments failed.", {
+          enqueueSnackbar(err.response.data.msg, {
             variant: "error",
             anchorOrigin: { horizontal: "center", vertical: "top" },
             autoHideDuration: 5000,

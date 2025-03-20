@@ -36,8 +36,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to get configurations");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = "Failed to get configurations";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
 
@@ -58,8 +59,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to update {keyValuePair.Key}");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to update {keyValuePair.Key}";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
 
             try
@@ -74,8 +76,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to write log");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to write log";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
     }

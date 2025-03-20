@@ -37,8 +37,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to get extensions");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = "Failed to get extensions";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
 
@@ -54,8 +55,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to get extensions");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = "Failed to get extensions";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
 
@@ -80,8 +82,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to add extension {form["ext"].ToString()}");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to add extension {form["ext"].ToString()}";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
 
             try
@@ -97,8 +100,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to write log");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to write log";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
 
@@ -124,8 +128,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to add extension {ext}");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to add extension {ext}";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
 
             try
@@ -141,8 +146,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to write log");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to write log";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
 
@@ -159,8 +165,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to add extension {ext}");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to add extension {ext}";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
 
             try
@@ -176,8 +183,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to write log");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to write log";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
     }

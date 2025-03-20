@@ -5,6 +5,7 @@ using MoveReactApp.Server.Helper;
 using MoveReactApp.Server.Models;
 using Newtonsoft.Json;
 using System.Net;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MoveReactApp.Server.Controllers
 {
@@ -37,8 +38,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to get departments");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = "Failed to get departments";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
 
@@ -53,8 +55,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to get department: {dept}");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to get department: {dept}";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
 
@@ -79,8 +82,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to add department: {form["dept"].ToString()}");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to add department: {form["dept"].ToString()}";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
 
             try
@@ -96,8 +100,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to write log");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to write log";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
 
@@ -124,8 +129,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to update department: {dept}");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to update department: {dept}";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
 
             try
@@ -141,8 +147,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to write log");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to write log";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
 
@@ -159,8 +166,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to delete department: {dept}");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to delete department: {dept}";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
 
             try
@@ -176,8 +184,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to write log");
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = $"Failed to write log";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
     }

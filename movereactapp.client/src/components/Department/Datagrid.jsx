@@ -186,7 +186,7 @@ function Datagrid({ department, extensionsList }) {
         setRows(res.data.extensions);
       })
       .catch((err) => {
-        enqueueSnackbar("Fetching extensions failed.", {
+        enqueueSnackbar(err.response.data.msg, {
           variant: "error",
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
@@ -252,14 +252,11 @@ function Datagrid({ department, extensionsList }) {
         );
       })
       .catch((err) => {
-        enqueueSnackbar(
-          `Unmapping ${department} and ${deletedRow.ext} failed.`,
-          {
-            variant: "error",
-            anchorOrigin: { horizontal: "center", vertical: "top" },
-            autoHideDuration: 5000,
-          }
-        );
+        enqueueSnackbar(err.response.data.msg, {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
         console.log(err);
       });
   };
@@ -303,14 +300,11 @@ function Datagrid({ department, extensionsList }) {
           setRows(res.data);
         })
         .catch((err) => {
-          enqueueSnackbar(
-            `Mapping ${department} and ${newRow.extension} failed.`,
-            {
-              variant: "error",
-              anchorOrigin: { horizontal: "center", vertical: "top" },
-              autoHideDuration: 5000,
-            }
-          );
+          enqueueSnackbar(err.response.data.msg, {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
           const editedRow = rows.find((row) => row.id === newRow.id);
           if (editedRow.isNew)
             setRows(rows.filter((row) => row.id !== newRow.id));
@@ -337,16 +331,13 @@ function Datagrid({ department, extensionsList }) {
           );
         })
         .catch((err) => {
-          enqueueSnackbar(
-            `updating mapped ${department} and ${originalRow.ext} failed.`,
-            {
-              variant: "error",
-              anchorOrigin: { horizontal: "center", vertical: "top" },
-              autoHideDuration: 5000,
-            }
-          );
+          enqueueSnackbar(err.response.data.msg, {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
           setRows(rows);
-          console.log(err);
+          console.log(err.response.data.msg);
         });
     } else {
       enqueueSnackbar(

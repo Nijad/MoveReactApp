@@ -48,7 +48,7 @@ function MoveIcon({ path, destination, canMove, setFiles }) {
           });
         })
         .catch((err) => {
-          enqueueSnackbar(`Moving file failed.`, {
+          enqueueSnackbar(err.response.data.msg, {
             variant: "error",
             anchorOrigin: { horizontal: "center", vertical: "top" },
             autoHideDuration: 5000,

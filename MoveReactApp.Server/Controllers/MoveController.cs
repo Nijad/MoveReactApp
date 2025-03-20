@@ -124,8 +124,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = ex.Message;
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
 
@@ -177,8 +178,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Failed to move file");
+                string msg = "Failed to move file";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
 
             string directory = file[..file.LastIndexOf('\\')];
@@ -188,8 +190,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = ex.Message;
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
 
@@ -204,8 +207,9 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Failed to delete file");
+                string msg = "Failed to delete file";
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
             try
             {
@@ -213,18 +217,19 @@ namespace MoveReactApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                string msg = ex.Message;
+                _logger.LogError(ex, msg);
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
             }
         }
 
         [HttpPost("DeleteAll")]
         public ActionResult DeleteAll([FromForm] IFormCollection form)
         {
-            string directory = form["directory"];
+            string directory = form["directory"].ToString();
             string[] files = Directory.GetFiles(directory);
             bool anyError = false;
-            string msg = "";
+            string message = "";
             foreach (string file in files)
                 try
                 {
@@ -232,12 +237,15 @@ namespace MoveReactApp.Server.Controllers
                 }
                 catch (Exception ex)
                 {
-                    msg = $"Can not delete file: {file}";
-                    _logger.LogError(ex, msg);
+                    message = $"Can not delete file: {file}";
+                    _logger.LogError(ex, message);
                     anyError = true;
                 }
             if (anyError)
-                return StatusCode((int)HttpStatusCode.InternalServerError, msg);
+            {
+                string msg = "One or more files have not been deleted";
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg });
+            }
             else
                 return Ok();
         }
