@@ -52,8 +52,6 @@ function DeptForm({
 
   const onSubmit = (data) => {
     try {
-      //await new Promise((resolve) => setTimeout(resolve, 1000));
-      //throw new Error("backend error");
       if (isNewRec) handleAddNewExtension(data);
       else handleOpenUpdateDialog(data);
     } catch (error) {
@@ -90,14 +88,20 @@ function DeptForm({
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
         });
-        //handleExtClick(data.ext);
       })
       .catch((err) => {
-        enqueueSnackbar(err.response.data.msg, {
-          variant: "error",
-          anchorOrigin: { horizontal: "center", vertical: "top" },
-          autoHideDuration: 5000,
-        });
+        if (err.response.status == 403)
+          enqueueSnackbar("You do not have the permission to add departments", {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
+        else
+          enqueueSnackbar(err.response.data.msg, {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
         console.log(err);
       });
   };
@@ -114,7 +118,6 @@ function DeptForm({
       })
       .then((res) => {
         setEditable(false);
-
         enqueueSnackbar(`Department ${dept} updated successfuly.`, {
           variant: "success",
           anchorOrigin: { horizontal: "center", vertical: "top" },
@@ -123,11 +126,21 @@ function DeptForm({
         //handleExtClick(data.ext);
       })
       .catch((err) => {
-        enqueueSnackbar(err.response.data.msg, {
-          variant: "error",
-          anchorOrigin: { horizontal: "center", vertical: "top" },
-          autoHideDuration: 5000,
-        });
+        if (err.response.status == 403)
+          enqueueSnackbar(
+            "You do not have the permission to update department information",
+            {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            }
+          );
+        else
+          enqueueSnackbar(err.response.data.msg, {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
         console.log(err);
       });
   };
@@ -163,7 +176,6 @@ function DeptForm({
           withCredentials: true,
         })
         .then((res) => {
-          //setFilterList(res.data);
           setDepartmentsList(departmentsList.filter((x) => x != dept));
           setFilterList(departmentsList.filter((x) => x != dept));
           setDept(undefined);
@@ -176,11 +188,21 @@ function DeptForm({
           });
         })
         .catch((err) => {
-          enqueueSnackbar(err.response.data.msg, {
-            variant: "error",
-            anchorOrigin: { horizontal: "center", vertical: "top" },
-            autoHideDuration: 5000,
-          });
+          if (err.response.status == 403)
+            enqueueSnackbar(
+              "You do not have the permission to delete departments",
+              {
+                variant: "error",
+                anchorOrigin: { horizontal: "center", vertical: "top" },
+                autoHideDuration: 5000,
+              }
+            );
+          else
+            enqueueSnackbar(err.response.data.msg, {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            });
           console.log(err);
         });
     } catch (error) {

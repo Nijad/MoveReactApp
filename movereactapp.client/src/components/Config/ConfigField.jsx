@@ -46,11 +46,21 @@ function ConfigField({ fieldInfo }) {
         });
       })
       .catch((err) => {
-        enqueueSnackbar(`Updating ${fieldInfo.key} failed.`, {
-          variant: "error",
-          anchorOrigin: { horizontal: "center", vertical: "top" },
-          autoHideDuration: 5000,
-        });
+        if (err.response.status == 403)
+          enqueueSnackbar(
+            "You do not have the permission to update configurations",
+            {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            }
+          );
+        else
+          enqueueSnackbar(err.response.data.msg, {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
         console.log(err);
       });
   };

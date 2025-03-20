@@ -51,8 +51,6 @@ function ExtForm({
 
   const onSubmit = (data) => {
     try {
-      //await new Promise((resolve) => setTimeout(resolve, 1000));
-      //throw new Error("backend error");
       if (isNewRec) handleAddNewExtension(data);
       else handleOpenUpdateDialog(data);
     } catch (error) {
@@ -90,11 +88,18 @@ function ExtForm({
         //handleExtClick(data.ext);
       })
       .catch((err) => {
-        enqueueSnackbar(err.response.data.msg, {
-          variant: "error",
-          anchorOrigin: { horizontal: "center", vertical: "top" },
-          autoHideDuration: 5000,
-        });
+        if (err.response.status == 403)
+          enqueueSnackbar("You do not have the permission to add extensions", {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
+        else
+          enqueueSnackbar(err.response.data.msg, {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
         console.log(err);
       });
   };
@@ -119,14 +124,23 @@ function ExtForm({
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
         });
-        //handleExtClick(data.ext);
       })
       .catch((err) => {
-        enqueueSnackbar(err.response.data.msg, {
-          variant: "error",
-          anchorOrigin: { horizontal: "center", vertical: "top" },
-          autoHideDuration: 5000,
-        });
+        if (err.response.status == 403)
+          enqueueSnackbar(
+            "You do not have the permission to update extension information",
+            {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            }
+          );
+        else
+          enqueueSnackbar(err.response.data.msg, {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
         console.log(err);
       });
   };
@@ -176,11 +190,21 @@ function ExtForm({
           });
         })
         .catch((err) => {
-          enqueueSnackbar(err.response.data.msg, {
-            variant: "error",
-            anchorOrigin: { horizontal: "center", vertical: "top" },
-            autoHideDuration: 5000,
-          });
+          if (err.response.status == 403)
+            enqueueSnackbar(
+              "You do not have the permission to delete extensions",
+              {
+                variant: "error",
+                anchorOrigin: { horizontal: "center", vertical: "top" },
+                autoHideDuration: 5000,
+              }
+            );
+          else
+            enqueueSnackbar(err.response.data.msg, {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            });
           console.log(err);
         });
     } catch (error) {

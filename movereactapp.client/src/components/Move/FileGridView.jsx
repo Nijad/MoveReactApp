@@ -38,11 +38,21 @@ function FileGridView({
           setFiles(res.data);
         })
         .catch((err) => {
-          enqueueSnackbar(err.response.data.msg, {
-            variant: "error",
-            anchorOrigin: { horizontal: "center", vertical: "top" },
-            autoHideDuration: 5000,
-          });
+          if (err.response.status == 403)
+            enqueueSnackbar(
+              "You do not have the permission to view files in the directory",
+              {
+                variant: "error",
+                anchorOrigin: { horizontal: "center", vertical: "top" },
+                autoHideDuration: 5000,
+              }
+            );
+          else
+            enqueueSnackbar(err.response.data.msg, {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            });
           console.log(err);
         });
     } else setFiles([]);

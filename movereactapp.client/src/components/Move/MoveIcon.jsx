@@ -48,11 +48,18 @@ function MoveIcon({ path, destination, canMove, setFiles }) {
           });
         })
         .catch((err) => {
-          enqueueSnackbar(err.response.data.msg, {
-            variant: "error",
-            anchorOrigin: { horizontal: "center", vertical: "top" },
-            autoHideDuration: 5000,
-          });
+          if (err.response.status == 403)
+            enqueueSnackbar("You don't have permission to move files", {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            });
+          else
+            enqueueSnackbar(err.response.data.msg, {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            });
           console.log(err);
         });
     }

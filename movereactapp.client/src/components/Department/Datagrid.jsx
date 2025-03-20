@@ -252,11 +252,21 @@ function Datagrid({ department, extensionsList }) {
         );
       })
       .catch((err) => {
-        enqueueSnackbar(err.response.data.msg, {
-          variant: "error",
-          anchorOrigin: { horizontal: "center", vertical: "top" },
-          autoHideDuration: 5000,
-        });
+        if (err.response.status == 403)
+          enqueueSnackbar(
+            "You do not have the permission to unmap the department from the extension",
+            {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            }
+          );
+        else
+          enqueueSnackbar(err.response.data.msg, {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
         console.log(err);
       });
   };
@@ -300,11 +310,21 @@ function Datagrid({ department, extensionsList }) {
           setRows(res.data);
         })
         .catch((err) => {
-          enqueueSnackbar(err.response.data.msg, {
-            variant: "error",
-            anchorOrigin: { horizontal: "center", vertical: "top" },
-            autoHideDuration: 5000,
-          });
+          if (err.response.status == 403)
+            enqueueSnackbar(
+              "You do not have the permission to map the department with the extension",
+              {
+                variant: "error",
+                anchorOrigin: { horizontal: "center", vertical: "top" },
+                autoHideDuration: 5000,
+              }
+            );
+          else
+            enqueueSnackbar(err.response.data.msg, {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            });
           const editedRow = rows.find((row) => row.id === newRow.id);
           if (editedRow.isNew)
             setRows(rows.filter((row) => row.id !== newRow.id));
@@ -331,11 +351,21 @@ function Datagrid({ department, extensionsList }) {
           );
         })
         .catch((err) => {
-          enqueueSnackbar(err.response.data.msg, {
-            variant: "error",
-            anchorOrigin: { horizontal: "center", vertical: "top" },
-            autoHideDuration: 5000,
-          });
+          if (err.response.status == 403)
+            enqueueSnackbar(
+              "You do not have the permission to update mapping the department with the extension",
+              {
+                variant: "error",
+                anchorOrigin: { horizontal: "center", vertical: "top" },
+                autoHideDuration: 5000,
+              }
+            );
+          else
+            enqueueSnackbar(err.response.data.msg, {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            });
           setRows(rows);
           console.log(err.response.data.msg);
         });
