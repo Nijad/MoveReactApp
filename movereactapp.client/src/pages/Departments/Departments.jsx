@@ -255,6 +255,10 @@ function Departemnts() {
           <Box>
             {dept === undefined ? (
               <Box
+                display="flex"
+                flexWrap="wrap"
+                justifyContent="center"
+                flexDirection="column"
                 textAlign="center"
                 alignContent="center"
                 height="calc(100vh - 128px)"

@@ -22,9 +22,14 @@ function AppBarLink({ title, link, icon = null }) {
       {icon === null ? (
         <Typography>{title}</Typography>
       ) : (
-        <Box>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="space-evenly"
+          height="100%"
+        >
           {icon}
-          &nbsp;
           <Typography variant="body2">{title}</Typography>
         </Box>
       )}

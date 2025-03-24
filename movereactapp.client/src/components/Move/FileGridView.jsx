@@ -91,7 +91,7 @@ function FileGridView({
                 }}
               >
                 <Tooltip title={file?.name} placement="top-start">
-                  <CardContent sx={{ paddingBottom: "0" }}>
+                  <CardContent sx={{ paddingBottom: "0", height: "100%" }}>
                     <Typography noWrap fontWeight={500}>
                       {file?.name}
                     </Typography>
