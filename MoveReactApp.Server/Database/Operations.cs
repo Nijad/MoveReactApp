@@ -1,4 +1,5 @@
-﻿using MoveReactApp.Server.Models;
+﻿using MoveReactApp.Server.Helper;
+using MoveReactApp.Server.Models;
 using MoveReactApp.Server.Models.DTOs;
 using MySqlConnector;
 using System.Data;
@@ -53,8 +54,14 @@ namespace MoveReactApp.Server.Database
                     FieldProps = dr["field_props"].ToString()
                 });
             }
-            ;
             return configs;
+        }
+
+        public string GetTerminalPath()
+        {
+            string query = "select value from config where `key` = 'terminal_path'";
+            DataTable dt = dB.ExecuteReader(query);
+            return dt.Rows[0]["value"].ToString();
         }
 
         public List<Department> GetDepartments()
@@ -382,6 +389,72 @@ namespace MoveReactApp.Server.Database
                 };
 
             return extensionDept;
+        }
+
+        public /*TerminalAttribute?*/ void GetTerminalAttributes()
+        {
+            string query = "SELECT a.*, s.status_description FROM terminal_attributes a, " +
+                "terminal_status s where a.status_id = s.status_id and a.terminal_no = 0";
+            DataTable dt = dB.ExecuteReader(query);
+
+            if (dt.Rows.Count > 0)
+            {
+                TerminalAttribute.StatusId = int.Parse(dt.Rows[0]["status_id"].ToString());
+                TerminalAttribute.StatusDesc = dt.Rows[0]["status_description"].ToString();
+                TerminalAttribute.ProcessId = string.IsNullOrEmpty(dt.Rows[0]["process_id"].ToString()) ?null: int.Parse(dt.Rows[0]["process_id"]?.ToString());
+                TerminalAttribute.ProcessName = string.IsNullOrEmpty(dt.Rows[0]["process_name"].ToString())?null: dt.Rows[0]["process_name"]?.ToString();
+                TerminalAttribute.ErrorMessage = string.IsNullOrEmpty(dt.Rows[0]["error_message"].ToString()) ? null : dt.Rows[0]["error_message"]?.ToString();
+                TerminalAttribute.User = dt.Rows[0]["user"]?.ToString();
+                TerminalAttribute.StartAt = string.IsNullOrEmpty(dt.Rows[0]["start_at"].ToString()) ? null : DateTime.Parse(dt.Rows[0]["start_at"].ToString());
+                TerminalAttribute.StopAt = string.IsNullOrEmpty(dt.Rows[0]["stop_at"].ToString()) ? null : DateTime.Parse(dt.Rows[0]["stop_at"].ToString());
+            }
+        }
+
+        public void StartStop(int statusNo, string username)
+        {
+            string query = "";
+            MySqlCommand cmd;
+            if (statusNo == 0)
+            {
+                if (TerminalAttribute.ProcessId != null)
+                    throw new Exception("Program is already running");
+                TerminalAttribute.TerminalPath = GetTerminalPath();
+                TerminalAttribute.RunTerminal(username);
+            }
+            else
+            {
+                query = $"update terminal_attributes set status_id = 0, process_id = null, process_name = null, " +
+                    $"stop_at =  SYSDATE() , user='{username}' where terminal_no = 0";
+                cmd = dB.ExecuteTransaction(query);
+                try
+                {
+                    TerminalAttribute.TerminateTerminal();
+                    Commit(cmd);
+                }
+                catch (ArgumentException ex)
+                {
+                    TerminalAttribute.ProcessId = null;
+                    Commit(cmd);
+                }
+                catch (Exception ex)
+                {
+                    if (ex.Message == "Access is denied.")
+                    {
+                        Commit(cmd);
+                        return;
+                    }
+                    Rollback(cmd);
+                    throw ex;
+                }
+            }
+        }
+
+        public void StopWithError(string errorMessage, TerminalStatusEnum setStatus)
+        {
+            string query = $"update terminal_attributes set status_id = {(int)setStatus}, " +
+                $"error_message='{errorMessage}', " +
+                $"stop_at =  SYSDATE() where terminal_no = 0";
+            dB.ExecuteNonQuery(query);
         }
     }
 }

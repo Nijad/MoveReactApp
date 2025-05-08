@@ -5,7 +5,8 @@
         Configurations,
         Extension,
         Department,
-        DepartmentExtensions
+        DepartmentExtensions,
+        Terminal
     }
 
     public enum ActionEnum
@@ -13,6 +14,13 @@
         Add,
         Update,
         Delete
+    }
+
+    public enum TerminalStatusEnum
+    {
+        closed,
+        running,
+        stopped
     }
     public static class EnumHelper
     {
@@ -28,6 +36,8 @@
                     return "department";
                 case TableEnum.DepartmentExtensions:
                     return "dept_ext";
+                case TableEnum.Terminal:
+                    return "terminal_attribute";
                 default:
                     return "";
             }
@@ -43,6 +53,21 @@
                     return "update";
                 case ActionEnum.Delete:
                     return "delete";
+                default:
+                    return "";
+            }
+        }
+
+        public static string GetTerminalStatus(TerminalStatusEnum terminalStatus)
+        {
+            switch (terminalStatus)
+            {
+                case TerminalStatusEnum.running:
+                    return "Running";
+                case TerminalStatusEnum.stopped:
+                    return "Stopped";
+                case TerminalStatusEnum.closed:
+                    return "Closed";
                 default:
                     return "";
             }

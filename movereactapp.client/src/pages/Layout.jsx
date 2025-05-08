@@ -3,13 +3,16 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { AppBar, Box, Stack, Toolbar } from "@mui/material";
+
 import SettingsIcon from "@mui/icons-material/Settings";
 import DriveFileMoveIcon from "@mui/icons-material/DriveFileMove";
 import FilterIcon from "@mui/icons-material/Filter";
 import LineStyleIcon from "@mui/icons-material/LineStyle";
 import HomeIcon from "@mui/icons-material/Home";
+import TerminalIcon from "@mui/icons-material/Terminal";
 import { Outlet } from "react-router-dom";
 import AppBarLink from "../components/common/AppBarLink";
+import RunStop from "../components/common/RunStop";
 
 const Layout = () => {
   return (
@@ -45,6 +48,12 @@ const Layout = () => {
               link="/Move"
               icon={<DriveFileMoveIcon />}
             />
+            <AppBarLink
+              title="TERMINAL"
+              link="/Terminal"
+              icon={<TerminalIcon />}
+            />
+            <RunStop />
           </Stack>
         </Toolbar>
       </AppBar>

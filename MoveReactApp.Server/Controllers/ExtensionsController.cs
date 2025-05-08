@@ -96,7 +96,7 @@ namespace MoveReactApp.Server.Controllers
                     JsonConvert.SerializeObject(new { }),
                     JsonConvert.SerializeObject(extension)
                 );
-                return Ok(ExtensiontNames());
+                return Ok(operations.GetExtensionNames());
             }
             catch (Exception ex)
             {

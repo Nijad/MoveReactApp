@@ -6,6 +6,7 @@ import Configurations from "./pages/Configurations/Configurations";
 import NoPage from "./pages/NoPage/NoPage";
 import Index from "./pages/Index/Index";
 import Move from "./pages/Move/Move";
+import Terminal from "./pages/Terminal/Terminal";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="Extensions" element={<Extensions />} />
         <Route path="Configurations" element={<Configurations />} />
         <Route path="Move" element={<Move />} />
+        <Route path="Terminal" element={<Terminal />} />
         <Route path="*" element={<NoPage />} />
       </Route>
     </Routes>

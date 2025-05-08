@@ -62,8 +62,12 @@ function ExtForm({
 
   const handleAddNewExtension = (data) => {
     let formData = new FormData();
-    for (var key in data) formData.append(key, data[key]);
-
+    for (var key in data) {
+      if (key == "note" && data[key] === null) formData.append("note", "");
+      else if (key == "program" && data[key] === null)
+        formData.append("program", "");
+      else formData.append(key, data[key]);
+    }
     axios
       .post(appUrl + "Extensions", formData, {
         withCredentials: true,
@@ -85,7 +89,6 @@ function ExtForm({
           anchorOrigin: { horizontal: "center", vertical: "top" },
           autoHideDuration: 5000,
         });
-        //handleExtClick(data.ext);
       })
       .catch((err) => {
         if (err.response.status == 403)
