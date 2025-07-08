@@ -251,5 +251,65 @@ namespace MoveReactApp.Server.Controllers
 
             return Ok(operations.GetDeptExtensions(department));
         }
+
+        [HttpPost("addalldepartments")]
+        public IActionResult AddAllDepartments([FromForm] IFormCollection form)
+        {
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("User is not authenticated.");
+
+            string extension = form["ext"].ToString();
+            bool hasError = false;
+            string[] departments = operations.GetDepartmentNames();
+            foreach (string department in departments)
+            {
+                try
+                {
+                    operations.AddExtDept(new()
+                    {
+                        Department = department,
+                        Ext = extension,
+                        Direction = "in/out"
+                    });
+
+                    try
+                    {
+                        ExtDeptDTO extDeptDTO = new()
+                        {
+                            Department = department,
+                            Direction = "in/out",
+                            Ext = extension
+                        };
+                        operations.WriteLog(
+                            username,
+                            EnumHelper.GetTableName(TableEnum.DepartmentExtensions),
+                            EnumHelper.GetActionName(ActionEnum.Add),
+                            JsonConvert.SerializeObject(new { }),
+                            JsonConvert.SerializeObject(extDeptDTO)
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        hasError = true;
+                        string msg = $"Failed to write log";
+                        _logger.LogError(ex, msg);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (!ex.Message.Contains("Duplicate entry"))
+                    {
+                        hasError = true;
+                        string msg = $"Failed mapping extension '{extension}' and department '{department}'";
+                        _logger.LogError(ex, msg);
+                    }
+                }
+            }
+
+            if (hasError)
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg = $"Some error occurred  while mapping departments with '{extension}' extension" });
+
+            return Ok(operations.GetExtDepartments(extension));
+        }
     }
 }
