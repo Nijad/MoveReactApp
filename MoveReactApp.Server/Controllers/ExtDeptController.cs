@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 using MoveReactApp.Server.Database;
 using MoveReactApp.Server.Helper;
 using MoveReactApp.Server.Models;
@@ -191,6 +190,66 @@ namespace MoveReactApp.Server.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpPost("addallextensions")]
+        public IActionResult AddAllExtensions([FromForm] IFormCollection form)
+        {
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("User is not authenticated.");
+
+            string department = form["dept"].ToString();
+            bool hasError = false;
+            string[] extensions = operations.GetExtensionNames();
+            foreach (string extension in extensions)
+            {
+                try
+                {
+                    operations.AddExtDept(new()
+                    {
+                        Department = department,
+                        Ext = extension,
+                        Direction = "in/out"
+                    });
+
+                    try
+                    {
+                        ExtDeptDTO extDeptDTO = new()
+                        {
+                            Department = department,
+                            Direction = "in/out",
+                            Ext = extension
+                        };
+                        operations.WriteLog(
+                            username,
+                            EnumHelper.GetTableName(TableEnum.DepartmentExtensions),
+                            EnumHelper.GetActionName(ActionEnum.Add),
+                            JsonConvert.SerializeObject(new { }),
+                            JsonConvert.SerializeObject(extDeptDTO)
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        hasError = true;
+                        string msg = $"Failed to write log";
+                        _logger.LogError(ex, msg);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (!ex.Message.Contains("Duplicate entry"))
+                    {
+                        hasError = true;
+                        string msg = $"Failed mapping extension '{extension}' and department '{department}'";
+                        _logger.LogError(ex, msg);
+                    }
+                }
+            }
+
+            if (hasError)
+                return StatusCode((int)HttpStatusCode.InternalServerError, new { msg = $"Some error occurred  while mapping extensions with '{department}' deprtment" });
+
+            return Ok(operations.GetDeptExtensions(department));
         }
     }
 }

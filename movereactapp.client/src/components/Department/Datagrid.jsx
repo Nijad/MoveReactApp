@@ -9,19 +9,20 @@ import {
   GridRowModes,
   GridToolbarContainer,
 } from "@mui/x-data-grid";
-import AddIcon from "@mui/icons-material/Add";
+import ControlPointDuplicateIcon from "@mui/icons-material/ControlPointDuplicate";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import EditIcon from "@mui/icons-material/Edit";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Close";
 import { useEffect, useState } from "react";
-import { useSnackbar } from "notistack";
+import { enqueueSnackbar, useSnackbar } from "notistack";
 import DraggableDialog from "../../components/common/DraggableDialog";
 import { appUrl } from "../../../URL";
 
 function EditToolbar(props) {
-  const { setRows, setRowModesModel, page, pageSize, rows } = props;
+  const { setRows, setRowModesModel, page, pageSize, rows, department } = props;
 
   const handleClick = () => {
     const id = -Math.random();
@@ -55,10 +56,56 @@ function EditToolbar(props) {
     }));
   };
 
+  const handleAddAllExtensions = () => {
+    let formData = new FormData();
+    formData.append("dept", department);
+    axios
+      .post(appUrl + `ExtDept/addallextensions`, formData, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        enqueueSnackbar(`All extensions add successfuly.`, {
+          variant: "success",
+          anchorOrigin: { horizontal: "center", vertical: "top" },
+          autoHideDuration: 5000,
+        });
+        setRows(res.data);
+      })
+      .catch((err) => {
+        if (err.response.status == 403)
+          enqueueSnackbar(
+            "You do not have the permission to map the department with the extension",
+            {
+              variant: "error",
+              anchorOrigin: { horizontal: "center", vertical: "top" },
+              autoHideDuration: 5000,
+            }
+          );
+        else
+          enqueueSnackbar(err.response.data.msg, {
+            variant: "error",
+            anchorOrigin: { horizontal: "center", vertical: "top" },
+            autoHideDuration: 5000,
+          });
+        console.log(err);
+      });
+  };
+
   return (
     <GridToolbarContainer>
-      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+      <Button
+        color="primary"
+        startIcon={<ControlPointIcon />}
+        onClick={handleClick}
+      >
         Add Extension
+      </Button>
+      <Button
+        color="primary"
+        startIcon={<ControlPointDuplicateIcon />}
+        onClick={handleAddAllExtensions}
+      >
+        Add All Extensions
       </Button>
     </GridToolbarContainer>
   );
@@ -455,6 +502,7 @@ function Datagrid({ department, extensionsList }) {
               page,
               pageSize,
               rows,
+              department,
             },
           }}
           onRowClick={handleClick}
