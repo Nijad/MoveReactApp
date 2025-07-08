@@ -6,5 +6,6 @@
         public string Ext { get; set; }
         public string Department { get; set; }
         public string Direction { get; set; }
+        public bool Enabled { get; set; }
     }
 }

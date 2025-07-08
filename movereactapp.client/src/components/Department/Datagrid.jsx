@@ -116,6 +116,15 @@ function Datagrid({ department, extensionsList }) {
       getOptionLabel: (value) => value.label,
     },
     {
+      field: "enabled",
+      headerName: "Status",
+      type: "boolean",
+      editable: false,
+      align: "center",
+      headerAlign: "center",
+      flex: 1,
+    },
+    {
       field: "actions",
       type: "actions",
       headerName: "Actions",

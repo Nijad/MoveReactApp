@@ -177,7 +177,7 @@ namespace MoveReactApp.Server.Database
         public List<ExtensionDepts> GetDeptExtensions(string dept)
         {
             List<ExtensionDepts> extDepts = new();
-            string query = $"select * from dept_ext where dept = '{dept}'";
+            string query = $"select d.*, e.enabled from dept_ext d, extension e where d.ext = e.ext and dept = '{dept}'";
             DataTable dt = dB.ExecuteReader(query);
             int i = 0;
 
@@ -189,7 +189,8 @@ namespace MoveReactApp.Server.Database
                         Department = dept,
                         Direction = DirectionConvert(int.Parse(dr["direction"].ToString())),
                         Ext = dr["ext"].ToString(),
-                        Id = i
+                        Id = i,
+                        Enabled = dr["enabled"].ToString() == "0" ? false : true
                     }
                 );
                 i++;
