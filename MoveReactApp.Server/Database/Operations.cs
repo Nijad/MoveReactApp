@@ -402,8 +402,8 @@ namespace MoveReactApp.Server.Database
             {
                 TerminalAttribute.StatusId = int.Parse(dt.Rows[0]["status_id"].ToString());
                 TerminalAttribute.StatusDesc = dt.Rows[0]["status_description"].ToString();
-                TerminalAttribute.ProcessId = string.IsNullOrEmpty(dt.Rows[0]["process_id"].ToString()) ?null: int.Parse(dt.Rows[0]["process_id"]?.ToString());
-                TerminalAttribute.ProcessName = string.IsNullOrEmpty(dt.Rows[0]["process_name"].ToString())?null: dt.Rows[0]["process_name"]?.ToString();
+                TerminalAttribute.ProcessId = string.IsNullOrEmpty(dt.Rows[0]["process_id"].ToString()) ? null : int.Parse(dt.Rows[0]["process_id"]?.ToString());
+                TerminalAttribute.ProcessName = string.IsNullOrEmpty(dt.Rows[0]["process_name"].ToString()) ? null : dt.Rows[0]["process_name"]?.ToString();
                 TerminalAttribute.ErrorMessage = string.IsNullOrEmpty(dt.Rows[0]["error_message"].ToString()) ? null : dt.Rows[0]["error_message"]?.ToString();
                 TerminalAttribute.User = dt.Rows[0]["user"]?.ToString();
                 TerminalAttribute.StartAt = string.IsNullOrEmpty(dt.Rows[0]["start_at"].ToString()) ? null : DateTime.Parse(dt.Rows[0]["start_at"].ToString());

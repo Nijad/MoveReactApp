@@ -33,7 +33,7 @@ namespace MoveReactApp.Server
                     }
                 );
                 //builder.Services.AddAuthorization(options => options.FallbackPolicy = options.DefaultPolicy);
-
+                
                 builder.Services.AddEndpointsApiExplorer();
                 builder.Services.AddSwaggerGen();
 
@@ -52,8 +52,23 @@ namespace MoveReactApp.Server
                               .AllowCredentials();
                     });
                 });
-
+                builder.Services.AddSingleton<RecycleLogger>();
                 WebApplication app = builder.Build();
+                app.Lifetime.ApplicationStopping.Register(() =>
+                {
+                    app.Services.GetService<RecycleLogger>()?.Log("ApplicationStopping");
+                });
+
+                app.Lifetime.ApplicationStopped.Register(() =>
+                {
+                    app.Services.GetService<RecycleLogger>()?.Log("ApplicationStopped");
+                });
+
+                app.Lifetime.ApplicationStarted.Register(() =>
+                {
+                    app.Services.GetService<RecycleLogger>()?.Log("ApplicationStarted");
+                });
+
                 app.UseCors("AllowReactApp");
                 app.Use(async (context, next) =>
                 {
